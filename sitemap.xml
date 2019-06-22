@@ -3,18 +3,18 @@
 
 
     <sitemap>
-        <loc>http://yoursite-url/post-sitemap.xml</loc>
-        <lastmod>2019-06-22T06:20:10.689Z</lastmod>
+        <loc>http://watsonwang.net/post-sitemap.xml</loc>
+        <lastmod>2019-06-22T07:41:24.205Z</lastmod>
     </sitemap>
 
     <sitemap>
-        <loc>http://yoursite-url/page-sitemap.xml</loc>
+        <loc>http://watsonwang.net/page-sitemap.xml</loc>
         <lastmod>2019-06-21T20:25:53.921Z</lastmod>
     </sitemap>
 
     <sitemap>
-        <loc>http://yoursite-url/tag-sitemap.xml</loc>
-        <lastmod>2019-06-22T06:20:10.689Z</lastmod>
+        <loc>http://watsonwang.net/tag-sitemap.xml</loc>
+        <lastmod>2019-06-22T07:41:24.205Z</lastmod>
     </sitemap>
 
 </sitemapindex>

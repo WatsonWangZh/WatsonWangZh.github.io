@@ -3,15 +3,15 @@
 
 
     <url>
-        <loc>http://yoursite-url/tags/Blog/</loc>
-        <lastmod>2019-06-22T06:20:10.689Z</lastmod>
+        <loc>http://watsonwang.net/tags/Blog/</loc>
+        <lastmod>2019-06-22T07:41:24.205Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
-        <loc>http://yoursite-url/tags/Hexo/</loc>
-        <lastmod>2019-06-22T06:20:10.689Z</lastmod>
+        <loc>http://watsonwang.net/tags/Hexo/</loc>
+        <lastmod>2019-06-22T07:41:24.205Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
