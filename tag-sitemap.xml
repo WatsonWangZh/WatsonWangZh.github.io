@@ -4,14 +4,14 @@
 
     <url>
         <loc>http://yoursite-url/tags/Blog/</loc>
-        <lastmod>2019-06-22T06:01:35.924Z</lastmod>
+        <lastmod>2019-06-22T06:20:10.689Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
         <loc>http://yoursite-url/tags/Hexo/</loc>
-        <lastmod>2019-06-22T06:01:35.924Z</lastmod>
+        <lastmod>2019-06-22T06:20:10.689Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
