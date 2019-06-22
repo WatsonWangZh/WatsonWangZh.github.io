@@ -4,7 +4,7 @@
 
     <sitemap>
         <loc>http://watsonwangzh.github.io/post-sitemap.xml</loc>
-        <lastmod>2019-06-22T16:13:05.561Z</lastmod>
+        <lastmod>2019-06-22T16:19:39.843Z</lastmod>
     </sitemap>
 
     <sitemap>
@@ -13,8 +13,13 @@
     </sitemap>
 
     <sitemap>
+        <loc>http://watsonwangzh.github.io/category-sitemap.xml</loc>
+        <lastmod>2019-06-22T16:19:39.843Z</lastmod>
+    </sitemap>
+
+    <sitemap>
         <loc>http://watsonwangzh.github.io/tag-sitemap.xml</loc>
-        <lastmod>2019-06-22T16:13:05.561Z</lastmod>
+        <lastmod>2019-06-22T16:19:39.843Z</lastmod>
     </sitemap>
 
 </sitemapindex>
