@@ -15,14 +15,14 @@
     </url>
     
     <url>
-        <loc>http://watsonwangzh.github.io/tags/</loc>
+        <loc>http://watsonwangzh.github.io/archive/</loc>
         <lastmod>2017-09-23T13:40:20.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     
     <url>
-        <loc>http://watsonwangzh.github.io/archive/</loc>
+        <loc>http://watsonwangzh.github.io/tags/</loc>
         <lastmod>2017-09-23T13:40:20.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
