@@ -231,7 +231,7 @@ XGBoost&=eXtreme+GBDT \\
 <h2><span id="加法模型">加法模型</span></h2><hr>
 <p>&emsp;&emsp;提升决策树模型可以表示为决策树的加法模型：  </p>
 <script type="math/tex; mode=display">f_M=\sum_{m=1}^M T\left(x;\Theta_m\right) \tag{2.1}</script><p>&emsp;&emsp;其中，<script type="math/tex">T\left(x;\Theta_m\right)</script>表示决策树；<script type="math/tex">\Theta_m</script>为决策树的参数；<script type="math/tex">M</script>为树的个数。</p>
-<h3><span id="前向分步算法">前向分步算法</span></h3><p>&emsp;&emsp;首先确定初始提升决策树<script type="math/tex">f_0\left(x\right)=0</script>，第<script type="math/tex">m</script>步的模型是</p>
+<h2><span id="前向分步算法">前向分步算法</span></h2><p>&emsp;&emsp;首先确定初始提升决策树<script type="math/tex">f_0\left(x\right)=0</script>，第<script type="math/tex">m</script>步的模型是</p>
 <script type="math/tex; mode=display">f_m\left(x\right)=f_{m-1}\left(x\right)+T\left(x;\Theta_m\right) \tag{2.2}</script><p>&emsp;&emsp;其中，<script type="math/tex">f_{m-1}\left(x\right)</script>为当前模型，通过经验风险极小化确定下一棵决策树的参数<script type="math/tex">\Theta_m</script>，</p>
 <script type="math/tex; mode=display">\hat{\Theta}_m=\mathop{\arg\min}_{\Theta_m}\sum_{i=1}^N L\left(y_i,f_{m-1}\left(x_i\right)+T\left(x_i;\Theta_m\right)\right) \tag{2.3}</script><hr>
 <p>&emsp;&emsp;已知训练数据集<script type="math/tex">T=\{\left(x_1,y_1\right),\left(x_2,y_2\right),\dots\left(x_N,y_N\right)\}</script>，<script type="math/tex">x_i\in\mathcal{X}\subseteq\mathbb{R}^n</script>，<script type="math/tex">\mathcal{X}</script>为输入空间，<script type="math/tex">y_i\in\mathcal{Y}\subseteq\mathbb{R}</script>，<script type="math/tex">\mathcal{Y}</script>为输出空间。如果将输入空间<script type="math/tex">\mathcal{X}</script>划分为<script type="math/tex">J</script>个互不相交的区域<script type="math/tex">R_1,R_2,\dots,R_J</script>，并且在每个区域上确定输出的常量<script type="math/tex">c_j</script>，那么决策树可表示为</p>
