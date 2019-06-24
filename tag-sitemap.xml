@@ -3,6 +3,27 @@
 
 
     <url>
+        <loc>http://watsonwangzh.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AE%97%E6%B3%95/</loc>
+        <lastmod>2019-06-24T15:31:11.922Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://watsonwangzh.github.io/tags/Kaggle/</loc>
+        <lastmod>2019-06-24T15:31:11.922Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://watsonwangzh.github.io/tags/%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6/</loc>
+        <lastmod>2019-06-24T15:31:11.922Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://watsonwangzh.github.io/tags/Blog/</loc>
         <lastmod>2019-06-24T15:21:43.720Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -19,27 +40,6 @@
     <url>
         <loc>http://watsonwangzh.github.io/tags/Hexo/</loc>
         <lastmod>2019-06-24T15:21:43.720Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://watsonwangzh.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AE%97%E6%B3%95/</loc>
-        <lastmod>2019-06-24T15:21:09.525Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://watsonwangzh.github.io/tags/Kaggle/</loc>
-        <lastmod>2019-06-24T15:21:09.525Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://watsonwangzh.github.io/tags/%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6/</loc>
-        <lastmod>2019-06-24T15:21:09.525Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
