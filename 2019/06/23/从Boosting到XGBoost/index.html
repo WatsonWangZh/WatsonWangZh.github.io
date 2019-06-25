@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content>
+    <meta name="description" content="null">
     <meta name="keyword" content>
     <link rel="shortcut icon" href="/img/ironman-draw.png">
     <!-- Place this tag in your head or just before your close body tag. -->
@@ -74,6 +74,10 @@
         
     }
     
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+    
 </style>
 
 <header class="intro-header" >
@@ -121,7 +125,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">WatsonWang&#39;s  Blog</a>
+            <a class="navbar-brand" href="/">人心险恶 GNMB</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -207,80 +211,79 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h1><span id="前言">前言</span></h1><hr>
-<p>&emsp; &emsp;集成学习在各种数据科学比赛中都有举足轻重的地位，而基于树模型的XGBoost更是其中的常客。XGBoost 是 “Extreme Gradient Boosting”的简称,以CART树作为基础模型实现。<br>&emsp; &emsp;本文将按<script type="math/tex">Boosting \to BDT \to GBDT \to XGBoost</script>的顺序介绍,以期对XGBoost有比较深入的认识。</p>
+                <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><hr>
+<p>集成学习在各种数据科学比赛中都有举足轻重的地位，而基于树模型的XGBoost更是其中的常客。XGBoost 是 “Extreme Gradient Boosting”的简称,以CART树作为基础模型实现。本文将按照<script type="math/tex">Boosting \to BDT \to GBDT \to XGBoost</script>的顺序介绍,以期对XGBoost有比较深入的认识。</p>
 <div align="middle"><iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="//music.163.com/outchain/player?type=2&id=36897723&auto=1&height=66"></iframe></div>
 
-<h1><span id="xgboost原理">XGboost原理</span></h1><hr>
+<h1 id="xgboost原理"><a href="#XGboost原理" class="headerlink" title="XGboost原理"></a>XGboost原理</h1><hr>
 <p>简而言之:</p>
 <script type="math/tex; mode=display">
 \begin{align}
 XGBoost&=eXtreme+GBDT \\
 &=eXtreme+(Gradient+BDT) \\
 &=eXtreme+Gradient+(Boosting+DecisionTree)
-\end{align}</script><h1><span id="boosting">Boosting</span></h1><p>Boosting即提升方法，提升方法的两个要点：加法模型和前向分步算法。</p>
-<h2><span id="加法模型">加法模型</span></h2><hr>
-<script type="math/tex; mode=display">f\left(x\right)=\sum_{m=1}^M\beta_m b\left(x;\gamma_m\right) \tag{1.1}</script><p>&emsp;&emsp;其中，<script type="math/tex">b\left(x;\gamma_m\right)</script>为基函数，<script type="math/tex">\gamma_m</script>为基函数的参数，<script type="math/tex">\beta_m</script>为基函数的系数。<br>&emsp;&emsp;在给定训练数据<script type="math/tex">\{\left(x_i,y_i\right)\}_{i=1}^N</script>及损失函数<script type="math/tex">L\left(y,f\left(x\right)\right)</script>的条件下，学习加法模型<script type="math/tex">f\left(x\right)</script>成为经验风险极小化问题：</p>
-<script type="math/tex; mode=display">\min_{\beta_m,\gamma_m}\sum_{i=1}^N L\left(y_i,\sum_{m=1}^M\beta_m b\left(x_i;\gamma_m\right)\right)\tag{1.2}</script><p>&emsp;&emsp;前向分步算法求解这一优化问题的思路：因为学习的是加法模型，可以从前向后，每一步只学习一个基函数及其系数，逐步逼近优化目标函数式（1.2），则可以简化优化复杂度。具体地，每步只需优化如下损失函数：</p>
-<script type="math/tex; mode=display">\min_{\beta,\gamma}\sum_{i=1}^N L\left(y_i,\beta b\left(x_i;\gamma\right)\right)\tag{1.3}</script><h2><span id="前向分步算法">前向分步算法</span></h2><hr>
-<p>&emsp;&emsp;输入：训练数据集<script type="math/tex">T=\{\left(x_1,y_1\right),\left(x_2,y_2\right),\dots,\left(x_N,y_N\right)\}</script>； 损失函数<script type="math/tex">L\left(y,f\left(x\right)\right)</script>；基函数集合<script type="math/tex">\{b\left(x;\gamma\right)\}</script>；<br>&emsp;&emsp;输出：加法模型<script type="math/tex">f\left(x\right)</script><br>&emsp;&emsp;（1）初始化<script type="math/tex">f_0\left(x\right)=0</script><br>&emsp;&emsp;（2）对<script type="math/tex">m=1,2,\dots,M</script><br>&emsp;&emsp;&emsp;&emsp;（a）极小化损失函数</p>
-<script type="math/tex; mode=display">\left(\beta_m,\gamma_m\right)=\mathop{\arg\min}_{\beta,\gamma} \sum_{i=1}^N L\left(y_i, f_{m-1}\left(x_i\right)+\beta b\left(x_i;\gamma\right)\right) \tag{1.4}</script><p>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;得到参数<script type="math/tex">\beta_m</script>，<script type="math/tex">\gamma_m</script><br>&emsp;&emsp;&emsp;&emsp;（b）更新</p>
-<script type="math/tex; mode=display">f_m\left(x\right)=f_{m-1}\left(x\right)+\beta_m b\left(x;\gamma_m\right) \tag{1.5}</script><p>&emsp;&emsp;（3）得到加法模型  </p>
-<script type="math/tex; mode=display">f\left(x\right)=f_M\left(x\right)=\sum_{m=1}^M\beta_m b\left(x;\gamma_m\right) \tag{1.6}</script><p>&emsp;&emsp;前向分步算法将同时求解从<script type="math/tex">m=1</script>到<script type="math/tex">M</script>所有参数<script type="math/tex">\beta_m,\gamma_m</script>的优化问题简化为逐次求解各个<script type="math/tex">\beta_m, \gamma_m</script>的优化问题。</p>
-<h1><span id="bdt">BDT</span></h1><p>&emsp;&emsp;BDT, Boosting Decision Tree，即以决策树为基函数的提升方法即为提升决策树。</p>
-<h2><span id="加法模型">加法模型</span></h2><hr>
-<p>&emsp;&emsp;提升决策树模型可以表示为决策树的加法模型：  </p>
-<script type="math/tex; mode=display">f_M=\sum_{m=1}^M T\left(x;\Theta_m\right) \tag{2.1}</script><p>&emsp;&emsp;其中，<script type="math/tex">T\left(x;\Theta_m\right)</script>表示决策树；<script type="math/tex">\Theta_m</script>为决策树的参数；<script type="math/tex">M</script>为树的个数。</p>
-<h2><span id="前向分步算法">前向分步算法</span></h2><p>&emsp;&emsp;首先确定初始提升决策树<script type="math/tex">f_0\left(x\right)=0</script>，第<script type="math/tex">m</script>步的模型是</p>
-<script type="math/tex; mode=display">f_m\left(x\right)=f_{m-1}\left(x\right)+T\left(x;\Theta_m\right) \tag{2.2}</script><p>&emsp;&emsp;其中，<script type="math/tex">f_{m-1}\left(x\right)</script>为当前模型，通过经验风险极小化确定下一棵决策树的参数<script type="math/tex">\Theta_m</script>，</p>
+\end{align}</script><h1 id="boosting"><a href="#Boosting" class="headerlink" title="Boosting"></a>Boosting</h1><p>Boosting即提升方法，提升方法的两个要点：加法模型和前向分步算法。</p>
+<h2 id="加法模型"><a href="#加法模型" class="headerlink" title="加法模型"></a>加法模型</h2><hr>
+<script type="math/tex; mode=display">f\left(x\right)=\sum_{m=1}^M\beta_m b\left(x;\gamma_m\right) \tag{1.1}</script><p>其中，<script type="math/tex">b\left(x;\gamma_m\right)</script>为基函数，<script type="math/tex">\gamma_m</script>为基函数的参数，<script type="math/tex">\beta_m</script>为基函数的系数。<br>在给定训练数据<script type="math/tex">\{\left(x_i,y_i\right)\}_{i=1}^N</script>及损失函数<script type="math/tex">L\left(y,f\left(x\right)\right)</script>的条件下，学习加法模型<script type="math/tex">f\left(x\right)</script>成为经验风险极小化问题：</p>
+<script type="math/tex; mode=display">\min_{\beta_m,\gamma_m}\sum_{i=1}^N L\left(y_i,\sum_{m=1}^M\beta_m b\left(x_i;\gamma_m\right)\right)\tag{1.2}</script><p>前向分步算法求解这一优化问题的思路：因为学习的是加法模型，可以从前向后，每一步只学习一个基函数及其系数，逐步逼近优化目标函数式（1.2），则可以简化优化复杂度。具体地，每步只需优化如下损失函数：</p>
+<script type="math/tex; mode=display">\min_{\beta,\gamma}\sum_{i=1}^N L\left(y_i,\beta b\left(x_i;\gamma\right)\right)\tag{1.3}</script><h2 id="前向分步算法"><a href="#前向分步算法" class="headerlink" title="前向分步算法"></a>前向分步算法</h2><hr>
+<p>输入：训练数据集<script type="math/tex">T=\{\left(x_1,y_1\right),\left(x_2,y_2\right),\dots,\left(x_N,y_N\right)\}</script>； 损失函数<script type="math/tex">L\left(y,f\left(x\right)\right)</script>；基函数集合<script type="math/tex">\{b\left(x;\gamma\right)\}</script>；<br>输出：加法模型<script type="math/tex">f\left(x\right)</script><br>（1）初始化<script type="math/tex">f_0\left(x\right)=0</script><br>（2）对<script type="math/tex">m=1,2,\dots,M</script><br>（a）极小化损失函数</p>
+<script type="math/tex; mode=display">\left(\beta_m,\gamma_m\right)=\mathop{\arg\min}_{\beta,\gamma} \sum_{i=1}^N L\left(y_i, f_{m-1}\left(x_i\right)+\beta b\left(x_i;\gamma\right)\right) \tag{1.4}</script><p>得到参数<script type="math/tex">\beta_m</script>，<script type="math/tex">\gamma_m</script><br>（b）更新</p>
+<script type="math/tex; mode=display">f_m\left(x\right)=f_{m-1}\left(x\right)+\beta_m b\left(x;\gamma_m\right) \tag{1.5}</script><p>（3）得到加法模型  </p>
+<script type="math/tex; mode=display">f\left(x\right)=f_M\left(x\right)=\sum_{m=1}^M\beta_m b\left(x;\gamma_m\right) \tag{1.6}</script><p>前向分步算法将同时求解从<script type="math/tex">m=1</script>到<script type="math/tex">M</script>所有参数<script type="math/tex">\beta_m,\gamma_m</script>的优化问题简化为逐次求解各个<script type="math/tex">\beta_m, \gamma_m</script>的优化问题。</p>
+<h1 id="bdt"><a href="#BDT" class="headerlink" title="BDT"></a>BDT</h1><p>BDT, Boosting Decision Tree，即以决策树为基函数的提升方法即为提升决策树。</p>
+<h2 id="加法模型"><a href="#加法模型-1" class="headerlink" title="加法模型"></a>加法模型</h2><hr>
+<p>提升决策树模型可以表示为决策树的加法模型：  </p>
+<script type="math/tex; mode=display">f_M=\sum_{m=1}^M T\left(x;\Theta_m\right) \tag{2.1}</script><p>其中，<script type="math/tex">T\left(x;\Theta_m\right)</script>表示决策树；<script type="math/tex">\Theta_m</script>为决策树的参数；<script type="math/tex">M</script>为树的个数。</p>
+<h2 id="前向分步算法"><a href="#前向分步算法-1" class="headerlink" title="前向分步算法"></a>前向分步算法</h2><p>首先确定初始提升决策树<script type="math/tex">f_0\left(x\right)=0</script>，第<script type="math/tex">m</script>步的模型是</p>
+<script type="math/tex; mode=display">f_m\left(x\right)=f_{m-1}\left(x\right)+T\left(x;\Theta_m\right) \tag{2.2}</script><p>其中，<script type="math/tex">f_{m-1}\left(x\right)</script>为当前模型，通过经验风险极小化确定下一棵决策树的参数<script type="math/tex">\Theta_m</script>，</p>
 <script type="math/tex; mode=display">\hat{\Theta}_m=\mathop{\arg\min}_{\Theta_m}\sum_{i=1}^N L\left(y_i,f_{m-1}\left(x_i\right)+T\left(x_i;\Theta_m\right)\right) \tag{2.3}</script><hr>
-<p>&emsp;&emsp;已知训练数据集<script type="math/tex">T=\{\left(x_1,y_1\right),\left(x_2,y_2\right),\dots\left(x_N,y_N\right)\}</script>，<script type="math/tex">x_i\in\mathcal{X}\subseteq\mathbb{R}^n</script>，<script type="math/tex">\mathcal{X}</script>为输入空间，<script type="math/tex">y_i\in\mathcal{Y}\subseteq\mathbb{R}</script>，<script type="math/tex">\mathcal{Y}</script>为输出空间。如果将输入空间<script type="math/tex">\mathcal{X}</script>划分为<script type="math/tex">J</script>个互不相交的区域<script type="math/tex">R_1,R_2,\dots,R_J</script>，并且在每个区域上确定输出的常量<script type="math/tex">c_j</script>，那么决策树可表示为</p>
-<script type="math/tex; mode=display">T\left(x;\Theta\right)=\sum_{j=1}^J c_j I\left(x\in R_j\right) \tag{2.4}</script><p>&emsp;&emsp;其中，参数<script type="math/tex">\Theta=\{\left(R_1,c_1\right),\left(R_2,c_2\right),\dots,\left(R_J,c_J\right)\}</script>表示决策树的区域划分和各区域上的常量值。<script type="math/tex">J</script>是决策树的复杂度即叶子结点个数。</p>
+<p>已知训练数据集<script type="math/tex">T=\{\left(x_1,y_1\right),\left(x_2,y_2\right),\dots\left(x_N,y_N\right)\}</script>，<script type="math/tex">x_i\in\mathcal{X}\subseteq\mathbb{R}^n</script>，<script type="math/tex">\mathcal{X}</script>为输入空间，<script type="math/tex">y_i\in\mathcal{Y}\subseteq\mathbb{R}</script>，<script type="math/tex">\mathcal{Y}</script>为输出空间。如果将输入空间<script type="math/tex">\mathcal{X}</script>划分为<script type="math/tex">J</script>个互不相交的区域<script type="math/tex">R_1,R_2,\dots,R_J</script>，并且在每个区域上确定输出的常量<script type="math/tex">c_j</script>，那么决策树可表示为</p>
+<script type="math/tex; mode=display">T\left(x;\Theta\right)=\sum_{j=1}^J c_j I\left(x\in R_j\right) \tag{2.4}</script><p>其中，参数<script type="math/tex">\Theta=\{\left(R_1,c_1\right),\left(R_2,c_2\right),\dots,\left(R_J,c_J\right)\}</script>表示决策树的区域划分和各区域上的常量值。<script type="math/tex">J</script>是决策树的复杂度即叶子结点个数。</p>
 <hr>
-<p>&emsp;&emsp;当采用平方误差损失函数时，</p>
-<script type="math/tex; mode=display">L\left(y,f\left(x\right)\right)=\left(y-f\left(x\right)\right)^2</script><p>&emsp;&emsp;其损失变为</p>
+<p>当采用平方误差损失函数时，</p>
+<script type="math/tex; mode=display">L\left(y,f\left(x\right)\right)=\left(y-f\left(x\right)\right)^2</script><p>其损失变为</p>
 <script type="math/tex; mode=display">\begin{align}
 L\left(y,f_{m-1}\left(x\right)+T\left(x;\Theta_m\right)\right) 
 &=\left[y-f_{m-1}\left(x\right)-T\left(x;\Theta_m\right)\right]^2 \\
 &=\left[r-T\left(x;\Theta_m\right)\right]^2
-\end{align}</script><p>&emsp;&emsp;其中，</p>
-<script type="math/tex; mode=display">r=y-f_{m-1}\left(x\right) \tag{2.5}</script><p>&emsp;&emsp;是当前模型拟合数据的残差（residual）。对回归问题的提升决策树，只需要简单地拟合当前模型的残差。<br>&emsp;&emsp;回归问题的提升决策树算法<br>&emsp;&emsp;输入：训练数据集<script type="math/tex">T=\{\left(x_1,y_1\right),\left(x_2,y_2\right),\dots,\left(x_N,y_N\right)\}</script>；<br>&emsp;&emsp;输出：提升决策树<script type="math/tex">f_M\left(x\right)</script><br>&emsp;&emsp;（1）初始化<script type="math/tex">f_0\left(x\right)=0</script><br>&emsp;&emsp;（2）对<script type="math/tex">m=1,2,\dots,M</script><br>&emsp;&emsp;（a）按照式（2.5）计算残差</p>
-<script type="math/tex; mode=display">r_{mi}=y_i-f_{m-1}\left(x_i\right), \quad i=1,2,\dots,N</script><p>&emsp;&emsp;b)拟合残差<script type="math/tex">r_{mi}</script>学习一个回归树，得到<script type="math/tex">T\left(x;\Theta_m\right)</script><br>&emsp;&emsp;（c）更新<script type="math/tex">f_m\left(x\right)=f_{m-1}\left(x\right)+T\left(x;\Theta_m\right)</script><br>&emsp;&emsp;（3）得到回归提升决策树 </p>
-<script type="math/tex; mode=display">f_M\left(x\right)=\sum_{m=1}^M T\left(x;\Theta_m\right)</script><h1><span id="gbdt">GBDT</span></h1><p>&emsp;&emsp;GBDT, Gradient Boosting Decision Tree即梯度提升决策树。</p>
+\end{align}</script><p>其中，</p>
+<script type="math/tex; mode=display">r=y-f_{m-1}\left(x\right) \tag{2.5}</script><p>是当前模型拟合数据的残差（residual）。对回归问题的提升决策树，只需要简单地拟合当前模型的残差。<br>回归问题的提升决策树算法<br>输入：训练数据集<script type="math/tex">T=\{\left(x_1,y_1\right),\left(x_2,y_2\right),\dots,\left(x_N,y_N\right)\}</script>；<br>输出：提升决策树<script type="math/tex">f_M\left(x\right)</script><br>（1）初始化<script type="math/tex">f_0\left(x\right)=0</script><br>（2）对<script type="math/tex">m=1,2,\dots,M</script><br>（a）按照式（2.5）计算残差</p>
+<script type="math/tex; mode=display">r_{mi}=y_i-f_{m-1}\left(x_i\right), \quad i=1,2,\dots,N</script><p>b)拟合残差<script type="math/tex">r_{mi}</script>学习一个回归树，得到<script type="math/tex">T\left(x;\Theta_m\right)</script><br>（c）更新<script type="math/tex">f_m\left(x\right)=f_{m-1}\left(x\right)+T\left(x;\Theta_m\right)</script><br>（3）得到回归提升决策树 </p>
+<script type="math/tex; mode=display">f_M\left(x\right)=\sum_{m=1}^M T\left(x;\Theta_m\right)</script><h1 id="gbdt"><a href="#GBDT" class="headerlink" title="GBDT"></a>GBDT</h1><p>GBDT, Gradient Boosting Decision Tree即梯度提升决策树。</p>
 <hr>
-<h2><span id="gbdt与bdt的不同">GBDT与BDT的不同</span></h2><hr>
-<p>&emsp;&emsp;梯度提升算法使用损失函数的负梯度在当前模型的值</p>
-<script type="math/tex; mode=display">-\left[\frac{\partial L\left(y,f\left(x_i\right)\right)}{\partial f\left(x_i\right)}\right]_{f\left(x\right)=f_{m-1}\left(x\right)} \tag{3.1}</script><p>&emsp;&emsp;作为回归问题提升决策树算法中残差的近似值，拟合一个回归树。</p>
-<h2><span id="gbdt梯度提升算法">GBDT梯度提升算法</span></h2><hr>
-<p>&emsp;&emsp;输入：训练数据集<script type="math/tex">T=\{\left(x_1,y_1\right),\left(x_2,y_2\right),\dots,\left(x_N,y_N\right)\}</script>； 损失函数<script type="math/tex">L\left(y,f\left(x\right)\right)</script><br>&emsp;&emsp;输出：梯度提升决策树<script type="math/tex">\hat{f}\left(x\right)</script><br>&emsp;&emsp;（1）初始化</p>
-<script type="math/tex; mode=display">f_0\left(x\right)=\mathop{\arg\min}_c\sum_{i=1}^N L\left(y_i,c\right) \tag{3.1}</script><p>&emsp;&emsp;（2）对<script type="math/tex">m=1,2,\dots,M</script><br>&emsp;&emsp;&emsp;&emsp;（a）对<script type="math/tex">i=1,2,\dots,N</script>，计算</p>
-<script type="math/tex; mode=display">r_{mi}=-\left[\frac{\partial L\left(y,f\left(x_i\right)\right)}{\partial f\left(x_i\right)}\right]_{f\left(x\right)=f_{m-1}\left(x\right)}\tag{3.2}</script><p>&emsp;&emsp;&emsp;&emsp;（b)对<script type="math/tex">r_{mi}</script>拟合一个回归树，得到第<script type="math/tex">m</script>棵树的叶结点区域<script type="math/tex">R_{mj},j=1,2,\dots,J</script><br>&emsp;&emsp;&emsp;&emsp;（c）对<script type="math/tex">j=1,2,\dots,J</script>，计算</p>
-<script type="math/tex; mode=display">c_{mj}=\mathop{\arg\min}_c\sum_{x_i\in R_{mj}} L\left(y_i, f_{m-1}\left(x_i\right)+c\right) \tag{3.3}</script><p>&emsp;&emsp;&emsp;&emsp;（d）更新<script type="math/tex">f_m\left(x\right)=f_{m-1}\left(x\right)+\sum_{j=1}^J c_{mj} I\left(x\in R_{mj}\right)</script><br>&emsp;&emsp;（3）得到回归梯度提升决策树 </p>
-<script type="math/tex; mode=display">\hat{f}\left(x\right)=f_M\left(x\right)=\sum_{m=1}^M \sum_{j=1}^J c_{mj} I\left(x\in R_{mj}\right) \tag{3.4}</script><h1><span id="xgboost">XGBoost</span></h1><p>&emsp;&emsp;XGBoost, eXtreme Gradient Boosting Decision Tree，即极致梯度提升决策树。</p>
+<h2 id="gbdt与bdt的不同"><a href="#GBDT与BDT的不同" class="headerlink" title="GBDT与BDT的不同"></a>GBDT与BDT的不同</h2><hr>
+<p>梯度提升算法使用损失函数的负梯度在当前模型的值</p>
+<script type="math/tex; mode=display">-\left[\frac{\partial L\left(y,f\left(x_i\right)\right)}{\partial f\left(x_i\right)}\right]_{f\left(x\right)=f_{m-1}\left(x\right)} \tag{3.1}</script><p>作为回归问题提升决策树算法中残差的近似值，拟合一个回归树。</p>
+<h2 id="gbdt梯度提升算法"><a href="#GBDT梯度提升算法" class="headerlink" title="GBDT梯度提升算法"></a>GBDT梯度提升算法</h2><hr>
+<p>输入：训练数据集<script type="math/tex">T=\{\left(x_1,y_1\right),\left(x_2,y_2\right),\dots,\left(x_N,y_N\right)\}</script>； 损失函数<script type="math/tex">L\left(y,f\left(x\right)\right)</script><br>输出：梯度提升决策树<script type="math/tex">\hat{f}\left(x\right)</script><br>（1）初始化</p>
+<script type="math/tex; mode=display">f_0\left(x\right)=\mathop{\arg\min}_c\sum_{i=1}^N L\left(y_i,c\right) \tag{3.1}</script><p>（2）对<script type="math/tex">m=1,2,\dots,M</script><br>（a）对<script type="math/tex">i=1,2,\dots,N</script>，计算</p>
+<script type="math/tex; mode=display">r_{mi}=-\left[\frac{\partial L\left(y,f\left(x_i\right)\right)}{\partial f\left(x_i\right)}\right]_{f\left(x\right)=f_{m-1}\left(x\right)}\tag{3.2}</script><p>（b)对<script type="math/tex">r_{mi}</script>拟合一个回归树，得到第<script type="math/tex">m</script>棵树的叶结点区域<script type="math/tex">R_{mj},j=1,2,\dots,J</script><br>（c）对<script type="math/tex">j=1,2,\dots,J</script>，计算</p>
+<script type="math/tex; mode=display">c_{mj}=\mathop{\arg\min}_c\sum_{x_i\in R_{mj}} L\left(y_i, f_{m-1}\left(x_i\right)+c\right) \tag{3.3}</script><p>（d）更新<script type="math/tex">f_m\left(x\right)=f_{m-1}\left(x\right)+\sum_{j=1}^J c_{mj} I\left(x\in R_{mj}\right)</script><br>（3）得到回归梯度提升决策树 </p>
+<script type="math/tex; mode=display">\hat{f}\left(x\right)=f_M\left(x\right)=\sum_{m=1}^M \sum_{j=1}^J c_{mj} I\left(x\in R_{mj}\right) \tag{3.4}</script><h1 id="xgboost"><a href="#XGBoost" class="headerlink" title="XGBoost"></a>XGBoost</h1><p>XGBoost, eXtreme Gradient Boosting Decision Tree，即极致梯度提升决策树。</p>
 <hr>
-<p>&emsp;&emsp;训练数据集<script type="math/tex">\mathcal{D}=\{\left(\mathbf{x}_i,y_i\right)\}</script>，其中<script type="math/tex">\mathbf{x}_i\in\mathbb{R}^m,y_i\in\mathbb{R},\left|\mathcal{D}\right|=n</script>。</p>
-<h2><span id="决策树模型">决策树模型</span></h2><script type="math/tex; mode=display">f\left(\mathbf{x}\right)=w_{q\left(\mathbf{x}\right)} \tag{4.1}</script><p>&emsp;&emsp;其中，<script type="math/tex">q:\mathbb{R}^m\to \{1,\dots,T\},w\in\mathbb{R}^T</script>,<script type="math/tex">T</script>为决策树叶子节点数。<br>&emsp;&emsp;提升决策树模型预测输出</p>
-<script type="math/tex; mode=display">\hat{y}_i=\phi\left(\mathbf{x}_i\right)=\sum_{k=1}^K f_k\left(\mathbf{x}_i\right) \tag{4.2}</script><p>&emsp;&emsp;其中，<script type="math/tex">f_k\left(\mathbf{x}\right)</script>为第<script type="math/tex">k</script>棵决策树。</p>
-<h2><span id="正则化目标函数">正则化目标函数</span></h2><script type="math/tex; mode=display">\mathcal{L}\left(\phi\right)=\sum_i l\left(\hat{y}_i,y_i\right)+\sum_k \Omega\left(f_k\right) \tag{4.3}</script><p>&emsp;&emsp;其中，<script type="math/tex">\Omega\left(f\right)=\gamma T+\frac{1}{2}\lambda\|w\|^2=\gamma T+\frac{1}{2}\lambda\sum_{j=1}^T w_j^2</script>。<br>&emsp;&emsp;第<script type="math/tex">t</script>轮目标函数</p>
-<script type="math/tex; mode=display">\mathcal{L}^{\left(t\right)}=\sum_{i=1}^n l\left(y_i,\hat{y}^{\left(t-1\right)}_i+f_t\left(\mathbf{x}_i\right)\right)+\Omega\left(f_t\right) \tag{4.4}</script><h2><span id="二阶泰勒">二阶泰勒</span></h2><p>&emsp;&emsp;第<script type="math/tex">t</script>轮目标函数在<script type="math/tex">\hat{y}^{\left(t-1\right)}</script>处的二阶泰勒展开</p>
-<script type="math/tex; mode=display">\mathcal{L}^{\left(t\right)}\simeq\sum_{i=1}^n\left[l\left(y_i,\hat{y}^{\left(t-1\right)}\right)+g_i f_t\left(\mathbf{x}_i\right)+\frac{1}{2}h_i f^2_t\left(\mathbf{x}_i\right)\right]+\Omega\left(f_t\right)  \tag{4.5}</script><p>&emsp;&emsp;其中，<script type="math/tex">g_i=\partial_{\hat{y}^{\left(t-1\right)}}l\left(y_i,\hat{y}^{\left(t-1\right)}\right),h_i=\partial^2_{\hat{y}^{\left(t-1\right)}}l\left(y_i,\hat{y}^{\left(t-1\right)}\right)</script>。<br>&emsp;&emsp;第<script type="math/tex">t</script>轮目标函数的二阶泰勒展开移除关于<script type="math/tex">f_t\left(\mathbf{x}_i\right)</script>常数项</p>
+<p>训练数据集<script type="math/tex">\mathcal{D}=\{\left(\mathbf{x}_i,y_i\right)\}</script>，其中<script type="math/tex">\mathbf{x}_i\in\mathbb{R}^m,y_i\in\mathbb{R},\left|\mathcal{D}\right|=n</script>。</p>
+<h2 id="决策树模型"><a href="#决策树模型" class="headerlink" title="决策树模型"></a>决策树模型</h2><script type="math/tex; mode=display">f\left(\mathbf{x}\right)=w_{q\left(\mathbf{x}\right)} \tag{4.1}</script><p>其中，<script type="math/tex">q:\mathbb{R}^m\to \{1,\dots,T\},w\in\mathbb{R}^T</script>,<script type="math/tex">T</script>为决策树叶子节点数。<br>提升决策树模型预测输出</p>
+<script type="math/tex; mode=display">\hat{y}_i=\phi\left(\mathbf{x}_i\right)=\sum_{k=1}^K f_k\left(\mathbf{x}_i\right) \tag{4.2}</script><p>其中，<script type="math/tex">f_k\left(\mathbf{x}\right)</script>为第<script type="math/tex">k</script>棵决策树。</p>
+<h2 id="正则化目标函数"><a href="#正则化目标函数" class="headerlink" title="正则化目标函数"></a>正则化目标函数</h2><script type="math/tex; mode=display">\mathcal{L}\left(\phi\right)=\sum_i l\left(\hat{y}_i,y_i\right)+\sum_k \Omega\left(f_k\right) \tag{4.3}</script><p>其中，<script type="math/tex">\Omega\left(f\right)=\gamma T+\frac{1}{2}\lambda\|w\|^2=\gamma T+\frac{1}{2}\lambda\sum_{j=1}^T w_j^2</script>。<br>第<script type="math/tex">t</script>轮目标函数</p>
+<script type="math/tex; mode=display">\mathcal{L}^{\left(t\right)}=\sum_{i=1}^n l\left(y_i,\hat{y}^{\left(t-1\right)}_i+f_t\left(\mathbf{x}_i\right)\right)+\Omega\left(f_t\right) \tag{4.4}</script><h2 id="二阶泰勒"><a href="#二阶泰勒" class="headerlink" title="二阶泰勒"></a>二阶泰勒</h2><p>第<script type="math/tex">t</script>轮目标函数在<script type="math/tex">\hat{y}^{\left(t-1\right)}</script>处的二阶泰勒展开</p>
+<script type="math/tex; mode=display">\mathcal{L}^{\left(t\right)}\simeq\sum_{i=1}^n\left[l\left(y_i,\hat{y}^{\left(t-1\right)}\right)+g_i f_t\left(\mathbf{x}_i\right)+\frac{1}{2}h_i f^2_t\left(\mathbf{x}_i\right)\right]+\Omega\left(f_t\right)  \tag{4.5}</script><p>其中，<script type="math/tex">g_i=\partial_{\hat{y}^{\left(t-1\right)}}l\left(y_i,\hat{y}^{\left(t-1\right)}\right),h_i=\partial^2_{\hat{y}^{\left(t-1\right)}}l\left(y_i,\hat{y}^{\left(t-1\right)}\right)</script>。<br>第<script type="math/tex">t</script>轮目标函数的二阶泰勒展开移除关于<script type="math/tex">f_t\left(\mathbf{x}_i\right)</script>常数项</p>
 <script type="math/tex; mode=display">\begin{align}
 \tilde{\mathcal{L}}^{\left(t\right)}&=\sum_{i=1}^n\left[g_i f_t\left(\mathbf{x}_i\right)+\frac{1}{2}h_i f^2_t\left(\mathbf{x}_i\right)\right]+\Omega\left(f_t\right)  \tag{4.6}\\
 &=\sum_{i=1}^n\left[g_i f_t\left(\mathbf{x}_i\right)+\frac{1}{2}h_i f^2_t\left(\mathbf{x}_i\right)\right]+\gamma T+\frac{1}{2}\lambda\sum_{j=1}^T w_j^2
-\end{align} \\</script><p>&emsp;&emsp;定义叶结点<script type="math/tex">j</script>上的样本的下标集合<script type="math/tex">I_j=\{i|q\left(\mathbf{x}_i\right)=j\}</script>，则目标函数可表示为按叶结点累加的形式</p>
-<script type="math/tex; mode=display">\tilde{\mathcal{L}}^{\left(t\right)}=\sum_{j=1}^T\left[\left(\sum_{i\in I_j}g_i\right)w_j+\frac{1}{2}\left(\sum_{i\in I_j}h_i+\lambda\right)w_j^2\right]+\gamma T \tag{4.7}</script><p>&emsp;&emsp;由于<script type="math/tex">w_j^*=\mathop{\arg\min}_{w_j}\tilde{\mathcal{L}}^{\left(t\right)}</script><br>&emsp;&emsp;可令<script type="math/tex">\frac{\partial\tilde{\mathcal{L}}^{\left(t\right)}}{\partial w_j}=0</script><br>&emsp;&emsp;得到每个叶结点<script type="math/tex">j</script>的最优分数为</p>
-<script type="math/tex; mode=display">w_j^*=-\frac{\sum_{i\in I_j}g_i}{\sum_{i\in I_j} h_i+\lambda} \tag{4.8}</script><p>&emsp;&emsp;代入每个叶结点<script type="math/tex">j</script>的最优分数，得到最优化目标函数值</p>
-<h2><span id="树生成准则">树生成准则</span></h2><script type="math/tex; mode=display">\tilde{\mathcal{L}}^{\left(t\right)}\left(q\right)=-\frac{1}{2}\sum_{j=1}^T 
-\frac{\left(\sum_{i\in I_j} g_i\right)^2}{\sum_{i\in I_j} h_i+\lambda}+\gamma T \tag{4.9}</script><p>&emsp;&emsp;假设<script type="math/tex">I_L</script>和<script type="math/tex">I_R</script>分别为分裂后左右结点的实例集，令<script type="math/tex">I=I_L\cup I_R</script>，则分裂后损失减少量由下式得出</p>
-<script type="math/tex; mode=display">\mathcal{L}_{split}=\frac{1}{2}\left[\frac{\left(\sum_{i\in I_L} g_i\right)^2}{\sum_{i\in I_L}h_i+\lambda}+\frac{\left(\sum_{i\in I_R} g_i\right)^2}{\sum_{i\in I_R}h_i+\lambda}-\frac{\left(\sum_{i\in I} g_i\right)^2}{\sum_{i\in I}h_i+\lambda}\right]-\gamma \tag{4.10}</script><p>&emsp;&emsp;用以评估待分裂结点。</p>
-<h2><span id="生成算法">生成算法</span></h2><p>&emsp;&emsp;算法1. 分裂查找的精确贪婪算法<br>&emsp;&emsp;输入：当前结点实例集<script type="math/tex">I</script>;特征维度<script type="math/tex">d</script><br>&emsp;&emsp;输出：根据最大分值分裂<br>&emsp;&emsp;（1）<script type="math/tex">gain\leftarrow 0</script><br>&emsp;&emsp;（2）<script type="math/tex">G\leftarrow\sum_{i\in I}g_i</script>，<script type="math/tex">H\leftarrow\sum_{i\in I}h_i</script><br>&emsp;&emsp;（3）for <script type="math/tex">k=1</script> to <script type="math/tex">d</script> do<br>&emsp;&emsp;&emsp;&emsp;（3.1）<script type="math/tex">G_L \leftarrow 0</script>，<script type="math/tex">H_L \leftarrow 0</script><br>&emsp;&emsp;&emsp;&emsp;（3.2）for <script type="math/tex">j</script> in sorted(<script type="math/tex">I</script>, by <script type="math/tex">\mathbf{x}_{jk}</script>) do<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;（3.2.1）<script type="math/tex">G_L \leftarrow G_L+g_j</script>，<script type="math/tex">H_L \leftarrow H_L+h_j</script><br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;（3.2.2）<script type="math/tex">G_R \leftarrow G-G_L</script>，<script type="math/tex">H_R=H-H_L</script><br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;（3.2.3）<script type="math/tex">score \leftarrow \max\left(score,\frac{G_L^2}{H_L+\lambda}+\frac{G_R^2}{H_R+\lambda}-\frac{G^2}{H+\lambda}\right)</script><br>&emsp;&emsp;&emsp;&emsp;（3.3）end<br>&emsp;&emsp;（4）end</p>
-<p>&emsp;&emsp;算法2. 分裂查找的近似贪婪算法<br>&emsp;&emsp;（1）for <script type="math/tex">k=1</script> to <script type="math/tex">d</script> do<br>&emsp;&emsp;&emsp;&emsp;（1.1）通过特征<script type="math/tex">k</script>的百分位数求候选分割点<script type="math/tex">S_k=\{s_{k1},s_{k2},\dots,s_{kl}\}</script><br>&emsp;&emsp;&emsp;&emsp;（1.2）可以在每颗树生成后（全局），可以在每次分裂后（局部）<br>&emsp;&emsp;（2）end<br>&emsp;&emsp;（3）for <script type="math/tex">k=1</script> to <script type="math/tex">m</script> do<br>&emsp;&emsp;&emsp;&emsp;（3.1）<script type="math/tex">G_{kv}\gets =\sum_{j\in\{j|s_{k,v}\geq\mathbf{x}_{jk}>s_{k,v-1}\}}g_j</script><br>&emsp;&emsp;&emsp;&emsp;（3.2）<script type="math/tex">H_{kv}\gets =\sum_{j\in\{j|s_{k,v}\geq\mathbf{x}_{jk}>s_{k,v-1}\}}h_j</script><br>&emsp;&emsp;（4）end<br>&emsp;&emsp;按照与前一节相同的步骤，在提议的分割中找到最大值。</p>
-<p>&emsp;&emsp;候选分割点<script type="math/tex">S_k=\{s_{k1},s_{k2},\dots,s_{kl}\}</script>中，<br>&emsp;&emsp;令</p>
-<script type="math/tex; mode=display">s_{k1}=\min_i\mathbf{x}_{ik},s_{kl}=\max_i\mathbf{x}_{ik}</script><p>&emsp;&emsp;其余各分割点满足</p>
-<script type="math/tex; mode=display">|r_k\left(s_{k,j}\right)-r_k\left(s_{k,j+1}\right)|<\epsilon \tag{4.11}</script><p>&emsp;&emsp;其中，函数<script type="math/tex">r_k:\mathbb{R}\to[0,+\infty)</script></p>
-<script type="math/tex; mode=display">r_k\left(z\right)=\frac{1}{\sum_{\left(x,h\right)\in\mathcal{D}_k}h}\sum_{\left(x,h\right)\in\mathcal{D}_k,x<z}h</script><script type="math/tex; mode=display">\mathcal{D}_k=\{\left(x_{1k},h_1\right),\left(x_{2k},h_2\right),\dots,\left(x_{nk},h_n\right)\}</script><p>&emsp;&emsp;<script type="math/tex">h_i</script>作为数据点权重的原因是由于，将式（4.6）重写<br>&emsp;&emsp;可得<script type="math/tex">\sum_{i=1}^n\frac{1}{2}h_i\left(f_t\left(\mathbf{x}_i\right)-g_i/h_i\right)^2+\Omega\left(f_t\right)+constant</script><br>&emsp;&emsp;即是权重为<script type="math/tex">h_i</script>的<script type="math/tex">f_t\left(\mathbf{x}_i\right)</script>对<script type="math/tex">g_i/h_i</script>的加权平方损失。</p>
-
-                
+\end{align} \\</script><p>定义叶结点<script type="math/tex">j</script>上的样本的下标集合<script type="math/tex">I_j=\{i|q\left(\mathbf{x}_i\right)=j\}</script>，则目标函数可表示为按叶结点累加的形式</p>
+<script type="math/tex; mode=display">\tilde{\mathcal{L}}^{\left(t\right)}=\sum_{j=1}^T\left[\left(\sum_{i\in I_j}g_i\right)w_j+\frac{1}{2}\left(\sum_{i\in I_j}h_i+\lambda\right)w_j^2\right]+\gamma T \tag{4.7}</script><p>由于<script type="math/tex">w_j^*=\mathop{\arg\min}_{w_j}\tilde{\mathcal{L}}^{\left(t\right)}</script><br>可令<script type="math/tex">\frac{\partial\tilde{\mathcal{L}}^{\left(t\right)}}{\partial w_j}=0</script><br>得到每个叶结点<script type="math/tex">j</script>的最优分数为</p>
+<script type="math/tex; mode=display">w_j^*=-\frac{\sum_{i\in I_j}g_i}{\sum_{i\in I_j} h_i+\lambda} \tag{4.8}</script><p>代入每个叶结点<script type="math/tex">j</script>的最优分数，得到最优化目标函数值</p>
+<h2 id="树生成准则"><a href="#树生成准则" class="headerlink" title="树生成准则"></a>树生成准则</h2><script type="math/tex; mode=display">\tilde{\mathcal{L}}^{\left(t\right)}\left(q\right)=-\frac{1}{2}\sum_{j=1}^T 
+\frac{\left(\sum_{i\in I_j} g_i\right)^2}{\sum_{i\in I_j} h_i+\lambda}+\gamma T \tag{4.9}</script><p>假设<script type="math/tex">I_L</script>和<script type="math/tex">I_R</script>分别为分裂后左右结点的实例集，令<script type="math/tex">I=I_L\cup I_R</script>，则分裂后损失减少量由下式得出</p>
+<script type="math/tex; mode=display">\mathcal{L}_{split}=\frac{1}{2}\left[\frac{\left(\sum_{i\in I_L} g_i\right)^2}{\sum_{i\in I_L}h_i+\lambda}+\frac{\left(\sum_{i\in I_R} g_i\right)^2}{\sum_{i\in I_R}h_i+\lambda}-\frac{\left(\sum_{i\in I} g_i\right)^2}{\sum_{i\in I}h_i+\lambda}\right]-\gamma \tag{4.10}</script><p>用以评估待分裂结点。</p>
+<h2 id="生成算法"><a href="#生成算法" class="headerlink" title="生成算法"></a>生成算法</h2><p>算法1. 分裂查找的精确贪婪算法<br>输入：当前结点实例集<script type="math/tex">I</script>;特征维度<script type="math/tex">d</script><br>输出：根据最大分值分裂<br>（1）<script type="math/tex">gain\leftarrow 0</script><br>（2）<script type="math/tex">G\leftarrow\sum_{i\in I}g_i</script>，<script type="math/tex">H\leftarrow\sum_{i\in I}h_i</script><br>（3）for <script type="math/tex">k=1</script> to <script type="math/tex">d</script> do<br>（3.1）<script type="math/tex">G_L \leftarrow 0</script>，<script type="math/tex">H_L \leftarrow 0</script><br>（3.2）for <script type="math/tex">j</script> in sorted(<script type="math/tex">I</script>, by <script type="math/tex">\mathbf{x}_{jk}</script>) do<br>（3.2.1）<script type="math/tex">G_L \leftarrow G_L+g_j</script>，<script type="math/tex">H_L \leftarrow H_L+h_j</script><br>（3.2.2）<script type="math/tex">G_R \leftarrow G-G_L</script>，<script type="math/tex">H_R=H-H_L</script><br>（3.2.3）<script type="math/tex">score \leftarrow \max\left(score,\frac{G_L^2}{H_L+\lambda}+\frac{G_R^2}{H_R+\lambda}-\frac{G^2}{H+\lambda}\right)</script><br>（3.3）end<br>（4）end</p>
+<p>算法2. 分裂查找的近似贪婪算法<br>（1）for <script type="math/tex">k=1</script> to <script type="math/tex">d</script> do<br>（1.1）通过特征<script type="math/tex">k</script>的百分位数求候选分割点<script type="math/tex">S_k=\{s_{k1},s_{k2},\dots,s_{kl}\}</script><br>（1.2）可以在每颗树生成后（全局），可以在每次分裂后（局部）<br>（2）end<br>（3）for <script type="math/tex">k=1</script> to <script type="math/tex">m</script> do<br>（3.1）<script type="math/tex">G_{kv}\gets =\sum_{j\in\{j|s_{k,v}\geq\mathbf{x}_{jk}>s_{k,v-1}\}}g_j</script><br>（3.2）<script type="math/tex">H_{kv}\gets =\sum_{j\in\{j|s_{k,v}\geq\mathbf{x}_{jk}>s_{k,v-1}\}}h_j</script><br>（4）end<br>按照与前一节相同的步骤，在提议的分割中找到最大值。</p>
+<p>候选分割点<script type="math/tex">S_k=\{s_{k1},s_{k2},\dots,s_{kl}\}</script>中，<br>令</p>
+<script type="math/tex; mode=display">s_{k1}=\min_i\mathbf{x}_{ik},s_{kl}=\max_i\mathbf{x}_{ik}</script><p>其余各分割点满足</p>
+<script type="math/tex; mode=display">|r_k\left(s_{k,j}\right)-r_k\left(s_{k,j+1}\right)|<\epsilon \tag{4.11}</script><p>其中，函数<script type="math/tex">r_k:\mathbb{R}\to[0,+\infty)</script></p>
+<script type="math/tex; mode=display">r_k\left(z\right)=\frac{1}{\sum_{\left(x,h\right)\in\mathcal{D}_k}h}\sum_{\left(x,h\right)\in\mathcal{D}_k,x<z}h</script><script type="math/tex; mode=display">\mathcal{D}_k=\{\left(x_{1k},h_1\right),\left(x_{2k},h_2\right),\dots,\left(x_{nk},h_n\right)\}</script><script type="math/tex; mode=display">h_i$$作为数据点权重的原因是由于，将式（4.6）重写  
+可得$$\sum_{i=1}^n\frac{1}{2}h_i\left(f_t\left(\mathbf{x}_i\right)-g_i/h_i\right)^2+\Omega\left(f_t\right)+constant</script><p>即是权重为<script type="math/tex">h_i</script>的<script type="math/tex">f_t\left(\mathbf{x}_i\right)</script>对<script type="math/tex">g_i/h_i</script>的加权平方损失。</p>
 
                 <hr>
                 <!-- Pager -->
@@ -292,40 +295,39 @@ L\left(y,f_{m-1}\left(x\right)+T\left(x;\Theta_m\right)\right)
                         </li>
                     
                 </ul>
-            <!-- 来必力City版安装代码 -->
+
 <div id="lv-container" data-id="city" data-uid="MTAyMC80NDg0OS8yMTM3MA==">
-<script type="text/javascript">
-   (function(d, s) {
-       var j, e = d.getElementsByTagName(s)[0];
-
-       if (typeof LivereTower === 'function') { return; }
-
-       j = d.createElement(s);
-       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
-       j.async = true;
-
-       e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-</script>
-<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+    <script type="text/javascript">
+        (function(d, s) {
+            var j, e = d.getElementsByTagName(s)[0];
+            if (typeof LivereTower === 'function') { return; }
+            j = d.createElement(s);
+            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+            j.async = true;
+            e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+    </script>
 </div>
-<!-- City版安装代码已完成 -->
-</div>
-            
+    </div>     
             <!-- Tabe of Content -->
             <!-- Table of Contents -->
 
-    
-      <aside id="sidebar">
-        <div id="toc" class="toc-article">
-        <strong class="toc-title">Contents</strong>
-        
+  
+    <aside id="sidebar">
+      <div id="toc" class="toc-article">
+      <strong class="toc-title">文章目录</strong>
+      
         <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#前言"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">前言</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#xgboost原理"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">XGboost原理</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#boosting"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Boosting</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#加法模型"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">加法模型</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#前向分步算法"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">前向分步算法</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#bdt"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">BDT</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#加法模型"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">加法模型</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#前向分步算法"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">前向分步算法</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#gbdt"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">GBDT</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#gbdt与bdt的不同"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">GBDT与BDT的不同</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#gbdt梯度提升算法"><span class="toc-nav-number">5.2.</span> <span class="toc-nav-text">GBDT梯度提升算法</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#xgboost"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">XGBoost</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#决策树模型"><span class="toc-nav-number">6.1.</span> <span class="toc-nav-text">决策树模型</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#正则化目标函数"><span class="toc-nav-number">6.2.</span> <span class="toc-nav-text">正则化目标函数</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#二阶泰勒"><span class="toc-nav-number">6.3.</span> <span class="toc-nav-text">二阶泰勒</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#树生成准则"><span class="toc-nav-number">6.4.</span> <span class="toc-nav-text">树生成准则</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#生成算法"><span class="toc-nav-number">6.5.</span> <span class="toc-nav-text">生成算法</span></a></li></ol></li></ol>
-        
-        </div>
-      </aside>
-    
+      
+      </div>
+    </aside>
+  
 
+
+<!-- <div id="toc" class="toc-article">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#xgboost原理"><span class="toc-number">2.</span> <span class="toc-text">XGboost原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#boosting"><span class="toc-number">3.</span> <span class="toc-text">Boosting</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#加法模型"><span class="toc-number">3.1.</span> <span class="toc-text">加法模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#前向分步算法"><span class="toc-number">3.2.</span> <span class="toc-text">前向分步算法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#bdt"><span class="toc-number">4.</span> <span class="toc-text">BDT</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#加法模型"><span class="toc-number">4.1.</span> <span class="toc-text">加法模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#前向分步算法"><span class="toc-number">4.2.</span> <span class="toc-text">前向分步算法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#gbdt"><span class="toc-number">5.</span> <span class="toc-text">GBDT</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#gbdt与bdt的不同"><span class="toc-number">5.1.</span> <span class="toc-text">GBDT与BDT的不同</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gbdt梯度提升算法"><span class="toc-number">5.2.</span> <span class="toc-text">GBDT梯度提升算法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#xgboost"><span class="toc-number">6.</span> <span class="toc-text">XGBoost</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#决策树模型"><span class="toc-number">6.1.</span> <span class="toc-text">决策树模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#正则化目标函数"><span class="toc-number">6.2.</span> <span class="toc-text">正则化目标函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二阶泰勒"><span class="toc-number">6.3.</span> <span class="toc-text">二阶泰勒</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#树生成准则"><span class="toc-number">6.4.</span> <span class="toc-text">树生成准则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#生成算法"><span class="toc-number">6.5.</span> <span class="toc-text">生成算法</span></a></li></ol></li></ol>
+</div> -->
                 
             <!-- Sidebar Container -->
             <div class="
@@ -356,37 +358,15 @@ L\left(y,f_{m-1}\left(x\right)+T\left(x;\Theta_m\right)\right)
                 <h5>FRIENDS</h5>
                 <ul class="list-inline">
 
-                    
-                        <li><a href="http://beantech.org" target="_blank">Bean Tech</a></li>
-                    
-                        <li><a href="http://blog.kaijun.rocks" target="_blank">Kaijun&#39;s Blog</a></li>
-                    
+                
+                    <li><a href="http://beantech.org" target="_blank">Bean Tech</a></li>
+                
                 </ul>
                 
             </div>
         </div>
     </div>
 </article>
-
-
-
-
-<!-- disqus embedded js code start (one page only need to embed once) -->
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES * * */
-    var disqus_shortname = "disqus_3RNIDcE67v";
-    var disqus_identifier = "http://watsonwangzh.github.io/2019/06/23/从Boosting到XGBoost/";
-    var disqus_url = "http://watsonwangzh.github.io/2019/06/23/从Boosting到XGBoost/";
-
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<!-- disqus embedded js code start end -->
-
-
 
 
 <!-- async load function -->
@@ -411,6 +391,7 @@ L\left(y,f_{m-1}\left(x\right)+T\left(x;\Theta_m\right)\right)
         anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
     })
 </script>
+
 <style>
     /* place left on bigger screen */
     @media all and (min-width: 800px) {
@@ -480,7 +461,7 @@ L\left(y,f_{m-1}\left(x\right)+T\left(x;\Theta_m\right)\right)
 
                 <p class="copyright text-muted">
                     	
-                    <span class="post-count">3.3k words altogether</span>
+                    <span class="post-count">3.1k words altogether</span>
                     <br>
                     Copyright &copy; Watson Wang 2019 
                 </p>
@@ -554,22 +535,6 @@ L\left(y,f_{m-1}\left(x\right)+T\left(x;\Theta_m\right)\right)
 
 
 <!-- Google Analytics -->
-
-
-<script>
-    // dynamic User by Hux
-    var _gaId = 'UA-XXXXXXXX-X';
-    var _gaDomain = 'yoursite';
-
-    // Originial
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-    ga('create', _gaId, _gaDomain);
-    ga('send', 'pageview');
-</script>
 
 
 
