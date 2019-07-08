@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="null">
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          SVM三部曲之线性可分SVM - WatsonWang | On the way.
+        
+    </title>
+
+    <link rel="canonical" href="http://watsonwangzh.github.io/2019/07/06/SVM支持向量机/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('svm.png')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#机器学习" title="机器学习">机器学习</a>
+                            
+                              <a class="tag" href="/tags/#SVM" title="SVM">SVM</a>
+                            
+                        </div>
+                        <h1>SVM三部曲之线性可分SVM</h1>
+                        <h2 class="subheading">SVM推导整理之一</h2>
+                        <span class="meta">
+                            Posted by Watson Wang on
+                            2019-07-06
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">WatsonWang Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>训练数据集</p>
+<script type="math/tex; mode=display">\begin{align*} \\& T = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\} \end{align*}</script><p>其中，$\mathbf{x}_{i} \in \mathcal{X} = \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N$，$\mathbf{x}_{i}$为第$i$个特征向量（实例），$y_{i}$为第$\mathbf{x}_{i}$的类标记，当$y_{i}=+1$时，称$\mathbf{x}_{i}$为正例；当$y_{i}= -1$时，称$\mathbf{x}_{i}$为负例，$\left( \mathbf{x}_{i}, y_{i} \right)$称为样本点。</p>
+<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="线性svm"><a href="#线性SVM" class="headerlink" title="线性SVM"></a>线性SVM</h2><p>线性可分支持向量机（硬间隔支持向量机）：给定线性可分训练数据集，通过间隔最大化或等价地求解相应地凸二次规划问题学习得到分离超平面为</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} = 0 \end{align*}</script><p>以及相应的分类决策函数</p>
+<script type="math/tex; mode=display">\begin{align*} \\& f \left( \mathbf{x} \right) = sign \left( \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} \right)  \end{align*}</script><p>称为线型可分支持向量机。其中，<script type="math/tex">\mathbf{w}^*</script>和<script type="math/tex">b^*</script>为感知机模型参数，<script type="math/tex">\mathbf{w}^* \in \mathbb{R}^{n}</script>叫做权值或权值向量，<script type="math/tex">b^* \in R</script>叫偏置，<script type="math/tex">\mathbf{w}^* \cdot \mathbf{x}</script>表示<script type="math/tex">\mathbf{w}^*</script>和<script type="math/tex">\mathbf{x}</script>的内积。<script type="math/tex">sign</script>是符号函数。</p>
+<h2 id="函数间隔与几何间隔"><a href="#函数间隔与几何间隔" class="headerlink" title="函数间隔与几何间隔"></a>函数间隔与几何间隔</h2><p>超平面<script type="math/tex">\left( \mathbf{w}, b \right)</script>关于样本点<script type="math/tex">\left( \mathbf{x}_{i}, y_{i} \right)</script>的函数间隔为</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \hat \gamma_{i} = y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) \end{align*}</script><p>超平面$\left( \mathbf{w}, b \right)$关于训练集$T$的函数间隔</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \hat \gamma = \min_{i = 1, 2, \cdots, N} \hat \gamma_{i} \end{align*}</script><p>即超平面$\left( \mathbf{w}, b \right)$关于训练集$T$中所有样本点$\left( \mathbf{x}_{i}, y_{i} \right)$的函数间隔的最小值。<br>超平面$\left( \mathbf{w}, b \right)$关于样本点$\left( \mathbf{x}_{i}, y_{i} \right)$的几何间隔为</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \gamma_{i} = y_{i} \left( \dfrac{\mathbf{w}}{\| \mathbf{w} \|} \cdot \mathbf{x}_{i} + \dfrac{b}{\| \mathbf{w} \|} \right) \end{align*}</script><p> 超平面$\left( \mathbf{w}, b \right)$关于训练集$T$的几何间隔</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \gamma = \min_{i = 1, 2, \cdots, N} \gamma_{i} \end{align*}</script><p>即超平面$\left( \mathbf{w}, b \right)$关于训练集$T$中所有样本点$\left( \mathbf{x}_{i}, y_{i} \right)$的几何间隔的最小值。<br>函数间隔和几何间隔的关系</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \gamma_{i} = \dfrac{\hat \gamma_{i}}{\| \mathbf{w} \|} 
+\\& \gamma = \dfrac{\hat \gamma}{\| \mathbf{w} \|} \end{align*}</script><h2 id="支持向量"><a href="#支持向量" class="headerlink" title="支持向量"></a>支持向量</h2><p>（硬间隔）支持向量：训练数据集的样本点中与分离超平面距离最近的样本点的实例，即使约束条件等号成立的样本点</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) -1 = 0 \end{align*}</script><p>对$y_{i} = +1$的正例点，支持向量在超平面  </p>
+<script type="math/tex; mode=display">\begin{align*} \\ & H_{1}:\mathbf{w} \cdot \mathbf{x} + b = 1  \end{align*}</script><p>对$y_{i} = -1$的正例点，支持向量在超平面  </p>
+<script type="math/tex; mode=display">\begin{align*} \\ & H_{1}:\mathbf{w} \cdot \mathbf{x} + b = -1  \end{align*}</script><p>$H_{1}$和$H_{2}$称为间隔边界。<br>$H_{1}$和$H_{2}$之间的距离称为间隔，且$|H_{1}H_{2}| = \dfrac{1}{| \mathbf{w} |} + \dfrac{1}{| \mathbf{w} |} = \dfrac{2}{| \mathbf{w} |}$。</p>
+<h2 id="求解转化"><a href="#求解转化" class="headerlink" title="求解转化"></a>求解转化</h2><p>最大间隔分离超平面等价为求解</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \max_{\mathbf{w},b} \quad \gamma
+\\ & s.t. \quad y_{i} \left( \dfrac{\mathbf{w}}{\| \mathbf{w} \|} \cdot \mathbf{x}_{i} + \dfrac{b}{\| \mathbf{w} \|} \right) \geq \gamma, \quad i=1,2, \cdots, N \end{align*}</script><p>等价的</p>
+<script type="math/tex; mode=display">\begin{align*}  \\ & \max_{\mathbf{w},b} \quad \dfrac{\hat \gamma}{\| \mathbf{w} \|}
+\\ & s.t. \quad y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) \geq \hat \gamma, \quad i=1,2, \cdots, N \end{align*}</script><p>等价的</p>
+<script type="math/tex; mode=display">\begin{align*}  \\ & \min_{\mathbf{w},b} \quad \dfrac{1}{2} \| \mathbf{w} \|^{2}
+\\ & s.t. \quad y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) -1 \geq 0, \quad i=1,2, \cdots, N \end{align*}</script><h1 id="学习算法"><a href="#学习算法" class="headerlink" title="学习算法"></a>学习算法</h1><p>线性可分支持向量机学习算法（最大间隔法）：<br>输入：线性可分训练数据集$T = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\}$，其中$\mathbf{x}_{i} \in \mathcal{X} = \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N$<br>输出：最大间隔分离超平面和分类决策函数  </p>
+<ol>
+<li>构建并求解约束最优化问题<script type="math/tex; mode=display">\begin{align*}  \\ & \min_{\mathbf{w},b} \quad \dfrac{1}{2} \| \mathbf{w} \|^{2}
+\\ & s.t. \quad y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) -1 \geq 0, \quad i=1,2, \cdots, N \end{align*}</script>求得最优解<script type="math/tex">\mathbf{w}^{*}, b^{*}</script>。  </li>
+<li>得到分离超平面<script type="math/tex; mode=display">\begin{align*}  \\ & \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} = 0 \end{align*}</script>以及分类决策函数  <script type="math/tex; mode=display">\begin{align*} \\& f \left( \mathbf{x} \right) = sign \left( \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} \right)  \end{align*}</script></li>
+</ol>
+<h1 id="具体求解"><a href="#具体求解" class="headerlink" title="具体求解"></a>具体求解</h1><ol>
+<li>引入拉格朗日乘子$\alpha_{i} \geq 0, i = 1, 2, \cdots, N$构建拉格朗日函数<script type="math/tex; mode=display">\begin{align*} \\ & L \left( \mathbf{w}, b, \alpha \right) =  \dfrac{1}{2} \| \mathbf{w} \|^{2} + \sum_{i=1}^{N} \alpha_{i} \left[- y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) + 1  \right] 
+\\ & = \dfrac{1}{2} \| \mathbf{w} \|^{2} - \sum_{i=1}^{N} \alpha_{i}  y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) + \sum_{i=1}^{N} \alpha_{i}  \end{align*}</script>其中，$\alpha = \left( \alpha_{1}, \alpha_{2}, \cdots, \alpha_{N} \right)^{T}$为拉格朗日乘子向量。</li>
+<li>求$\min_{\mathbf{w},b}L \left( \mathbf{w}, b, \alpha \right)$:<script type="math/tex; mode=display">\begin{align*} \\ &  \nabla _{\mathbf{w}} L \left( \mathbf{w}, b, \alpha \right) = \mathbf{w} - \sum_{i=1}^{N} \alpha_{i} y_{i} \mathbf{x}_{i} = 0 
+\\ &  \nabla _{b} L \left( \mathbf{w}, b, \alpha \right) = -\sum_{i=1}^{N} \alpha_{i} y_{i} = 0 \end{align*}</script>得  <script type="math/tex; mode=display">\begin{align*} \\ &   \mathbf{w} ＝ \sum_{i=1}^{N} \alpha_{i} y_{i} \mathbf{x}_{i}  
+\\ &  \sum_{i=1}^{N} \alpha_{i} y_{i} = 0 \end{align*}</script>代入拉格朗日函数，得<script type="math/tex; mode=display">\begin{align*} \\ & L \left( \mathbf{w}, b, \alpha \right) =  \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right) - \sum_{i=1}^{N} \alpha_{i}  y_{i} \left[ \left( \sum_{j=1}^{N} \alpha_{j} y_{j} \mathbf{x}_{j} \right) \cdot \mathbf{x}_{i} + b \right] + \sum_{i=1}^{N} \alpha_{i} 
+\\ & = - \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right) - \sum_{i=1}^{N} \alpha_{i} y_{i} b + \sum_{i=1}^{N} \alpha_{i} 
+\\ & = - \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right)  + \sum_{i=1}^{N} \alpha_{i} \end{align*}</script>即<script type="math/tex; mode=display">\begin{align*} \\ & \min_{\mathbf{w},b}L \left( \mathbf{w}, b, \alpha \right) = - \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right)  + \sum_{i=1}^{N} \alpha_{i}    \end{align*}</script>3.求$\max_{\alpha} \min_{\mathbf{w},b}L \left( \mathbf{w}, b, \alpha \right)$:<script type="math/tex; mode=display">\begin{align*} \\ &  \max_{\alpha} - \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right)  + \sum_{i=1}^{N} \alpha_{i}  
+\\ & s.t. \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
+\\ & \alpha_{i} \geq 0, \quad i=1,2, \cdots, N  \end{align*}</script>等价的<script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha} \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right)  - \sum_{i=1}^{N} \alpha_{i}  
+\\ & s.t. \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
+\\ & \alpha_{i} \geq 0, \quad i=1,2, \cdots, N  \end{align*}</script>求得最优解<script type="math/tex">\alpha^{*} = \left( \alpha_{1}^{*}, \alpha_{1}^{*}, \cdots, \alpha_{N}^{*} \right)</script>。<br>1). 计算<script type="math/tex; mode=display">\begin{align*}  \\ & \mathbf{w}^{*} = \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} \mathbf{x}_{i} \end{align*}</script>并选择<script type="math/tex">\alpha^{*}</script>的一个正分量<script type="math/tex">\alpha_{j}^{*} > 0</script>，计算<script type="math/tex; mode=display">\begin{align*}  \\ & b^{*} = y_{j} - \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right) \end{align*}</script>2). 得到分离超平面<script type="math/tex; mode=display">\begin{align*}  \\ & \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} = 0 \end{align*}</script>以及分类决策函数  <script type="math/tex; mode=display">\begin{align*} \\& f \left( \mathbf{x} \right) = sign \left( \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} \right)  \end{align*}</script></li>
+</ol>
+<h1 id="附录拉格朗日乘子法"><a href="#附录：拉格朗日乘子法" class="headerlink" title="附录：拉格朗日乘子法"></a>附录：拉格朗日乘子法</h1><p>假设$f \left( \mathbf{x} \right), c_{i} \left( \mathbf{x} \right), h_{j} \left( \mathbf{x} \right)$是定义在$\mathbb{R}^{n}$上的连续可微函数。<br>称约束最优化问题</p>
+<script type="math/tex; mode=display">\begin{align*} \\&  \min_{\mathbf{x} \in \mathbb{R}^{n}} \quad f \left( \mathbf{x} \right) 
+\\ & s.t. \quad c_{i} \left( \mathbf{x} \right) \leq 0, \quad i = 1,2, \cdots, k
+\\ & \quad \quad h_{j} \left( \mathbf{x} \right) = 0, \quad j=1,2, \cdots, l\end{align*}</script><p>为原始最优化问题或原始问题。<br>引入拉格朗日函数</p>
+<script type="math/tex; mode=display">\begin{align*} \\&  L \left( \mathbf{x}, \alpha, \beta \right) = f \left( \mathbf{x} \right) + \sum_{i=1}^{k} \alpha_{i} c_{i} \left( \mathbf{x} \right) + \sum_{j=1}^{l} \beta_{j} h_{j}\left( \mathbf{x} \right) \end{align*}</script><p>其中，$\mathbf{x}=\left(x^{\left( 1 \right)}, x^{\left( 2 \right)}, \cdots, x^{\left( n \right) } \right)^{T} \in \mathbb{R}^{n}, \alpha_{i}, \beta_{j}$是拉格朗日乘子，$\alpha_{i} \geq 0$。<br>构建关于$\mathbf{x}$的函数</p>
+<script type="math/tex; mode=display">\begin{align*} \\&  \theta_{P} \left( \mathbf{x} \right) = \max_{\alpha, \beta; \alpha_{i} \geq 0} L \left( \mathbf{x}, \alpha, \beta \right) \end{align*}</script><p>假设给定某个违反原始问题约束条件的$\mathbf{x}$，即存在某个$i$使得$c_{i} \left( \mathbf{x} \right) &gt; 0$或$h_{j} \left( \mathbf{x} \right) \neq 0$。若$c_{i} \left( \mathbf{x} \right) &gt; 0$，可令$\alpha_{i} \to +\infty$，使得$\theta_{P} \left( \mathbf{x} \right)=+\infty$；若$h_{j} \left( \mathbf{x} \right) \neq 0$，可令$\beta_{j}$使$ \beta_{j} h_{j} \left( \mathbf{x} \right) \to +\infty$，使得$\theta_{P} \left( \mathbf{x} \right)=+\infty$。将其余$\alpha_{i}, \beta_{j}$均取值为0。<br>即</p>
+<script type="math/tex; mode=display">\begin{align*} \\&  \theta_{P} \left( \mathbf{x} \right) = \max_{\alpha, \beta; \alpha_{i} \geq 0} \left[ f \left( \mathbf{x} \right) + \sum_{i=1}^{k} \alpha_{i} c_{i} \left( \mathbf{x} \right) + \sum_{j=1}^{l} \beta_{j} h_{j}\left( \mathbf{x} \right)\right] = +\infty \end{align*}</script><p>假设给定某个符合原始问题约束条件的$\mathbf{x}$，即$c_{i} \left( \mathbf{x} \right) \leq 0$且$h_{j} \left( \mathbf{x} \right) = 0$，<br>则</p>
+<script type="math/tex; mode=display">\begin{align*} \\&  \theta_{P} \left( \mathbf{x} \right) =\max_{\alpha, \beta; \alpha_{i} \geq 0} \left[ f \left( \mathbf{x} \right) + \sum_{i=1}^{k} \alpha_{i} c_{i} \left( \mathbf{x} \right) + \sum_{j=1}^{l} \beta_{j} h_{j}\left( \mathbf{x} \right)\right]= f \left( \mathbf{x} \right) \end{align*}</script><p>由以上，得</p>
+<script type="math/tex; mode=display">\begin{align*} \theta_{P} \left( \mathbf{x} \right) = \left\{
+\begin{aligned} 
+\ &  f \left( \mathbf{x} \right), 当\mathbf{x}满足原始问题约束
+\\ & +\infty, 否则
+\end{aligned}
+\right.\end{align*}</script><p>则极小化问题</p>
+<script type="math/tex; mode=display">\begin{align*} \\&  \min_{\mathbf{x}} \theta_{P} \left( \mathbf{x} \right) = \min_{\mathbf{x}} \max_{\alpha, \beta; \alpha_{i} \geq 0} L \left( \mathbf{x}, \alpha, \beta \right)\end{align*}</script><p>与原始最优化问题等价，即有相同的解。</p>
+<script type="math/tex; mode=display">\begin{align*} \\&  \min_{\mathbf{x}} \max_{\alpha, \beta; \alpha_{i} \geq 0} L \left( \mathbf{x}, \alpha, \beta \right)\end{align*}</script><p>称为广义拉格朗日函数的极小极大问题。<br>定义原始问题的最优值</p>
+<script type="math/tex; mode=display">\begin{align*} \\&  p^{*} = \min_{\mathbf{x}} \theta_{P} \left( \mathbf{x} \right) \end{align*}</script><p>称为原始问题的值。<br>构建关于$\alpha, \beta$的函数</p>
+<script type="math/tex; mode=display">\begin{align*} \\&   \theta_{D} \left( \alpha, \beta \right) =  \min_{\mathbf{x}} L \left( \mathbf{x}, \alpha, \beta \right)\end{align*}</script><p>则极大化问题</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \max_{\alpha,\beta;\alpha_{i} \geq 0} \theta_{D} \left( \alpha, \beta \right) = \max_{\alpha,\beta;\alpha_{i} \geq 0}  \min_{\mathbf{x}} L \left( \mathbf{x}, \alpha, \beta \right) \end{align*}</script><p>称为广义拉格朗日函数的极大极小问题。<br>将广义拉格朗日函数的极大极小问题表示为约束最优化问题</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \max_{\alpha,\beta;\alpha_{i} \geq 0} \theta_{D} \left( \alpha, \beta \right) = \max_{\alpha,\beta;\alpha_{i} \geq 0}  \min_{\mathbf{x}} L \left( \mathbf{x}, \alpha, \beta \right) 
+\\ & \quad s.t. \quad \alpha_{i} \geq 0, \quad i =1,2, \cdots, k \end{align*}</script><p>称为原始问题的对偶问题。<br>定义对偶问题的最优值</p>
+<script type="math/tex; mode=display">\begin{align*} \\&  d^{*} = \max_{\alpha, \beta;\alpha_{i} \geq 0} \theta_{D} \left( \alpha, \beta \right) \end{align*}</script><p>称为对偶问题的值。<br>若原始问题与对偶问题都有最优解，则</p>
+<script type="math/tex; mode=display">\begin{align*} \\&  d^{*} =  \max_{\alpha,\beta;\alpha_{i} \geq 0}  \min_{\mathbf{x}} L \left( \mathbf{x}, \alpha, \beta \right) \leq  \min_{\mathbf{x}} \max_{\alpha, \beta; \alpha_{i} \geq 0} L \left( \mathbf{x}, \alpha, \beta \right) = p^{*}\end{align*}</script><p>对于原始问题及其对偶问题，假设函数$f \left( \mathbf{x} \right)$和$c_{i} \left( \mathbf{x} \right)$是凸函数，$h_{j} \left( \mathbf{x} \right)$是仿射函数，且不等式约束$c_{i} \left( \mathbf{x} \right)$是严格可行的，即存在$\mathbf{x}$，对所有$i$有$c_{i} \left( \mathbf{x} \right) &lt; 0$，则存在<script type="math/tex">\mathbf{x}^{*}, \alpha^{*}, \beta^{*}</script>，使<script type="math/tex">\mathbf{x}^{*}</script>是原始问题的解，<script type="math/tex">\alpha^{*}, \beta^{*}</script>是对偶问题的解，并且</p>
+<script type="math/tex; mode=display">\begin{align*} \\&  p^{*}=d^{*} = L \left( \mathbf{x}^{*}, \alpha^{*}, \beta^{*} \right) \end{align*}</script><p>对于原始问题及其对偶问题，假设函数<script type="math/tex">f \left( \mathbf{x} \right)</script>和<script type="math/tex">c_{i} \left( \mathbf{x} \right)</script>是凸函数，<script type="math/tex">h_{j} \left( \mathbf{x} \right)</script>是仿射函数，且不等式约束<script type="math/tex">c_{i} \left( \mathbf{x} \right)</script>是严格可行的，即存在$\mathbf{x}$，对所有$i$有$c_{i} \left( \mathbf{x} \right) &lt; 0$，则存在<script type="math/tex">\mathbf{x}^{*}, \alpha^{*}, \beta^{*}</script>，使<script type="math/tex">\mathbf{x}^{*}</script>是原始问题的解，<script type="math/tex">\alpha^{*}, \beta^{*}</script>是对偶问题的解的充分必要条件是<script type="math/tex">\mathbf{x}^{*}, \alpha^{*}, \beta^{*}</script>满足下面的Karush-Kuhn-Tucker(KKT)条件：</p>
+<script type="math/tex; mode=display">\begin{align*} \\&  \nabla _{\mathbf{x}} L \left( \mathbf{x}^{*}, \alpha^{*}, \beta^{*} \right) = 0 
+\\ & \nabla _{\alpha} L \left( \mathbf{x}^{*}, \alpha^{*}, \beta^{*} \right) = 0 
+\\ & \nabla _{\beta} L \left( \mathbf{x}^{*}, \alpha^{*}, \beta^{*} \right) = 0 
+\\ & \alpha_{i}^{*} c_{i} \left( \mathbf{x}^{*} \right) = 0,\quad i= 1, 2, \cdots, k 
+\\ & c_{i} \left( \mathbf{x}^{*} \right) \leq 0, \quad i=1,2, \cdots, k
+\\ & \alpha_{i}^{*} \geq 0, \quad i=1,2, \cdots, k
+\\ & h_{j} \left( \mathbf{x}^{*} \right) = 0, \quad j=1,2, \cdots, l\end{align*}</script>
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/07/08/机器学习入门/" data-toggle="tooltip" data-placement="top" title="机器学习入门">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/07/04/Nature-DeepLearning/" data-toggle="tooltip" data-placement="top" title="[Nature, 2015] DeepLearning ">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NDg0OS8yMTM3MA==">
+    <script type="text/javascript">
+        (function(d, s) {
+            var j, e = d.getElementsByTagName(s)[0];
+            if (typeof LivereTower === 'function') { return; }
+            j = d.createElement(s);
+            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+            j.async = true;
+            e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+    </script>
+</div>
+    </div>     
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <aside id="sidebar">
+      <div id="toc" class="toc-article">
+      <strong class="toc-title">文章目录</strong>
+      
+        <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#基本概念"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">基本概念</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#线性svm"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">线性SVM</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#函数间隔与几何间隔"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">函数间隔与几何间隔</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#支持向量"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">支持向量</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#求解转化"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">求解转化</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#学习算法"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">学习算法</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#具体求解"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">具体求解</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#附录拉格朗日乘子法"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">附录：拉格朗日乘子法</span></a></li></ol>
+      
+      </div>
+    </aside>
+  
+
+
+<!-- <div id="toc" class="toc-article">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#基本概念"><span class="toc-number">1.</span> <span class="toc-text">基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#线性svm"><span class="toc-number">1.1.</span> <span class="toc-text">线性SVM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数间隔与几何间隔"><span class="toc-number">1.2.</span> <span class="toc-text">函数间隔与几何间隔</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支持向量"><span class="toc-number">1.3.</span> <span class="toc-text">支持向量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#求解转化"><span class="toc-number">1.4.</span> <span class="toc-text">求解转化</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#学习算法"><span class="toc-number">2.</span> <span class="toc-text">学习算法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#具体求解"><span class="toc-number">3.</span> <span class="toc-text">具体求解</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#附录拉格朗日乘子法"><span class="toc-number">4.</span> <span class="toc-text">附录：拉格朗日乘子法</span></a></li></ol>
+</div> -->
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#机器学习" title="机器学习">机器学习</a>
+                        
+                          <a class="tag" href="/tags/#SVM" title="SVM">SVM</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                
+                    <li><a href="http://beantech.org" target="_blank">Bean Tech</a></li>
+                
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<script type="text/javascript" src="/js/zooming.js"></script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/WatsonWangZh">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                	
+
+                <p class="copyright text-muted">
+                    	
+                    <span class="post-count">10.3k words altogether</span>
+                    <br>
+                    Copyright &copy; Watson Wang 2019 
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://watsonwangzh.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+	
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://watsonwangzh.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

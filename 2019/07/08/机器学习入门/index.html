@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="null">
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          机器学习入门 - WatsonWang | On the way.
+        
+    </title>
+
+    <link rel="canonical" href="http://watsonwangzh.github.io/2019/07/08/机器学习入门/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('ml.png')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#机器学习" title="机器学习">机器学习</a>
+                            
+                              <a class="tag" href="/tags/#基础" title="基础">基础</a>
+                            
+                        </div>
+                        <h1>机器学习入门</h1>
+                        <h2 class="subheading">李航《统计学习方法》第一章</h2>
+                        <span class="meta">
+                            Posted by Watson Wang on
+                            2019-07-08
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">WatsonWang Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="基本术语"><a href="#基本术语" class="headerlink" title="基本术语"></a>基本术语</h1><p>机器学习：利用经验、通过计算、构建模型，来改善系统自身的性能。<br>属性（特征）：描述事物在特定方面的性质的事项。<br>属性值：属性上的取值。<br>属性空间（输入空间）：由属性张成的空间，属性空间<script type="math/tex">\mathcal{X}</script>。<br>记录（样本）：一个具体事物的属性描述，由属性向量表示。<br>第<script type="math/tex">j</script>个记录<script type="math/tex">\mathbf{x}_j</script>的属性向量</p>
+<script type="math/tex; mode=display">\mathbf{x} _ { j } = \left( x _ { j } ^ { ( 1 ) } , x _ { j } ^ { ( 2 ) } , \cdots , x _ { j } ^ { ( i ) } , \cdots , x _ { j } ^ { ( n ) } \right) ^ { \top } , \quad j = 1,2 , \cdots , N, \quad \mathbf{x}_j\in\mathcal{X}。</script><p>标记：描述事物某个特性的事项。<br>标记值：标记上的取值。<br>标记空间（输出空间）：所有标记的集合，标记空间<script type="math/tex">\mathcal{Y}</script>。<br>样例：拥有了对应标记的记录，由（记录，标记）对表示。第$j$个样例</p>
+<script type="math/tex; mode=display">\left(\mathbf{x}_j,y_j\right),\quad j=1,2,\dots,N,\quad\mathbf{x}_j\in\mathcal{X},y_j\in\mathcal{Y}。</script><p>数据集：<br>记录的集合（无监督），$D=\{\mathbf{x}_1,\mathbf{x}_2,\dots,\mathbf{x}_N\}$；<br>样例的集合（有监督），$D=\{\left(\mathbf{x}_1,y_1\right),\left(\mathbf{x}_2,y_2\right),\dots,\left(\mathbf{x}_N,y_N\right)\}$。<br>回归：有监督学习中，标记为连续值，$\mathcal{Y}=\mathbb{R}$。<br>分类：有监督学习中，标记为离散值。其中$|\mathcal{Y}|=2,\mathcal{Y}=\{0,1\}$或$\mathcal{Y}=\{+1,-1\}$为二分类；$|\mathcal{Y}|&gt;2,\mathcal{Y}=\{c_1,c_2,\dots,c_n\}$，为多分类。<br>训练数据集：用以训练模型的数据集的子集，$D_{training} \subseteq D$。<br>测试数据集：应用测试模型的数据集的子集，$D_{testing} \subseteq D$。</p>
+<h1 id="假设空间与参数空间"><a href="#假设空间与参数空间" class="headerlink" title="假设空间与参数空间"></a>假设空间与参数空间</h1><p>决策函数（非概率模型）：从输入空间$\mathcal{X}$到输出空间$\mathcal{Y}$的映射$f:\mathcal{X}\to\mathcal{Y}$。<br>假设空间$\mathcal{F}$定义为决策函数的集合</p>
+<script type="math/tex; mode=display">\mathcal{F} = \left\{ f | Y = f \left( \mathbf{X} \right) \right\}</script><p>其中，$\mathbf{X}$是定义在输入空间$\mathcal{X}$上的变量，$\mathbf{X}\in\mathcal{X}$;$Y$是定义在输出空间$\mathcal{Y}$上的变量。<br>假设空间$\mathcal{F}$通常是由一个参数向量决定的函数族</p>
+<script type="math/tex; mode=display">\mathcal{F} = \left\{ f | Y = f_{\mathbf{w}} \left( \mathbf{X} \right), \mathbf{w} \in \mathbb{R}^{n} \right\}</script><p>其中，参数向量$\mathbf{w}$取值于$n$维向量空间$\mathbb{R}^{n}$，称为参数空间。<br>假设空间$\mathcal{F}$也可定义为条件概率的集合（概率模型）</p>
+<script type="math/tex; mode=display">\mathcal{F} = \left\{ P | P \left( Y | \mathbf{X} \right) \right\}</script><p>其中，$\mathbf{X}$是定义在输入空间$\mathcal{X}$上的随机变量，$Y$是定义在输出空间$\mathcal{Y}$上的随机变量。<br>假设空间$\mathcal{F}$通常是由一个参数向量决定的概率分布族</p>
+<script type="math/tex; mode=display">\mathcal{F} = \left\{ P | P_{\mathbf{w}} \left( Y | \mathbf{X} \right), \mathbf{w} \in \mathbb{R}^{n} \right\}</script><p>其中，参数向量$\mathbf{w}$取值于$n$维向量空间$\mathbb{R}^{n}$，称为参数空间。</p>
+<h1 id="模型策略"><a href="#模型策略" class="headerlink" title="模型策略"></a>模型策略</h1><p>损失函数（代价函数）度量模型预测错误的程度，是预测输出$f\left(\mathbf{X}\right)$和实际输出$Y$的非负实值函数，记作$L \left(Y, f \left( \mathbf{X} \right) \right)$。<br>0-1损失函数</p>
+<script type="math/tex; mode=display">\begin{align*} L \left(Y, f \left( \mathbf{X} \right) \right)  &= \left\{
+\begin{aligned} 
+\ &  1, \quad Y \neq f \left( \mathbf{X} \right)
+\\ & 0, \quad Y = f \left( \mathbf{X} \right)
+\end{aligned}
+\right.  
+&=I\left(Y \neq f \left( \mathbf{X}\right)\right)
+\end{align*}</script><p>其中，$I\left(\cdot\right)$是指示函数。</p>
+<p>平方损失函数</p>
+<script type="math/tex; mode=display">\begin{align*} L \left(Y, f \left( \mathbf{X} \right) \right) = \left( Y - f \left( \mathbf{X} \right) \right)^{2} \end{align*}</script><p>绝对值损失函数</p>
+<script type="math/tex; mode=display">\begin{align*} L \left(Y, f \left( \mathbf{X} \right) \right) = \left| Y - f \left( \mathbf{X} \right) \right| \end{align*}</script><p>对数似然损失函数</p>
+<script type="math/tex; mode=display">\begin{align*} L \left(Y, P \left( Y | \mathbf{X} \right) \right) = - \log P \left( Y | \mathbf{X} \right) \end{align*}</script><p>经验风险（经验损失）是模型$f\left(\mathbf{X}\right)$关于训练数据集</p>
+<script type="math/tex; mode=display">\begin{align*} \\& D = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\} \end{align*}</script><p>的平均损失</p>
+<script type="math/tex; mode=display">\begin{align*} R_{emp} \left( f \right) = \dfrac{1}{N} \sum_{i=1}^{N} L \left(y_{i}, f \left( \mathbf{x}_{i} \right) \right) \end{align*}</script><p>经验风险最小化</p>
+<script type="math/tex; mode=display">\min_{f\in\mathcal{F}} R_{emp}\left(f\right)</script><p>其中，$\mathcal{F}$是假设空间。</p>
+<p>过拟合：学习时选择的模型所包含的参数过多，以至于出现对已知数据预测得很好，但对未知数据预测得很差的现象。<br>欠拟合：学习时选择的模型所包含的参数过少，以至于出现不能对数据预测很好的现象。<br>泛化能力：学习得到的模型对未知数据的预测能力。</p>
+<p>结构风险：在经验风险上增加表示模型复杂度的正则化项。</p>
+<script type="math/tex; mode=display">\begin{align*} R_{str}= \dfrac{1}{N} \sum_{i=1}^{N} L \left(y_{i}, f \left( \mathbf{x}_{i} \right) \right) + \lambda J \left(f\right) \end{align*}</script><p>其中，$J \left(f\right)$是模型复杂度，是正则化项，是定义在假设空间$\mathcal{F}$上的泛函；$\lambda \geq 0$是系数，用以权衡风险和模型复杂度。<br>结构风险最小化</p>
+<script type="math/tex; mode=display">\min_{f\in\mathcal{F}} R_{str}\left(f\right)</script><p>其中，$\mathcal{F}$是假设空间。<br>正则化项可以是参数向量的$L_{2}$范数</p>
+<script type="math/tex; mode=display">\begin{align*}  J_{2} =  \frac{1}{2}\| \mathbf{w} \|^2\end{align*}</script><p>其中，$|\mathbf{w}|$表示参数向量$\mathbf{w}$的$L_{2}$范数。<br>正则化项可以是参数向量的$L_{1}$范数</p>
+<script type="math/tex; mode=display">\begin{align*}  J_{1} =  \| \mathbf{w} \|_{1} \end{align*}</script><p>其中，$|\mathbf{w}|_{1}$表示参数向量$\mathbf{w}$的$L_{1}$范数。</p>
+<h1 id="优化算法"><a href="#优化算法" class="headerlink" title="优化算法"></a>优化算法</h1><p>机器学习的训练过程就是使用训练数据集$D$，按照学习准则在假设空间$\mathcal{F}$中寻找最优模型$f^*$的最优化求解过程</p>
+<script type="math/tex; mode=display">f^* = \mathop{\arg\min}_{f\in\mathcal{F}}R_{str}\left(f\right)</script><p>或者在参数空间中寻找最优参数<script type="math/tex">\mathbf{w}^*</script>的最优化求解过程</p>
+<script type="math/tex; mode=display">\mathbf{w}^*=\mathop{\arg\min}_{f_{\mathbf{w}}\in\mathcal{F}}R_{str}\left(f_{\mathbf{w}}\right)</script><p>梯度下降法：通过迭代的方法来计算训练集$D$上的风险函数最小值</p>
+<script type="math/tex; mode=display">\begin{align*}\mathbf{w}_{t+1}&=\mathbf{w}_t-\alpha\frac{\partial R_D\left(\mathbf{w}\right)}{\partial\mathbf{w}} \\
+&=\mathbf{w}_t-\alpha\frac{1}{N}\sum_{i=1}^N\frac{\partial L\left(y_i,f_{\mathbf{w}}\left(\mathbf{x}_i\right)\right) }{\partial\mathbf{w}} \end{align*}</script><p>其中，$\mathbf{w}_t$为第$t$次迭代的参数值，$\alpha$为学习率。</p>
+<h1 id="性能度量与评估方法"><a href="#性能度量与评估方法" class="headerlink" title="性能度量与评估方法"></a>性能度量与评估方法</h1><p>训练误差：模型$Y = \hat f \left(X\right)$关于训练数据集的平均损失</p>
+<script type="math/tex; mode=display">\begin{align*} R_{emp} \left( \hat f \right) = \dfrac{1}{N} \sum_{i=1}^{N} L \left(y_{i}, \hat f \left( \mathbf{x}_{i} \right) \right) \end{align*}</script><p>其中，$N$是训练样本容量。<br>测试误差：模型$Y = \hat f \left(X\right)$关于测试数据集的平均损失</p>
+<script type="math/tex; mode=display">\begin{align*} e_{test}  = \dfrac{1}{N'} \sum_{i=1}^{N'} L \left(y_{i}, \hat f \left( \mathbf{x}_{i} \right) \right) \end{align*}</script><p>其中，$N’$是测试样本容量。<br>当损失函数是0-1损失，测试误差即测试集上的误差率</p>
+<script type="math/tex; mode=display">\begin{align*} e_{test} = \dfrac{1}{N'} \sum_{i=1}^{N’} I \left( y_{i} \neq \hat f \left(\mathbf{x}_{i} \right) \right) \end{align*}</script><p>其中，$I$是指示函数，即$y \neq \hat f \left( \mathbf{x} \right)$时为1，否则为0。<br>测试集上的准确率</p>
+<script type="math/tex; mode=display">\begin{align*} r_{test} = \dfrac{1}{N'} \sum_{i=1}^{N’} I \left( y_{i} = \hat f \left(\mathbf{x}_{i} \right) \right) \end{align*}</script><p>则，$r_{test} + e_{test} = 1 $。</p>
+<p>分类中，模型的预测结果可分为：</p>
+<ol>
+<li>真正例（True Positive，TP）：将正类预测为正类；  </li>
+<li>假负类（False Negative，FN）：将正类预测为负类；  </li>
+<li>假正类（False Positive，FP）：将负类预测为正类；  </li>
+<li>真负类（True Negative，TN）：将负类预测为负类。<br>精确率（查准率）<script type="math/tex; mode=display">\begin{align*}  P = \dfrac{TP}{TP+FP}\end{align*}</script>召回率（查全率）<script type="math/tex; mode=display">\begin{align*}  R = \dfrac{TP}{TP+FN}\end{align*}</script></li>
+</ol>
+<p>P-R曲线：根据模型的预测结果对记录进行排序，按此顺序逐个对记录作为正样本进行预测，计算出当前查全率、查准率。在以查全率为横坐标，查准率为纵坐标的坐标系中，绘制各点并连接成线。<br>平衡点：模型在“查准率=查全率”时的取值。<br>模型比较：平衡点大的模型性能优于平衡点小的模型。<br><img style="float:center;" src="PR.jpg" width="40%" alt="PR"><br>$F_{1}$值是精确率和召回率的调和均值</p>
+<script type="math/tex; mode=display">\begin{align*} \\ &  \dfrac{2}{F_{1}} = \dfrac{1}{P} + \dfrac{1}{R} 
+\\ & F_{1} = \dfrac{2TP}{2TP+FP+FN}\end{align*}</script><p>真正率</p>
+<script type="math/tex; mode=display">TPR=\frac{TP}{TP+FN}</script><p>假正率</p>
+<script type="math/tex; mode=display">FPR=\frac{FP}{TN+FP}</script><p>ROC曲线：根据模型的预测结果对记录进行排序，按此顺序逐个对记录作为正样本进行预测，计算出当前真正率、假正率。在以假正率为横坐标，真正率为纵坐标的坐标系中，绘制各点并连接成线。<br>AUC：坐标系中ROC曲线下覆盖面积。<br>模型比较：模型ROC曲线有交叉时，AUC大的模型性能优于AUC小的模型。<br>留出法：将数据集$D$划分为两个互斥的集合，其中一个集合作为训练集，另一个作为测试集。在训练集上训练模型，在测试集上测试误差，作为对泛华能力的评估。<br>k折交叉验证：将数据集$D$划分为$k$个大小相似的互斥子集，即$D=D_1\cup D_2\cup\dots\cup D_k$，$D_i\cap D_j=\emptyset \left(i\neq j\right)$。每次用$k-1$个子集的并集作为训练集，余下的子集作为测试集。可得到$k$组训练集、测试集。最终返回的是$k$个测试结果的均值。</p>
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/07/06/SVM支持向量机/" data-toggle="tooltip" data-placement="top" title="SVM三部曲之线性可分SVM">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NDg0OS8yMTM3MA==">
+    <script type="text/javascript">
+        (function(d, s) {
+            var j, e = d.getElementsByTagName(s)[0];
+            if (typeof LivereTower === 'function') { return; }
+            j = d.createElement(s);
+            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+            j.async = true;
+            e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+    </script>
+</div>
+    </div>     
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <aside id="sidebar">
+      <div id="toc" class="toc-article">
+      <strong class="toc-title">文章目录</strong>
+      
+        <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#基本术语"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">基本术语</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#假设空间与参数空间"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">假设空间与参数空间</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#模型策略"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">模型策略</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#优化算法"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">优化算法</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#性能度量与评估方法"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">性能度量与评估方法</span></a></li></ol>
+      
+      </div>
+    </aside>
+  
+
+
+<!-- <div id="toc" class="toc-article">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#基本术语"><span class="toc-number">1.</span> <span class="toc-text">基本术语</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#假设空间与参数空间"><span class="toc-number">2.</span> <span class="toc-text">假设空间与参数空间</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#模型策略"><span class="toc-number">3.</span> <span class="toc-text">模型策略</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#优化算法"><span class="toc-number">4.</span> <span class="toc-text">优化算法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#性能度量与评估方法"><span class="toc-number">5.</span> <span class="toc-text">性能度量与评估方法</span></a></li></ol>
+</div> -->
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#机器学习" title="机器学习">机器学习</a>
+                        
+                          <a class="tag" href="/tags/#基础" title="基础">基础</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                
+                    <li><a href="http://beantech.org" target="_blank">Bean Tech</a></li>
+                
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<script type="text/javascript" src="/js/zooming.js"></script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/WatsonWangZh">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                	
+
+                <p class="copyright text-muted">
+                    	
+                    <span class="post-count">10.3k words altogether</span>
+                    <br>
+                    Copyright &copy; Watson Wang 2019 
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://watsonwangzh.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+	
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://watsonwangzh.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
