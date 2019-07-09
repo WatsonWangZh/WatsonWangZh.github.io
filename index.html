@@ -206,33 +206,34 @@
 
 <div class="post-preview">
 
-    <a href="/2019/07/08/机器学习入门/">
+    <a href="/2019/07/09/SVM三部曲之软间隔SVM/">
         <h2 class="post-title">
             
                 <i class="fa fa-thumb-tack"></i>
                 <font color=7D26CD>置顶</font>
                 <span class="post-meta-driver">|</span>
             
-            机器学习入门
+            SVM三部曲之软间隔SVM
         </h2>
         <h3 class="post-subtitle">
-            李航《统计学习方法》第一章
+            SVM推导整理之二
         </h3>
         <div class="post-content-preview">
-            基本术语机器学习：利用经验、通过计算、构建模型，来改善系统自身的性能。属性（特征）：描述事物在特定方面的性质的事项。属性值：属性上的取值。属性空间（输入空间）：由属性张成的空间，属性空间\mathcal{X}。记录（样本）：一个具体事物的属性描述，由属性向量表示。第j个记录\mathbf{x}_j的属性向量
-\mathbf{x} _ { j } = \left( x _ { j } ^ { ......
+            基本概念软间隔SVM线性支持向量机（软间隔支持向量机）：给定线性不可分训练数据集，通过求解凸二次规划问题  
+\begin{align*}  \\ & \min_{\mathbf{w},b,\xi} \quad \dfrac{1}{2} \| \mathbf{w} \|^{2} + C \sum_{i=1}^{N} \xi_{i}
+\\ & s.t. \quad y_{i} \left( \......
         </div>
     </a>
     
         <p class="post-meta" style="margin: 10px 0;">
             Posted by Watson Wang on
-            2019-07-08
+            2019-07-09
         </p>
         <div class="tags">
             
               <a href="/tags/#机器学习" title="机器学习">机器学习</a>
             
-              <a href="/tags/#基础" title="基础">基础</a>
+              <a href="/tags/#SVM" title="SVM">SVM</a>
             
         </div>
     
@@ -242,14 +243,14 @@
 
 <div class="post-preview">
 
-    <a href="/2019/07/06/SVM支持向量机/">
+    <a href="/2019/07/06/SVM三部曲之硬间隔SVM/">
         <h2 class="post-title">
             
                 <i class="fa fa-thumb-tack"></i>
                 <font color=7D26CD>置顶</font>
                 <span class="post-meta-driver">|</span>
             
-            SVM三部曲之线性可分SVM
+            SVM三部曲之硬间隔SVM
         </h2>
         <h3 class="post-subtitle">
             SVM推导整理之一
@@ -301,6 +302,38 @@
               <a href="/tags/#深度学习" title="深度学习">深度学习</a>
             
               <a href="/tags/#迁移学习" title="迁移学习">迁移学习</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2019/07/08/机器学习入门/">
+        <h2 class="post-title">
+            
+            机器学习入门
+        </h2>
+        <h3 class="post-subtitle">
+            李航《统计学习方法》第一章
+        </h3>
+        <div class="post-content-preview">
+            基本术语机器学习：利用经验、通过计算、构建模型，来改善系统自身的性能。属性（特征）：描述事物在特定方面的性质的事项。属性值：属性上的取值。属性空间（输入空间）：由属性张成的空间，属性空间\mathcal{X}。记录（样本）：一个具体事物的属性描述，由属性向量表示。第j个记录\mathbf{x}_j的属性向量
+\mathbf{x} _ { j } = \left( x _ { j } ^ { ......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Watson Wang on
+            2019-07-08
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#机器学习" title="机器学习">机器学习</a>
+            
+              <a href="/tags/#基础" title="基础">基础</a>
             
         </div>
     
@@ -451,6 +484,10 @@ XGboost原理
     <ul>
       
         <li>
+          <a href="/2019/07/09/SVM三部曲之软间隔SVM/">SVM三部曲之软间隔SVM</a>
+        </li>
+      
+        <li>
           <a href="/2019/07/09/迁移学习综述/">迁移学习综述</a>
         </li>
       
@@ -459,15 +496,11 @@ XGboost原理
         </li>
       
         <li>
-          <a href="/2019/07/06/SVM支持向量机/">SVM三部曲之线性可分SVM</a>
+          <a href="/2019/07/06/SVM三部曲之硬间隔SVM/">SVM三部曲之硬间隔SVM</a>
         </li>
       
         <li>
           <a href="/2019/07/04/Nature-DeepLearning/">[Nature, 2015] DeepLearning </a>
-        </li>
-      
-        <li>
-          <a href="/2019/06/23/从Boosting到XGBoost/">从 Boosting 到 XGBoost</a>
         </li>
       
     </ul>
@@ -478,7 +511,7 @@ XGboost原理
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -534,7 +567,7 @@ XGboost原理
 
                 <p class="copyright text-muted">
                     	
-                    <span class="post-count">14.2k words altogether</span>
+                    <span class="post-count">15.6k words altogether</span>
                     <br>
                     Copyright &copy; Watson Wang 2019 
                 </p>
