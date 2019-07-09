@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="null">
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          迁移学习综述 - WatsonWang | On the way.
+        
+    </title>
+
+    <link rel="canonical" href="http://watsonwangzh.github.io/2019/07/09/迁移学习综述/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('TL.png')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#深度学习" title="深度学习">深度学习</a>
+                            
+                              <a class="tag" href="/tags/#迁移学习" title="迁移学习">迁移学习</a>
+                            
+                        </div>
+                        <h1>迁移学习综述</h1>
+                        <h2 class="subheading">TransferLearning概览</h2>
+                        <span class="meta">
+                            Posted by Watson Wang on
+                            2019-07-09
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">WatsonWang Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>目前，机器学习和深度学习正在如火如荼地发展，而由于迁移学习的思想符合当前的数据发展状况，正在受到人们越来越多的关注：吴恩达曾在2016NIPS turorial中指出“Transfer Learning will be the driver of ML success. ”。<br>本文将对迁移学习中的基本概念、不同算法的分类、原理与应用做一简要介绍和说明。</p>
+<h1 id="迁移学习简介"><a href="#迁移学习简介" class="headerlink" title="迁移学习简介"></a>迁移学习简介</h1><h2 id="什么是迁移学习"><a href="#什么是迁移学习？" class="headerlink" title="什么是迁移学习？"></a>什么是迁移学习？</h2><p>简而言之，就是将在一个场景中学习到的知识迁移到另一个场景应用。可以采用迁移学习到原因是当前任务和之前任务可能有某种关联，它们是来自相似domain的不同任务或者不同domain的相似任务。例如：<br><img src="1.png" alt="ex1"><br>左侧使用Kaggle上拍摄的猫和狗的图片数据集训练出来的图像分类模型，对拍摄的老鹰和布谷鸟的图片进行分类；右侧使用前述模型对动漫图片形式到猫和狗到图片进行分类。</p>
+<h2 id="为什么需要迁移学习"><a href="#为什么需要迁移学习？" class="headerlink" title="为什么需要迁移学习？"></a>为什么需要迁移学习？</h2><p>众所周知，采用机器学习或者深度学习算法可以达到的上限是取决于数据和特征的，而在深度学习领域特征是可以通过数据逐层提取学习到的。<br>使用深度学习技术解决问题的过程中，最常见的障碍在于，因为模型有大量的参数需要训练，因此需要海量的训练数据作为支撑。在面对某一领域的具体问题时，通常可能无法得到构建模型所需规模的数据。借助迁移学习，在一个模型训练任务中针对某种类型数据获得的关系也可以轻松地应用于同一领域的不同问题。<br><img src="TL.jpg" alt="driverofML"></p>
+<h2 id="迁移学习算法一览"><a href="#迁移学习算法一览" class="headerlink" title="迁移学习算法一览"></a>迁移学习算法一览</h2><p>根据原始数据和目标数据的标签有无，可以将迁移学习算法分为以下四类。后文主要对有标签到有标签和有标签到无标签的迁移学习算法做主要介绍，无标签到有标签和无标签到无标签到迁移学习算法由于理论上的效果有限且研究较少，只做简要介绍。</p>
+<table border="1">
+    <tr>
+        <td colspan="4" rowspan="2" align="center"> 迁移学习分类</td>
+        <td colspan="6" align="center">   原始数据</td>
+    </tr>
+    <tr>
+        <td colspan="3" align="center"> 有标签</td>
+        <td colspan="3" align="center"> 无标签</td>
+    </tr>
+    <tr>
+        <td colspan="2" rowspan="2" align="center">目标数据</td>
+        <td colspan="2" align="center">有标签</td>
+        <td colspan="3" align="center">model fine-tuning<div> multitask learning<br></div></td>
+        <td colspan="3" align="center">self-taught learning</td>
+    </tr>
+    <tr>
+        <td colspan="2" align="center">无标签</td>
+        <td colspan="3" align="center">domain-adversarial training<div> zero-shot learning<br></div></td>
+        <td colspan="3" align="center">self-taught clustering</td>
+    </tr>
+</table>
+
+<h1 id="有监督到有监督"><a href="#有监督到有监督" class="headerlink" title="有监督到有监督"></a>有监督到有监督</h1><h2 id="model-fine-tune-存在的问题及改进措施"><a href="#Model-Fine-tune、存在的问题及改进措施" class="headerlink" title="Model Fine-tune、存在的问题及改进措施"></a>Model Fine-tune、存在的问题及改进措施</h2><p>Model Fine-tune的典型应用是把预训练好模型的参数以某种方式借用到到自己的业务场景下，在新的数据集上重新做一次优化，以加速训练过程。</p>
+<ul>
+<li>任务状况<ul>
+<li>原始数据： 有大量 $(X^s,y^s)$ 数据</li>
+<li>目标数据：只有少量$(X^t,y^t)$ 数据 </li>
+</ul>
+</li>
+<li>例子:(有监督学习)电商小类别商品识别<ul>
+<li>源数据：Imagenet多种物体图片识别，有大量数据。</li>
+<li>目标数据：电商小品类商品图片识别，只有少量数据。 </li>
+</ul>
+</li>
+<li><p>基本思想</p>
+<ul>
+<li>由原始的Imagenet图像训练一个模型，在自己的数据集上调优。</li>
+</ul>
+</li>
+<li><p>可能的问题：在小量调优数据上可能过拟合。</p>
+</li>
+<li>可能的原因：预训练好的模型参数非常丰富，很容易在目标数据上拟合好，但在用到新的数据上时效果并不好，即出现过拟合。</li>
+</ul>
+<p>过拟合处理方式之一：保守训练/Conservative Training<br><img src="CT.png" alt="ct"></p>
+<ul>
+<li>常见控制模型的过拟合方式<ul>
+<li>添加正则化项 $L_1$、$L_2$</li>
+<li>dropout随机失活</li>
+<li>调小学习率，通过迭代轮次限制来控制</li>
+</ul>
+</li>
+</ul>
+<p>其中，添加正则化项的方式启发我们在使用预训练好的模型时，可以限定参数的变动范围，使其不要距原模型的参数过远，即认为原始模型是一个泛化性能很好的模型。定义 $W$为原始模型的参数，定义  $W^{‘}$为在目标数据集学习调整后的模型参数，添加惩罚项 $\lambda||W^{‘}-W||$来控制变动范围，使得两个模型的参数很接近，从而控制新模型不要在小规模数据集上达到过拟合的状态。其中 $\lambda$为模型的超参数。<br>另外一种控制过拟合的方式是通过控制原模型和新模型的输出来实现，即目标数据在通过原模型时会有一个输出值$Y$，通过新模型时也会有一个输出值$Y^{‘}$,二者都是概率向量 ，添加惩罚项 $\lambda||Y^{‘}-Y||$来控制变动范围，本质上也是约束权重$w$的变化范围。其中 $\lambda$为模型的超参数。</p>
+<p>过拟合处理方式之二：层迁移 / Layer Transfer<br>最原始的Layer Transfer方式是把预训练模型的参数全部导入新的目标任务中，在此基础上通过目标数据集进行下一步的调整。而为了控制过拟合，通常有以下几个trick可以使用。<br><img src="LT1.png" alt="LT1"></p>
+<ul>
+<li>目标数据量很小的情况：拷贝部分层参数到新模型网络参数中且fiexd住，使其不可学习；剩余的层采用random随机初始化的方式且是可学习的。而又由于需要适应原始层的参数要求，就使得random层参数的变动范围也是可控的。</li>
+<li>目标数据量足够大，可以把原先fixed住的一些层放开来，但是要设定一个小的学习率，如0.0001，因为此时较不容易过拟合。</li>
+<li>这时又会存在一个问题，我们应该拷贝（复用）哪些层呢？需要结合具体的业务领域知识做出选择。<br><img src="LT3.png" alt="LT3"><ul>
+<li>语音识别：通常是复用最后的一些层。原因：不同人的说话方式不同，需要把不同人说话方式抽象成语音的基本单元，而说话的内容都是由这些语音的基本单元构成的，是固定通用的。所以需要通过识别speaker的说话方式，抽象成语音的基本单元来完成speaker的语音识别。<br><img src="LT2.png" alt="LT2"></li>
+<li>图像分类：通常是复用开始的一些层。原因：通常图像识别使用最多的模型是CNN，而在前面的Layer做的任务主要是从底层的像素中逐层提取线条、纹理等上层抽象的理解，而这些基本元素在不同图像中的差别不大。故可以fixed住这些特征抽取器，在这些特征的基础上再进一步的学习不同业务的分割超平面。</li>
+<li>一般情况下，会复用连续的开始层或者结束层，而不会采用跳变的方式。</li>
+</ul>
+</li>
+</ul>
+<h2 id="multitask-learning"><a href="#Multitask-Learning" class="headerlink" title="Multitask Learning"></a>Multitask Learning</h2><p>多任务学习（Multitask Learning）和模型再训练（Model Fine-tune）的区别主要在于Model Fine-tune只专注于在目标数据集上的效果，而Multitask Learning的目标要达到在原始任务和目标任务上效果的双赢。这通常通过组合不同的网络模型达到。下图是Multitask Learning针对两种不同业务场景的不同实现方式：<br><img src="ML.png" alt="ML"><br>上图左侧说明，为了完成目标任务B，可以通过调整原始任务模型的权重来达到，但又通过原始任务和目标任务上“双赢”效果的约束，限制了模型的参数变动范围，使得模型参数的变动范围相较于Model Fine-tune更小。Multitask Learning在多种语音识别领域中的应用证明了人类语言有一些共性，也证明了此种方式是有一定价值的。<br>上图右侧显示的是相差较大、不同业务领域的Multitask Learning模型（例如Imagenet中真实拍摄图片的分类模型A和卡通动漫领域的图片分类模型B）。它们允许网络分别从不同的数据源中抽象浅层的特征表示，并在中间二者相差不大的某层进行连接共用。但通常这种方式由于是来自不同领域的数据源，很难达到任务A和任务B上表现共赢的结果。<br>Multitask Learning兼顾任务A和B的不同实现方式：</p>
+<ul>
+<li>将任务A和B的Loss Function加权求和作为新的Loss Function，但存在A优B劣或B优A劣的问题</li>
+<li>采用类似GAN的方式，在其中一侧的网络中update一次参数，再拷贝到另一侧网络中进行参数update</li>
+</ul>
+<h2 id="progressive-neural-networks"><a href="#Progressive-Neural-Networks" class="headerlink" title="Progressive Neural Networks"></a>Progressive Neural Networks</h2><p><img src="PNN.png" alt="PNN"><br>如上所示，Progressive Neural Networks是一种很“激进”的神经网络，基本想法：针对于任务1去训练一个神经网络NN1，并希望NN1可以对之后的任务有帮助，把它的参数接回到网络中，并通过参数的设置来控制已学习模型对新任务的影响程度，如此迭代下去。网络的训练过程是串行的。类似于GBDT的树模型方式。也类似于ResNet的思想，选择性地补充某些信息。<br>ResNet 和Highway网络在某种程度上是一种“可选“的网络，通过参数设置可以选择性地跳过其中的某些层，从而获得来可以自主确定网络层数的能力，故可以在很深的网络层数下依然可以训练。</p>
+<h1 id="有监督到无监督"><a href="#有监督到无监督" class="headerlink" title="有监督到无监督"></a>有监督到无监督</h1><ul>
+<li>任务描述：同一任务的不同数据<ul>
+<li>源数据： $(X^s,y^s)$ 有标签的训练数据</li>
+<li>目标数据：$(X^t)$  无标签的测试数据</li>
+</ul>
+</li>
+</ul>
+<p><img src="DAT1.png" alt="DAT1"><br>通过在有标签的训练数据上，通过监督学习训练得到一个模型，要求使用该模型解决属于同一类任务，但数据没有标签的问题。例如通过MNIST有标签数据集学习得到的模型，完成MNIST-M无标签（人工去除或不使用标签）数据集的分类。MNIST-M相较于MNIST的区别在于MNIST-M有一些干扰性很强的背景或者纹理。</p>
+<h2 id="domain-adversarial-training"><a href="#Domain-adversarial-Training" class="headerlink" title="Domain-adversarial Training"></a>Domain-adversarial Training</h2><p>采用VGG16的模型作为特征抽取器，在MNIST和MNIST-M数据集上抽取4096*1维的特征，并利用tensorflow中tensorboard工具的embedding做可视化如下:<br><img src="DAT2.png" alt="DAT2"><br>如同所示，MNIST可以通过VGG16模型得到很好区分的原因是，不同类别的数字已经被划分到了不同的区域中。而MNIST-M数据集由于含有很多干扰，未能被划分到不同的区域中，所以原始模型对于MNIST-M数据集的分类是无效的。<br><img src="DAT3.png" alt="DAT3"><br>由于MNIST-M数据集是没有标签的且与MNIST数据集很像，故考虑采用类似于GAN的方法。基本思想是由于需要将无监督问题转化成监督学习问题，而每个图片已知的信息只有属于MNIST或MNIST-M，故考虑将粒度变大，采用Domain/域的标签，不再考虑具体的数字标签。其中Domain分类器只用来区分数据是来自MNIST还是MNIST-M。<br>通过调整feature把Domain标签逐步消除，得到一个通用的特征，该特征既在原始黑白的MNIST数据集上有良好效果，又在含有干扰的MNIST-M数据集上表现良好。那么Domain标签是如何消除掉的呢？<br><img src="DAT4.png" alt="DAT4"><br>如图所示，该网络架构分为特征抽取部分（feature extractor）、标签预测部分(Label predictor)和域分类器(Domain classifier)三个部分。其中标签预测用于数字图片所属类别（0-9）的预测，域分类器用于数字图片来自某个域（MNIST或者MNIST-M）的预测。<br>我们希望它能够在识别正确类别的同时，消除掉对域的认识（域分类器分不出来），既要最优化Label predictor，又要在Domain classifier很“努力”的前提下，最差化Domain classifier，或者说是反向调优Domain classifier。<br>其中在通过Label predictor时，由于需要做label预测，仅需要MNIST数据集。而在通过Domain classifier时，是需要消除域标签的，所以需要MNIST和MNIST-M数据集的共同参与。<br><img src="DAT5.png" alt="DAT5"></p>
+<ul>
+<li>Backpropagation中需要注意的地方<ul>
+<li>针对Label Predictor：使用SGD优化feature extractor</li>
+<li>针对Domain Classifier：先SGD优化Domain局部网络，再反向SGD优化feature extractor,其中 $\lambda$为超参数。<br><img src="DAT6.png" alt="DAT6"><br>通过上表可以看出，只用MNIST数据集训练，然后在MNIST-M数据集上进行预测时，效果欠佳。而采用Domain-adversarial Training得到的模型在多个数据集上的效果都有所提升。<h2 id="zero-shot-learning"><a href="#Zero-shot-Learning" class="headerlink" title="Zero-shot Learning"></a>Zero-shot Learning</h2><img src="ZSL1.png" alt="ZSL1"><br>零样本学习是针对完全没有见过的目标数据的学习。例如通过猫狗的数据集训练得到的模型，来对草泥马这种生物进行识别，而你现在又没有标注好的带标签的草泥马样本。</li>
+</ul>
+</li>
+<li>针对这种问题，通常通过属性表征类的方法解决,即将训练识别粒度减小，训练的神经网络不再用来识别类别，而是识别属性。<ul>
+<li>有属性数据库（要求属性数据库要足够丰富，且在稀疏的属性表上需要做embedding）<ul>
+<li>属性识别 + 查表</li>
+<li>属性embedding</li>
+</ul>
+</li>
+<li>没有属性数据库<ul>
+<li>属性embedding + 词 embedding</li>
+<li>对语义embedding 做加权<br><img src="ZSL2.png" alt="ZSL2"><br><img src="ZSL3.png" alt="ZSL3"><br>由于属性数据库的表通常是非常稀疏的，考虑属性embedding，即把高维空间中很稀疏的向量表示映射为低维稠密空间中的向量表示。如图所示，通过$f(<em>)$和$g(</em>)$两个神经网络进行embedding，优化的loss function是使查表得到属性的embedding与图片识别属性的embedding足够接近，并以此作为零样本识别的依据。<br><img src="ZSL4.png" alt="ZSL4"><br>如下图所示，由于上面提出的朴素Zero-shot Learning 值考虑了与正确分类的属性embedding足够接近，这就存在将所有图片属性emdding与查表属性embedding都学习成同样向量的可能，而这对于Learning是无效的。<br>考虑采用与SVM中Hinge Loss类似的方式，如下所示：定义一个安全距离k，即图片属性embedding与正确属性embedding的得分至少要比与错误属性embedding的得分高出k，否则就会得到一个loss。<br><img src="ZSL6.png" alt="ZSL6"><br><img src="ZSL5.png" alt="ZSL5"><br><img src="ZSL7.png" alt="ZSL7"></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="无监督到有监督"><a href="#无监督到有监督" class="headerlink" title="无监督到有监督"></a>无监督到有监督</h1><h2 id="self-taught-learning"><a href="#Self-taught-Learning" class="headerlink" title="Self-taught Learning"></a>Self-taught Learning</h2><p>主要思想</p>
+<ul>
+<li>尝试通过无监督方法从源数据抽取更好的表达</li>
+<li>对目标数据也进行更好的表达</li>
+</ul>
+<h1 id="无监督到无监督"><a href="#无监督到无监督" class="headerlink" title="无监督到无监督"></a>无监督到无监督</h1><h2 id="self-taught-clustering"><a href="#Self-taught-Clustering" class="headerlink" title="Self-taught Clustering"></a>Self-taught Clustering</h2><p>主要思想</p>
+<ul>
+<li>尝试通过无监督方法从源数据抽取更好的表达</li>
+<li>对目标数据也进行更好的表达</li>
+</ul>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://arxiv.org/abs/1606.04671" target="_blank" rel="noopener">[1].Andrei A. Rusu, Neil C. Rabinowitz, Guillaume Desjardins, Hubert Soyer, James Kirkpatrick, Koray Kavukcuoglu, Razvan Pascanu, Raia Hadsell, “Progressive Neural Networks”, arXiv preprint 2016.</a><br><a href="https://arxiv.org/abs/1701.08734" target="_blank" rel="noopener">[2].Chrisantha Fernando, Dylan Banarse, Charles Blundell, Yori Zwols, David Ha, Andrei A. Rusu, Alexander Pritzel, Daan Wierstra, “PathNet: Evolution Channels Gradient Descent in Super NeuralNetworks”, arXiv preprint, 2017.</a><br><a href="http://proceedings.mlr.press/v37/ganin15.pdf" target="_blank" rel="noopener">[3].Yaroslav Ganin, Victor Lempitsky, Unsupervised Domain Adaptation by Backpropagation, ICML, 2015.</a><br><a href="https://arxiv.org/abs/1505.07818" target="_blank" rel="noopener">[4].Hana Ajakan, Pascal Germain, Hugo Larochelle, François Laviolette, Mario Marchand, Domain-­‐Adversarial Training of Neural Networks, JMLR, 2016.</a><br><a href="https://arxiv.org/abs/1611.04558" target="_blank" rel="noopener">[5].Melvin Johnson, Mike Schuster, Quoc V. Le, Maxim Krikun, Yonghui Wu, Zhifeng Chen, Nikhil Thorat. Google’s Multilingual Neural Machine Translation System: Enabling Zero-­‐Shot Translation, arXiv preprint 2016.</a><br><a href="http://ai.stanford.edu/~hllee/icml07-selftaughtlearning.pdf" target="_blank" rel="noopener">[6].Rajat Raina , Alexis Battle , Honglak Lee , Benjamin Packer , Andrew Y.Ng, Self-­‐taught learning: transfer learning from unlabeled data, ICML,2007.</a><br><a href="https://www.cse.ust.hk/~qyang/Docs/2008/dwyakicml.pdf" target="_blank" rel="noopener">[7].xWenyuan Dai, Qiang Yang, Gui-­‐Rong Xue, Yong Yu, “Self-­‐ taught clustering”, ICML 2008.</a></p>
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/07/08/机器学习入门/" data-toggle="tooltip" data-placement="top" title="机器学习入门">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NDg0OS8yMTM3MA==">
+    <script type="text/javascript">
+        (function(d, s) {
+            var j, e = d.getElementsByTagName(s)[0];
+            if (typeof LivereTower === 'function') { return; }
+            j = d.createElement(s);
+            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+            j.async = true;
+            e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+    </script>
+</div>
+    </div>     
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <aside id="sidebar">
+      <div id="toc" class="toc-article">
+      <strong class="toc-title">文章目录</strong>
+      
+        <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#迁移学习简介"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">迁移学习简介</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#什么是迁移学习"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">什么是迁移学习？</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#为什么需要迁移学习"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">为什么需要迁移学习？</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#迁移学习算法一览"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">迁移学习算法一览</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#有监督到有监督"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">有监督到有监督</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#model-fine-tune-存在的问题及改进措施"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">Model Fine-tune、存在的问题及改进措施</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#multitask-learning"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">Multitask Learning</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#progressive-neural-networks"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">Progressive Neural Networks</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#有监督到无监督"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">有监督到无监督</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#domain-adversarial-training"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">Domain-adversarial Training</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#zero-shot-learning"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">Zero-shot Learning</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#无监督到有监督"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">无监督到有监督</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#self-taught-learning"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">Self-taught Learning</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#无监督到无监督"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">无监督到无监督</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#self-taught-clustering"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">Self-taught Clustering</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#参考文献"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">参考文献</span></a></li></ol>
+      
+      </div>
+    </aside>
+  
+
+
+<!-- <div id="toc" class="toc-article">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#迁移学习简介"><span class="toc-number">1.</span> <span class="toc-text">迁移学习简介</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是迁移学习"><span class="toc-number">1.1.</span> <span class="toc-text">什么是迁移学习？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么需要迁移学习"><span class="toc-number">1.2.</span> <span class="toc-text">为什么需要迁移学习？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#迁移学习算法一览"><span class="toc-number">1.3.</span> <span class="toc-text">迁移学习算法一览</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#有监督到有监督"><span class="toc-number">2.</span> <span class="toc-text">有监督到有监督</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#model-fine-tune-存在的问题及改进措施"><span class="toc-number">2.1.</span> <span class="toc-text">Model Fine-tune、存在的问题及改进措施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#multitask-learning"><span class="toc-number">2.2.</span> <span class="toc-text">Multitask Learning</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#progressive-neural-networks"><span class="toc-number">2.3.</span> <span class="toc-text">Progressive Neural Networks</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#有监督到无监督"><span class="toc-number">3.</span> <span class="toc-text">有监督到无监督</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#domain-adversarial-training"><span class="toc-number">3.1.</span> <span class="toc-text">Domain-adversarial Training</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#zero-shot-learning"><span class="toc-number">3.2.</span> <span class="toc-text">Zero-shot Learning</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#无监督到有监督"><span class="toc-number">4.</span> <span class="toc-text">无监督到有监督</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#self-taught-learning"><span class="toc-number">4.1.</span> <span class="toc-text">Self-taught Learning</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#无监督到无监督"><span class="toc-number">5.</span> <span class="toc-text">无监督到无监督</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#self-taught-clustering"><span class="toc-number">5.1.</span> <span class="toc-text">Self-taught Clustering</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考文献"><span class="toc-number">6.</span> <span class="toc-text">参考文献</span></a></li></ol>
+</div> -->
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#深度学习" title="深度学习">深度学习</a>
+                        
+                          <a class="tag" href="/tags/#迁移学习" title="迁移学习">迁移学习</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                
+                    <li><a href="http://beantech.org" target="_blank">Bean Tech</a></li>
+                
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<script type="text/javascript" src="/js/zooming.js"></script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/WatsonWangZh">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                	
+
+                <p class="copyright text-muted">
+                    	
+                    <span class="post-count">14.2k words altogether</span>
+                    <br>
+                    Copyright &copy; Watson Wang 2019 
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://watsonwangzh.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+	
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://watsonwangzh.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

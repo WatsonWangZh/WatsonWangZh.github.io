@@ -3,6 +3,41 @@
 
 
     <url>
+        <loc>http://watsonwangzh.github.io/tags/%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0/</loc>
+        <lastmod>2019-07-09T08:07:13.663Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://watsonwangzh.github.io/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</loc>
+        <lastmod>2019-07-09T08:07:13.663Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://watsonwangzh.github.io/tags/%E5%9F%BA%E7%A1%80/</loc>
+        <lastmod>2019-07-08T11:27:39.185Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://watsonwangzh.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</loc>
+        <lastmod>2019-07-08T11:27:39.185Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://watsonwangzh.github.io/tags/SVM/</loc>
+        <lastmod>2019-07-08T11:27:36.430Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://watsonwangzh.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AE%97%E6%B3%95/</loc>
         <lastmod>2019-07-08T11:27:10.116Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -19,34 +54,6 @@
     <url>
         <loc>http://watsonwangzh.github.io/tags/%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6/</loc>
         <lastmod>2019-07-08T11:27:10.116Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://watsonwangzh.github.io/tags/SVM/</loc>
-        <lastmod>2019-07-08T11:26:22.836Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://watsonwangzh.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</loc>
-        <lastmod>2019-07-08T11:26:22.836Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://watsonwangzh.github.io/tags/%E5%9F%BA%E7%A1%80/</loc>
-        <lastmod>2019-07-08T11:25:55.449Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://watsonwangzh.github.io/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</loc>
-        <lastmod>2019-07-04T11:24:15.268Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>

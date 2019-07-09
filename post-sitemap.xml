@@ -8,16 +8,8 @@
     </url>
 
     <url>
-        <loc>http://watsonwangzh.github.io/2019/06/23/%E4%BB%8EBoosting%E5%88%B0XGBoost/</loc>
-        <lastmod>2019-07-08T11:27:10.116Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://watsonwangzh.github.io/2019/07/06/SVM%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/</loc>
-        <lastmod>2019-07-08T11:26:22.836Z</lastmod>
+        <loc>http://watsonwangzh.github.io/2019/07/09/%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E7%BB%BC%E8%BF%B0/</loc>
+        <lastmod>2019-07-09T08:07:13.663Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -25,7 +17,23 @@
 
     <url>
         <loc>http://watsonwangzh.github.io/2019/07/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8/</loc>
-        <lastmod>2019-07-08T11:25:55.449Z</lastmod>
+        <lastmod>2019-07-08T11:27:39.185Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://watsonwangzh.github.io/2019/07/06/SVM%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/</loc>
+        <lastmod>2019-07-08T11:27:36.430Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://watsonwangzh.github.io/2019/06/23/%E4%BB%8EBoosting%E5%88%B0XGBoost/</loc>
+        <lastmod>2019-07-08T11:27:10.116Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
