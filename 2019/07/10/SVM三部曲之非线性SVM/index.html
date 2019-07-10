@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="null">
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          SVM三部曲之非线性SVM - WatsonWang | On the way.
+        
+    </title>
+
+    <link rel="canonical" href="http://watsonwangzh.github.io/2019/07/10/SVM三部曲之非线性SVM/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('kernelsvm.jpg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#机器学习" title="机器学习">机器学习</a>
+                            
+                              <a class="tag" href="/tags/#SVM" title="SVM">SVM</a>
+                            
+                        </div>
+                        <h1>SVM三部曲之非线性SVM</h1>
+                        <h2 class="subheading">SVM推导整理之三</h2>
+                        <span class="meta">
+                            Posted by Watson Wang on
+                            2019-07-10
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">WatsonWang Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="非线性svm"><a href="#非线性SVM" class="headerlink" title="非线性SVM"></a>非线性SVM</h2><p>从非线性分类训练集，通过核函数与软间隔最大化，学习得到分类决策函数  </p>
+<script type="math/tex; mode=display">\begin{align*} \\& f \left( \mathbf{x} \right) = sign \left( \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} K \left(\mathbf{x}, \mathbf{x}_{i} \right) + b^{*} \right) \end{align*}</script><p>称为非线性支持向量机，$K \left( \mathbf{x}, \mathbf{z} \right)$是正定核函数。</p>
+<h2 id="核函数"><a href="#核函数" class="headerlink" title="核函数"></a>核函数</h2><p>设$\mathcal{X}$是输入空间（欧氏空间$\mathbb{R}^{n}$的子集或离散集合），$\mathcal{H}$是特征空间（希尔伯特空间），如果存在一个从$\mathcal{X}$到$\mathcal{H}$的映射</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \phi \left( \mathbf{x} \right) : \mathcal{X} \to \mathcal{H}   \end{align*}</script><p>使得对所有$\mathbf{x},\mathbf{z} \in \mathcal{X}$，函数$K \left(\mathbf{x}, \mathbf{z} \right)$满足条件 </p>
+<script type="math/tex; mode=display">\begin{align*} \\ &  K \left(\mathbf{x}, \mathbf{z} \right) = \phi \left( \mathbf{x} \right) \cdot \phi \left( \mathbf{z} \right)  \end{align*}</script><p>则称$K \left(\mathbf{x}, \mathbf{z} \right)$为核函数，$\phi \left( \mathbf{x} \right)$为映射函数，式中$\phi \left( \mathbf{x} \right) \cdot \phi \left( \mathbf{z} \right)$为$\phi \left( \mathbf{x} \right)$和$\phi \left( \mathbf{z} \right)$的内积。 </p>
+<h2 id="常用核函数"><a href="#常用核函数" class="headerlink" title="常用核函数"></a>常用核函数</h2><ol>
+<li>多项式核函数<script type="math/tex; mode=display">\begin{align*} \\& K \left( \mathbf{x}, \mathbf{z} \right) = \left( \mathbf{x} \cdot \mathbf{z} + 1 \right)^{p} \end{align*}</script></li>
+<li>高斯核函数  <script type="math/tex; mode=display">\begin{align*} \\& K \left( \mathbf{x}, \mathbf{z} \right) = \exp \left( - \dfrac{\| \mathbf{x} - \mathbf{z} \|^{2}}{2 \sigma^{2}} \right) \end{align*}</script></li>
+</ol>
+<h1 id="学习算法"><a href="#学习算法" class="headerlink" title="学习算法"></a>学习算法</h1><p>输入：训练数据集$T = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\}$，其中$\mathbf{x}_{i} \in \mathcal{X} = \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N$<br>输出：分类决策函数  </p>
+<ol>
+<li>选择适当的核函数$K \left( \mathbf{x}, \mathbf{z} \right)$和惩罚参数$C \geq 0$，构建并求解约束最优化问题<script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha} \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right)  - \sum_{i=1}^{N} \alpha_{i}  
+\\ & s.t. \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
+\\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2, \cdots, N  \end{align*}</script>求得最优解<script type="math/tex">\alpha^{*} = \left( \alpha_{1}^{*}, \alpha_{1}^{*}, \cdots, \alpha_{N}^{*} \right)</script>。  </li>
+<li>计算<script type="math/tex; mode=display">\begin{align*}  \\ & \mathbf{w}^{*} = \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} \mathbf{x}_{i} \end{align*}</script>并选择<script type="math/tex">\alpha^{*}</script>的一个分量<script type="math/tex">0 < \alpha_{j}^{*} < C</script>，计算<script type="math/tex; mode=display">\begin{align*}  \\ & b^{*} = y_{j} - \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right) \end{align*}</script></li>
+<li>得到分离超平面<script type="math/tex; mode=display">\begin{align*}  \\ & \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} = 0 \end{align*}</script>以及分类决策函数  <script type="math/tex; mode=display">\begin{align*} \\& f \left( \mathbf{x} \right) = sign \left( \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right) + b^{*} \right)  \end{align*}</script></li>
+</ol>
+<h1 id="具体求解smo"><a href="#具体求解SMO" class="headerlink" title="具体求解SMO"></a>具体求解SMO</h1><p>SMO算法：<br>输入：训练数据集$T = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\}$，其中$\mathbf{x}_{i} \in \mathcal{X} = \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N$，精度$\varepsilon$；<br>输出：近似解$\hat \alpha$ </p>
+<ol>
+<li>取初始值$\alpha^{0} = 0$，令$k = 0$；</li>
+<li>选取优化变量$\alpha_{1}^{\left( k \right)},\alpha_{2}^{\left( k \right)}$，求解<script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha_{1}, \alpha_{2}} W \left( \alpha_{1}, \alpha_{2} \right) = \dfrac{1}{2} K_{11} \alpha_{1}^{2} + \dfrac{1}{2} K_{22} \alpha_{2}^{2} + y_{1} y_{2} K_{12} \alpha_{1} \alpha_{2} 
+\\ & \quad\quad\quad\quad\quad\quad - \left( \alpha_{1} + \alpha_{2} \right) + y_{1} \alpha_{1} \sum_{i=3}^{N} y_{i} \alpha_{i} K_{i1} + y_{2} \alpha_{2} \sum_{i=3}^{N} y_{i} \alpha_i K_{i2}
+\\ & s.t. \quad \alpha_{1} + \alpha_{2} = -\sum_{i=3}^{N} \alpha_{i} y_{i} = \varsigma
+\\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2  \end{align*}</script>求得最优解$\alpha_{1}^{\left( k＋1 \right)},\alpha_{2}^{\left( k+1 \right)}$，更新$\alpha$为$\alpha^{\left( k+1 \right)}$；</li>
+<li>若在精度$\varepsilon$范围内满足停机条件<script type="math/tex; mode=display">\begin{align*}  \\ & \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
+\\ & 0 \leq \alpha_{i} \leq C, i = 1, 2, \cdots, N
+\\ & \end{align*}</script><script type="math/tex; mode=display">\begin{align*} y_{i} \cdot g \left( x_{i} \right) = \left\{
+\begin{aligned} 
+\ &  \geq 1, \left\{ x_{i} | \alpha_{i} = 0 \right\}
+\\ & = 1, \left\{ x_{i} | 0 < \alpha_{i} < C \right\}
+\\ & \leq 1, \left\{ x_{i} | \alpha_{i} = C \right\}
+\end{aligned}
+\right.\end{align*}</script>则转4.；否则令$k = k + 1$，转2.；<br>4.取$\hat \alpha = \alpha^{\left( k + 1 \right)}$。</li>
+</ol>
+<hr>
+<p>要解如下凸二次规划的对偶问题：  </p>
+<script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha} \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right)  - \sum_{i=1}^{N} \alpha_{i}  
+\\ & s.t. \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
+\\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2, \cdots, N  \end{align*}</script><p>选择$\alpha_{1}, \alpha_{2}$两个变量，其他变量$\alpha_{i} \left( i = 3, 4, \cdots, N \right)$是固定的，SMO的最优化问题的子问题  </p>
+<script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha_{1}, \alpha_{2}} W \left( \alpha_{1}, \alpha_{2} \right) = \dfrac{1}{2} K_{11} \alpha_{1}^{2} + \dfrac{1}{2} K_{22} \alpha_{2}^{2} + y_{1} y_{2} K_{12} \alpha_{1} \alpha_{2} 
+\\ & \quad\quad\quad\quad\quad\quad - \left( \alpha_{1} + \alpha_{2} \right) + y_{1} \alpha_{1} \sum_{i=3}^{N} y_{i} \alpha_{i} K_{i1} + y_{2} \alpha_{2} \sum_{i=3}^{N} y_{i} \alpha_i K_{i2}
+\\ & s.t. \quad \alpha_{1} + \alpha_{2} = -\sum_{i=3}^{N} \alpha_{i} y_{i} = \varsigma
+\\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2  \end{align*}</script><p>其中，<script type="math/tex">K_{ij} = K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right), i,j = 1,2, \cdots, N, \varsigma</script>是常数，且省略了不含<script type="math/tex">\alpha_{1}, \alpha_{2}</script>的常数项。<br>设凸二次规划的对偶问题的初始可行解为$\alpha_{1}^{old}, \alpha_{2}^{old}$，最优解为$\alpha_{1}^{new}, \alpha_{2}^{new}$，且在沿着约束方向未经剪辑时$\alpha_{2}$的最优解为$ \alpha_{2}^{new,unc}$。<br>由于$\alpha_{2}^{new}$需要满足$0 \leq \alpha_{i} \leq C$，所以最优解$\alpha_{2}^{new}$的取值范围需满足</p>
+<script type="math/tex; mode=display">\begin{align*} \\ &  L \leq \alpha_{2}^{new} \leq H  \end{align*}</script><p>其中，L与H是$\alpha_{2}^{new}$所在的对角线段断点的界。<br>如果$y_{1} \neq y_{2}$，则  </p>
+<script type="math/tex; mode=display">\begin{align*} \\ &  L = \max \left( 0, \alpha_{2}^{old} - \alpha_{1}^{old} \right), H = \min \left( C, C + \alpha_{2}^{old} - \alpha_{1}^{old} \right) \end{align*}</script><p>如果$y_{1} = y_{2}$，则  </p>
+<script type="math/tex; mode=display">\begin{align*} \\ &  L = \max \left( 0, \alpha_{2}^{old} + \alpha_{1}^{old} - C \right), H = \min \left( C,  \alpha_{2}^{old} + \alpha_{1}^{old} \right) \end{align*}</script><p>记</p>
+<script type="math/tex; mode=display">\begin{align*} \\ &  g \left( \mathbf{x} \right) = \sum_{i=1}^{N} \alpha_{i} y_{i} K \left( \mathbf{x}_{i}, \mathbf{x} \right) + b  \end{align*}</script><p>令</p>
+<script type="math/tex; mode=display">\begin{align*} \\ &  E_{i} = g \left( \mathbf{x}_{i} \right) - y_{i} = \left( \sum_{j=1}^{N} \alpha_{j} y_{j} K \left( \mathbf{x}_{j}, \mathbf{x}_{i} \right) + b \right) - y_{i}, \quad i=1,2
+\\ & v_{i} = \sum_{j=3}^{N} \alpha_{j} y_{j} K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right) = g \left( \mathbf{x}_{i} \right) - \sum_{j=1}^{2}\alpha_{j} y_{j} K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right) - b, \quad i=1,2\end{align*}</script><p>则</p>
+<script type="math/tex; mode=display">\begin{align*} \\ &   W \left( \alpha_{1}, \alpha_{2} \right) = \dfrac{1}{2} K_{11} \alpha_{1}^{2} + \dfrac{1}{2} K_{22} \alpha_{2}^{2} + y_{1} y_{2} K_{12} \alpha_{1} \alpha_{2} 
+\\ & \quad\quad\quad\quad\quad\quad - \left( \alpha_{1} + \alpha_{2} \right) + y_{1} v_{1} \alpha_{1}+ y_{2} v_{2} \alpha_{2} 
+\end{align*}</script><p>由于$\alpha_{1} y_{1} = \varsigma, y_{i}^{2} = 1$，可将$\alpha_{1}$表示为</p>
+<script type="math/tex; mode=display">\begin{align*} \\ &  \alpha_{1} = \left( \varsigma - y_{2} \alpha_{2} \right) y_{1}\end{align*}</script><p>代入，得</p>
+<script type="math/tex; mode=display">\begin{align*} \\    W \left( \alpha_{2} \right) &= \dfrac{1}{2} K_{11} \left[ \left( \varsigma - y_{2} \alpha_{2} \right) y_{1} \right]^{2} + \dfrac{1}{2} K_{22} \alpha_{2}^{2} + y_{1} y_{2} K_{12} \left( \varsigma - y_{2} \alpha_{2} \right) y_{1} \alpha_{2} 
+\\ & \quad\quad\quad\quad\quad\quad - \left[ \left( \varsigma - y_{2} \alpha_{2} \right) y_{1} + \alpha_{2} \right] + y_{1} v_{1} \left( \varsigma - y_{2} \alpha_{2} \right) y_{1} + y_{2} v_{2} \alpha_{2}
+\\ & = \dfrac{1}{2} K_{11} \left( \varsigma - y_{2} \alpha_{2} \right)^{2} + \dfrac{1}{2} K_{22} \alpha_{2}^{2} + y_{2} K_{12} \left( \varsigma - y_{2} \alpha_{2} \right) \alpha_{2} 
+\\ & \quad\quad\quad\quad\quad\quad - \left( \varsigma - y_{2} \alpha_{2} \right) y_{1} - \alpha_{2} + v_{1} \left( \varsigma - y_{2} \alpha_{2} \right) + y_{2} v_{2} \alpha_{2}
+\end{align*}</script><p>对$\alpha_{2}$求导</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & \dfrac {\partial W}{\partial \alpha_{2}} = K_{11} \alpha_{2} + K_{22} \alpha_{2} -2 K_{12} \alpha_{2}
+\\ & \quad\quad\quad - K_{11} \varsigma y_{2} + K_{12} \varsigma y_{2} + y_{1} y_{2} -1 - v_{1} y_{2} + y_{2} v_{2} \end{align*}</script><p>令其为0，得</p>
+<script type="math/tex; mode=display">\begin{align*} \\  \left( K_{11} + K_{22} - 2 K_{12} \right) \alpha_{2} &= y_{2} \left( y_{2} - y_{1} + \varsigma K_{11} - \varsigma K_{12} + v_{1} - v_{2} \right)
+\\ & = y_{2} \left[ y_{2} - y_{1} + \varsigma K_{11} - \varsigma K_{12} + \left( g \left( \mathbf{x}_{1} \right) - \sum_{j=1}^{2}\alpha_{j} y_{j} K_{1j} - b \right) - \left( g \left( \mathbf{x}_{2} \right) - \sum_{j=1}^{2}\alpha_{j} y_{j} K_{2j} - b \right) \right]\end{align*}</script><p>将$\varsigma = \alpha_{1}^{old} y_{1} + \alpha_{2}^{old} y_{2}$代入，得</p>
+<script type="math/tex; mode=display">\begin{align*} \\  \left( K_{11} + K_{22} - 2 K_{12} \right) \alpha_{2}^{new,unc} &= y_{2} \left( \left( K_{11} + K_{22} - 2 K_{12} \right) \alpha_{2}^{old} y_{2} + y_{2} - y_{1} + g \left( x_{1} \right) - g \left( x_{2} \right) \right)
+\\ & = \left( K_{11} + K_{22} - 2 K_{12} \right) \alpha_{2}^{old} + y_{2} \left( E_{1} - E_{2} \right) \end{align*}</script><p>令$\eta = K_{11} + K_{22} - 2 K_{12}$代入，得</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & \alpha_{2}^{new,unc} = \alpha_{2}^{old} + \dfrac{y_{2} \left( E_{1} - E_{2} \right)}{\eta}\end{align*}</script><p>经剪辑后</p>
+<script type="math/tex; mode=display">\begin{align*} \alpha_{2}^{new} = \left\{
+\begin{aligned} 
+\ &  H, \alpha_{2}^{new,unc} > H
+\\ & \alpha_{2}^{new,unc}, L \leq \alpha_{2}^{new,unc} \leq H
+\\ & L, \alpha_{2}^{new,unc} < L 
+\end{aligned}
+\right.\end{align*}</script><p>由于$\varsigma = \alpha_{1}^{old} y_{1} + \alpha_{2}^{old} y_{2}$及$\varsigma = \alpha_{1}^{new} y_{1} + \alpha_{2}^{new} y_{2}$<br>则</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & \alpha_{1}^{old} y_{1} + \alpha_{2}^{old} y_{2} = \alpha_{1}^{new} y_{1} + \alpha_{2}^{new} y_{2}
+\\ & \quad\quad\quad\quad \alpha_{1}^{new} = \alpha_{1}^{old} + y_{1} y_{2} \left( \alpha_{2}^{old} - \alpha_{2}^{new} \right) \end{align*}</script><p>由分量$0 &lt; \alpha_{1}^{new} &lt; C$，则</p>
+<script type="math/tex; mode=display">\begin{align*}  \\ & b_1^{new} = y_{1} - \sum_{i=3}^{N} \alpha_{i} y_{i} K_{i1} - \alpha_{1}^{new} y_{1} K_{11} - \alpha_{2}^{new} y_{2} K_{21} \end{align*}</script><p>由</p>
+<script type="math/tex; mode=display">\begin{align*} \\ &  E_{1} = g \left( \mathbf{x}_{1} \right) - y_{1} = \left( \sum_{j=1}^{N} \alpha_{j} y_{j} K_{ij} + b \right) - y_{1}
+\\ & = \sum_{i=3}^{N} \alpha_{i} y_{i} K_{i1} + \alpha_{1}^{old} y_{1} K_{11} + \alpha_{2}^{old} y_{2} K_{21} + b^{old} - y_{1} \end{align*}</script><p>则</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & y_{1} - \sum_{i=3}^{N} \alpha_{i} y_{i} K_{i1} = -E_{1} + \alpha_{1}^{old} y_{1} K_{11} + \alpha_{2}^{old} y_{2} K_{21} + b^{old}  \end{align*}</script><p>代入，得</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & b_1^{new} =  -E_{1} + y_{1} K_{11} \left( \alpha_{1}^{new} - \alpha_{1}^{old} \right) - y_{2} K_{21} \left( \alpha_{2}^{new} - \alpha_{2}^{old} \right) + b^{old} \end{align*}</script><p>同理，得</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & b_2^{new} =  -E_{2} + y_{1} K_{12} \left( \alpha_{1}^{new} - \alpha_{1}^{old} \right) - y_{2} K_{22} \left( \alpha_{2}^{new} - \alpha_{2}^{old} \right) + b^{old} \end{align*}</script><p>如果$\alpha_{1}^{new}, \alpha_{2}^{new}$满足$0 &lt; \alpha_{i}^{new} &lt; C, i = 1, 2$，<br>则  </p>
+<script type="math/tex; mode=display">\begin{align*} \\ & b^{new} = b_{1}^{new} = b_{2}^{new}\end{align*}</script><p>否则</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & b^{new} = \dfrac{b_{1}^{new} + b_{2}^{new}}{2} \end{align*}</script><p>更新$E_{i}$  </p>
+<script type="math/tex; mode=display">\begin{align*} \\ & E_{i}^{new} = \sum_{S} y_{j} \alpha_{j} K_{ \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right)} + b^{new} - y_{i} \end{align*}</script><p>其中，$S$是所有支持向量$x_{j}$的集合。</p>
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/07/09/SVM三部曲之软间隔SVM/" data-toggle="tooltip" data-placement="top" title="SVM三部曲之软间隔SVM">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NDg0OS8yMTM3MA==">
+    <script type="text/javascript">
+        (function(d, s) {
+            var j, e = d.getElementsByTagName(s)[0];
+            if (typeof LivereTower === 'function') { return; }
+            j = d.createElement(s);
+            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+            j.async = true;
+            e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+    </script>
+</div>
+    </div>     
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <aside id="sidebar">
+      <div id="toc" class="toc-article">
+      <strong class="toc-title">文章目录</strong>
+      
+        <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#基本概念"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">基本概念</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#非线性svm"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">非线性SVM</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#核函数"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">核函数</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#常用核函数"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">常用核函数</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#学习算法"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">学习算法</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#具体求解smo"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">具体求解SMO</span></a></li></ol>
+      
+      </div>
+    </aside>
+  
+
+
+<!-- <div id="toc" class="toc-article">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#基本概念"><span class="toc-number">1.</span> <span class="toc-text">基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#非线性svm"><span class="toc-number">1.1.</span> <span class="toc-text">非线性SVM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#核函数"><span class="toc-number">1.2.</span> <span class="toc-text">核函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常用核函数"><span class="toc-number">1.3.</span> <span class="toc-text">常用核函数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#学习算法"><span class="toc-number">2.</span> <span class="toc-text">学习算法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#具体求解smo"><span class="toc-number">3.</span> <span class="toc-text">具体求解SMO</span></a></li></ol>
+</div> -->
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#机器学习" title="机器学习">机器学习</a>
+                        
+                          <a class="tag" href="/tags/#SVM" title="SVM">SVM</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                
+                    <li><a href="http://beantech.org" target="_blank">Bean Tech</a></li>
+                
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<script type="text/javascript" src="/js/zooming.js"></script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/WatsonWangZh">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                	
+
+                <p class="copyright text-muted">
+                    	
+                    <span class="post-count">18.1k words altogether</span>
+                    <br>
+                    Copyright &copy; Watson Wang 2019 
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://watsonwangzh.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+	
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://watsonwangzh.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
