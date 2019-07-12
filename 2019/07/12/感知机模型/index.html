@@ -14,11 +14,11 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>
         
-          SVM三部曲之软间隔SVM - WatsonWang | On the way.
+          感知机模型 - WatsonWang | On the way.
         
     </title>
 
-    <link rel="canonical" href="http://watsonwangzh.github.io/2019/07/09/SVM三部曲之软间隔SVM/">
+    <link rel="canonical" href="http://watsonwangzh.github.io/2019/07/12/感知机模型/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -69,7 +69,7 @@
 <style type="text/css">
     header.intro-header{
         
-            background-image: url('svm2.jpg')
+            background-image: url('perceptron.jpg')
             /*post*/
         
     }
@@ -92,14 +92,14 @@
                             
                               <a class="tag" href="/tags/#机器学习" title="机器学习">机器学习</a>
                             
-                              <a class="tag" href="/tags/#SVM" title="SVM">SVM</a>
+                              <a class="tag" href="/tags/#感知机" title="感知机">感知机</a>
                             
                         </div>
-                        <h1>SVM三部曲之软间隔SVM</h1>
-                        <h2 class="subheading">SVM推导整理之二</h2>
+                        <h1>感知机模型</h1>
+                        <h2 class="subheading"></h2>
                         <span class="meta">
                             Posted by Watson Wang on
-                            2019-07-09
+                            2019-07-12
                         </span>
                     </div>
                 
@@ -209,68 +209,57 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="软间隔svm"><a href="#软间隔SVM" class="headerlink" title="软间隔SVM"></a>软间隔SVM</h2><p>线性支持向量机（软间隔支持向量机）：给定线性不可分训练数据集，通过求解凸二次规划问题  </p>
-<script type="math/tex; mode=display">\begin{align*}  \\ & \min_{\mathbf{w},b,\xi} \quad \dfrac{1}{2} \| \mathbf{w} \|^{2} + C \sum_{i=1}^{N} \xi_{i}
-\\ & s.t. \quad y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) \geq 1 - \xi_{i}
-\\ & \xi_{i} \geq 0, \quad i=1,2, \cdots, N \end{align*}</script><p>学习得到分离超平面为</p>
-<script type="math/tex; mode=display">\begin{align*} \\& \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} = 0 \end{align*}</script><p>以及相应的分类决策函数</p>
-<script type="math/tex; mode=display">\begin{align*} \\& f \left( \mathbf{x} \right) = sign \left( \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} \right)  \end{align*}</script><p>称为线型支持向量机。</p>
-<h2 id="支持向量"><a href="#支持向量" class="headerlink" title="支持向量"></a>支持向量</h2><p>（软间隔）支持向量：线性不可分情况下，最优化问题的解<script type="math/tex">\alpha^{*} = \left( \alpha_{1}^{*}, \alpha_{2}^{*}, \cdots, \alpha_{N}^{*} \right)^{T}</script>中对应于<script type="math/tex">\alpha_{i}^{*} > 0</script>的样本点<script type="math/tex">\left( x_{i}, y_{i} \right)</script>的实例<script type="math/tex">x_{i}</script>。</p>
-<h2 id="几何间隔"><a href="#几何间隔" class="headerlink" title="几何间隔"></a>几何间隔</h2><p>实例$x_{i}$的几何间隔</p>
-<script type="math/tex; mode=display">\begin{align*} \\& \gamma_{i} = \dfrac{y_{i} \left( w \cdot x_{i} + b \right)}{ \| w \|} = \dfrac{| 1 - \xi_{i} |}{\| w \|} \end{align*}</script><p>且$\dfrac{1}{2} | H_{1}H_{2} | = \dfrac{1}{| w |}$<br>则实例$x_{i}$到间隔边界的距离</p>
-<script type="math/tex; mode=display">\begin{align*} \dfrac{\xi_{i}}{\| w \|}\end{align*}</script><script type="math/tex; mode=display">\begin{align*} \xi_{i} \geq 0 \Leftrightarrow \left\{
+                <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="线性可分"><a href="#线性可分" class="headerlink" title="线性可分"></a>线性可分</h2><p>给定数据集</p>
+<script type="math/tex; mode=display">\begin{align*} \\& D = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\} \end{align*}</script><p>其中，$\mathbf{x}_{i} \in \mathcal{X} = \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N$，如果存在某个超平面$S$</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \mathbf{w} \cdot \mathbf{x} + b ＝ 0  \end{align*}</script><p>能够将数据集的正实例和负实例完全正确地划分到超平面的两侧，即对所有$y_{i}=+1$的实例$\mathbf{x}_{i}$，有$\mathbf{w} \cdot \mathbf{x}_{i} + b &gt; 0$，对所有$y_{i}=-1$的实例$\mathbf{x}_{i}$，有$\mathbf{w} \cdot \mathbf{x}_{i} + b &lt; 0$，则称数据集$D$为线性可分数据集；否则，称数据集$D$线性不可分。</p>
+<h2 id="感知机模型"><a href="#感知机模型" class="headerlink" title="感知机模型"></a>感知机模型</h2><p>感知机是一种线性二类分类模型，感知机模型的假设空间是定义在特征空间中的所有线性分类模型或线性分类器，即函数集合$\left\{ f | f \left( \mathbf{x} \right) = \mathbf{w} \cdot {x} + b \right\}$。<br>假设输入空间$\mathcal{X} \subseteq \mathbb{R}^{n}$，输出空间$\mathcal{Y} = \left\{+1, -1 \right\}$。输入$\mathbf{x} \in \mathcal{X}$表示实例的特征向量，对应于输入空间的点；输出$y \in \mathcal{Y}$表示实例的类别。由输入空间到输出空间的函数</p>
+<script type="math/tex; mode=display">\begin{align*} \\& f \left( \mathbf{x} \right) = sign \left( \mathbf{w} \cdot \mathbf{x} + b \right)  \end{align*}</script><p>称为感知机。其中，$\mathbf{w}$和$b$为感知机模型参数，$\mathbf{w} \in \mathbb{R}^{n}$叫做权值或权值向量，$b \in R$叫偏置，$\mathbf{w} \cdot \mathbf{x}$表示$\mathbf{w}$和$\mathbf{x}$的内积。$sign$是符号函数，即  </p>
+<script type="math/tex; mode=display">\begin{align*} sign \left( x \right) = \left\{
 \begin{aligned} 
-\ &  \xi_{i}=0, x_{i}在间隔边界上;
-\\ & 0 < \xi_{i} < 1, x_{i}在间隔边界与分离超平面之间;
-\\ & \xi_{i}=1, x_{i}在分离超平面上;
-\\ & \xi_{i}>1, x_{i}在分离超平面误分类一侧;
+\ &  +1, x \geq 0
+\\ & -1, x<0
 \end{aligned}
-\right.\end{align*}</script><h2 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h2><p>线性支持向量机（软间隔）的合页损失函数</p>
-<script type="math/tex; mode=display">\begin{align*} \\& L \left( y \left( \mathbf{w} \cdot \mathbf{x} + b \right) \right) = \left[ 1 - y \left(\mathbf{w} \cdot \mathbf{x} + b \right) \right]_{+} \end{align*}</script><p>其中，“＋”为取正函数</p>
-<script type="math/tex; mode=display">\begin{align*} \left[ z \right]_{+} = \left\{
-\begin{aligned} 
-\ &  z, z > 0
-\\ & 0, z \leq 0
-\end{aligned}
-\right.\end{align*}</script><h1 id="学习算法"><a href="#学习算法" class="headerlink" title="学习算法"></a>学习算法</h1><p>线性支持向量机（软间隔支持向量机）学习算法：<br>输入：训练数据集$T = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\}$，其中$\mathbf{x}_{i} \in \mathcal{X} = \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N$<br>输出：最大间隔分离超平面和分类决策函数  </p>
+\right.\end{align*}</script><h2 id="分离超平面"><a href="#分离超平面" class="headerlink" title="分离超平面"></a>分离超平面</h2><p>线性方程</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \mathbf{w} \cdot \mathbf{x} + b ＝ 0  \end{align*}</script><p>对应于特征空间$\mathcal{X}$中的一个超平面$S$，其中$\mathbf{w}$是超平面的法向量，$b$是超平面的截距。超平面$S$将特征空间划分为两部分，位于其中的点被分为正、负两类，超平面$S$称为分离超平面。</p>
+<h1 id="参数学习"><a href="#参数学习" class="headerlink" title="参数学习"></a>参数学习</h1><p>输入空间$\mathcal{X}$中的任一点$x_{0}$到超平面$S$的距离：</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \dfrac{1}{\| \mathbf{w} \|} \left| \mathbf{w} \cdot x_{0} + b \right| \end{align*}</script><p>其中$| \mathbf{w} |$是权值向量$\mathbf{w}$的$L_{2}$范数。<br>对于误分类数据$\left( \mathbf{x}_{i}, y_{i} \right)$，当$\mathbf{w} \cdot \mathbf{x} + b &gt; 0$时，$y_{i}=-1$，<br>$\left( \mathbf{x}_{i}, y_{i} \right)$，当$\mathbf{w} \cdot \mathbf{x} + b &lt; 0$时，$y_{i}=+1$，则有<script type="math/tex">-y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) > 0</script><br>误分类点$\mathbf{x}_{i}$到分离超平面的距离:</p>
+<script type="math/tex; mode=display">\begin{align*} \\& -\dfrac{1}{\| \mathbf{w} \|} y_{i}\left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) \end{align*}</script><p>假设超平面$S$的误分类点集合为$M$，则所有误分类点到超平面$S$的总距离：</p>
+<script type="math/tex; mode=display">\begin{align*} \\& -\dfrac{1}{\| \mathbf{w} \|} \sum_{\mathbf{x}_{i} \in M} y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) \end{align*}</script><p>给定训练数据集</p>
+<script type="math/tex; mode=display">\begin{align*} \\& D = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\} \end{align*}</script><p>其中，$\mathbf{x}_{i} \in \mathcal{X} = R^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N$。感知机$sign \left( \mathbf{w} \cdot \mathbf{x} + b \right)$的损失函数定义为</p>
+<script type="math/tex; mode=display">\begin{align*} \\& L \left( \mathbf{w}, b \right) =  -\sum_{\mathbf{x}_{i} \in M} y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) \end{align*}</script><p>其中，$M$为误分类点的集合。<br>给定训练数据集</p>
+<script type="math/tex; mode=display">\begin{align*} \\& D = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\} \end{align*}</script><p>其中，$\mathbf{x}_{i} \in \mathcal{X} = \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N$。求最优参数$\mathbf{w}^<em>$和$b^</em>$，使其为以下损失函数极小化问题的解</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \min_{\mathbf{w},b} L \left( \mathbf{w}, b \right) =  -\sum_{\mathbf{x}_{i} \in M} y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) \end{align*}</script><p>其中，$M$为误分类点的集合。<br>假设误分类点集合$M$是固定的，则损失函数$L \left( \mathbf{w}, b \right)$的梯度</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \nabla _{\mathbf{w}} L \left( \mathbf{w}, b \right) = -\sum_{\mathbf{x}_{i} \in M} y_{i} \mathbf{x}_{i} 
+\\ & \nabla _{b} L \left( \mathbf{w}, b \right) = -\sum_{\mathbf{x}_{i} \in M} y_{i} \end{align*}</script><p>随机选取一个误分类点$\left( \mathbf{x}_{i}, y_{i} \right)$，对$\mathbf{w}, b$进行更新：</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \mathbf{w} \leftarrow \mathbf{w} + \eta y_{i} \mathbf{x}_{i} 
+\\ & b \leftarrow b + \eta y_{i} \end{align*}</script><p>其中，$\eta \left( 0 &lt; \eta \leq 1 \right)$是步长，称为学习率。</p>
+<h1 id="感知机算法"><a href="#感知机算法" class="headerlink" title="感知机算法"></a>感知机算法</h1><p>感知机算法（原始形式）：<br>输入：训练数据集$D = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\}$，其中$\mathbf{x}_{i} \in \mathcal{X} = \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N $；学习率$\eta \left( 0 &lt; \eta \leq 1 \right)$。<br>输出：$\mathbf{w},b$；感知机模型$f \left( \mathbf{x} \right) = sign \left( \mathbf{w} \cdot \mathbf{x} + b \right)$</p>
 <ol>
-<li>选择惩罚参数$C \geq 0$，构建并求解约束最优化问题<script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha} \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right)  - \sum_{i=1}^{N} \alpha_{i}  
-\\ & s.t. \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
-\\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2, \cdots, N  \end{align*}</script>求得最优解<script type="math/tex">\alpha^{*} = \left( \alpha_{1}^{*}, \alpha_{1}^{*}, \cdots, \alpha_{N}^{*} \right)</script>。  </li>
-<li>计算<script type="math/tex; mode=display">\begin{align*}  \\ & \mathbf{w}^{*} = \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} \mathbf{x}_{i} \end{align*}</script>并选择<script type="math/tex">\alpha^{*}</script>的一个分量<script type="math/tex">0 < \alpha_{j}^{*} < C</script>，计算<script type="math/tex; mode=display">\begin{align*}  \\ & b^{*} = y_{j} - \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right) \end{align*}</script></li>
-<li>得到分离超平面<script type="math/tex; mode=display">\begin{align*}  \\ & \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} = 0 \end{align*}</script>以及分类决策函数  <script type="math/tex; mode=display">\begin{align*} \\& f \left( \mathbf{x} \right) = sign \left( \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} \right)  \end{align*}</script></li>
+<li>选取初值$\mathbf{w}_{0},b_{0}$ </li>
+<li>在训练集中选取数据$\left( \mathbf{x}_{i}, y_{i} \right)$  </li>
+<li>如果$y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) \leq 0$  <script type="math/tex; mode=display">\begin{align*} \\& \mathbf{w} \leftarrow \mathbf{w} + \eta y_{i} x_{i} 
+\\ & b \leftarrow b + \eta y_{i} \end{align*}</script></li>
+<li>转至2，直至训练集中没有误分类点。</li>
 </ol>
-<h1 id="具体求解"><a href="#具体求解" class="headerlink" title="具体求解"></a>具体求解</h1><p>最优化问题的求解：  </p>
+<p>设$\mathbf{w},b$修改n次，则$\mathbf{w},b$关于$\left( \mathbf{x}_{i}, y_{i} \right)$的增量分别是$\alpha_{i} y_{i} \mathbf{x}_{i}$和$\alpha_{i} y_{i}$，其中$\alpha_{i} = n_{i} \eta$。$\mathbf{w},b$可表示为</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \mathbf{w} = \sum_{i=1}^{N} \alpha_{i} y_{i} \mathbf{x}_{i} 
+\\ & b = \sum_{i=1}^{N} \alpha_{i} y_{i} \end{align*}</script><p>其中，$\alpha_{i} \geq 0, i=1,2, \cdots, N$</p>
+<p>感知机算法（对偶形式）：<br>输入：训练数据集$D = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\}$，其中<script type="math/tex">\mathbf{x}_{i} \in \mathcal{X} = R^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N</script>；学习率$\eta \left( 0 &lt; \eta \leq 1 \right)$。<br>输出：$\alpha,b$；感知机模型$f \left( x \right) = sign \left( \sum_{j=1}^{N} \alpha_{j} y_{j} x_{j} \cdot x + b \right)$  ，其中$\alpha = \left( \alpha_{1}, \alpha_{2}, \cdots, \alpha_{N} \right)^{T}$</p>
 <ol>
-<li>引入拉格朗日乘子$\alpha_{i} \geq 0, \mu_{i} \geq 0, i = 1, 2, \cdots, N$构建拉格朗日函数<script type="math/tex; mode=display">\begin{align*} \\ & L \left( \mathbf{w}, b, \xi, \alpha, \mu \right) =  \dfrac{1}{2} \| \mathbf{w} \|^{2} + C \sum_{i=1}^{N} \xi_{i} + \sum_{i=1}^{N} \alpha_{i} \left[- y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) + 1 - \xi_{i}  \right] + \sum_{i=1}^{N} \mu_{i} \left( -\xi_{i} \right)
-\\ & = \dfrac{1}{2} \| \mathbf{w} \|^{2} + C \sum_{i=1}^{N} \xi_{i} - \sum_{i=1}^{N} \alpha_{i} \left[ y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) -1 + \xi_{i} \right] - \sum_{i=1}^{N} \mu_{i} \xi_{i}  \end{align*}</script>其中，$\alpha = \left( \alpha_{1}, \alpha_{2}, \cdots, \alpha_{N} \right)^{T}$以及$\mu = \left( \mu_{1}, \mu_{2}, \cdots, \mu_{N} \right)^{T}$为拉格朗日乘子向量。  </li>
-<li>求$\min_{\mathbf{w},b}L \left( \mathbf{w}, b, \xi, \alpha, \mu \right)$:<script type="math/tex; mode=display">\begin{align*} \\ &  \nabla_{\mathbf{w}} L \left( \mathbf{w}, b, \xi, \alpha, \mu \right) = \mathbf{w} - \sum_{i=1}^{N} \alpha_{i} y_{i} \mathbf{x}_{i} = 0 
-\\ &  \nabla_{b} L \left( \mathbf{w}, b, \xi, \alpha, \mu \right) = -\sum_{i=1}^{N} \alpha_{i} y_{i} = 0 
-\\ & \nabla_{\xi_{i}} L \left( \mathbf{w}, b, \xi, \alpha, \mu \right) = C - \alpha_{i} - \mu_{i} = 0 \end{align*}</script>得  <script type="math/tex; mode=display">\begin{align*} \\ &   \mathbf{w} ＝ \sum_{i=1}^{N} \alpha_{i} y_{i} \mathbf{x}_{i}  
-\\ &  \sum_{i=1}^{N} \alpha_{i} y_{i} = 0 
-\\ & C - \alpha_{i} - \mu_{i} = 0\end{align*}</script>代入拉格朗日函数，得<script type="math/tex; mode=display">\begin{align*} \\  L \left( \mathbf{w}, b, \xi, \alpha, \mu \right) &=  \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right) + C \sum_{i=1}^{N} \xi_{i} - \sum_{i=1}^{N} \alpha_{i}  y_{i} \left[ \left( \sum_{j=1}^{N} \alpha_{j} y_{j} x_{j} \right) \cdot \mathbf{x}_{i} + b \right] 
-\\ & + \sum_{i=1}^{N} \alpha_{i} - \sum_{i=1}^{N} \alpha_{i} \xi_{i} - \sum_{i}^{N} \mu_{i} \xi_{i}
-\\ & = - \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right) - \sum_{i=1}^{N} \alpha_{i} y_{i} b + \sum_{i=1}^{N} \alpha_{i} + \sum_{i=1}^{N} \xi_{i} \left( C - \alpha_{i} - \mu_{i}  \right)
-\\ & = - \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right)  + \sum_{i=1}^{N} \alpha_{i} \end{align*}</script>即<script type="math/tex; mode=display">\begin{align*} \\ & \min_{\mathbf{w},b,\xi}L \left( \mathbf{w}, b, \xi, \alpha, \mu \right) = - \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right)  + \sum_{i=1}^{N} \alpha_{i}    \end{align*}</script>3.求$\max_{\alpha} \min_{\mathbf{w},b, \xi}L \left( \mathbf{w}, b, \xi, \alpha, \mu \right)$:<script type="math/tex; mode=display">\begin{align*} \\ &  \max_{\alpha} - \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right)  + \sum_{i=1}^{N} \alpha_{i}  
-\\ & s.t. \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
-\\ & C - \alpha_{i} - \mu_{i} = 0
-\\ & \alpha_{i} \geq 0
-\\ & \mu_{i} \geq 0, \quad i=1,2, \cdots, N  \end{align*}</script>等价的<script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha} \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right)  - \sum_{i=1}^{N} \alpha_{i}  
-\\ & s.t. \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
-\\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2, \cdots, N  \end{align*}</script></li>
+<li>$\alpha \leftarrow 0, b \leftarrow 0$ </li>
+<li>在训练集中选取数据$\left( x_{i}, y_{i} \right)$  </li>
+<li>如果$y_{i} \left( \sum_{j=1}^{N} \alpha_{j} y_{j} x_{j} \cdot x_{i} + b \right) \leq 0$  <script type="math/tex; mode=display">\begin{align*} \\& \alpha_{i} \leftarrow \alpha_{i} + \eta
+\\ & b \leftarrow b + \eta y_{i} \end{align*}</script></li>
+<li>转至2，直至训练集中没有误分类点。</li>
 </ol>
 
                 <hr>
                 <!-- Pager -->
                 <ul class="pager">
                     
-                        <li class="previous">
-                            <a href="/2019/07/10/SVM三部曲之非线性SVM/" data-toggle="tooltip" data-placement="top" title="SVM三部曲之非线性SVM">&larr; Previous Post</a>
-                        </li>
-                    
                     
                         <li class="next">
-                            <a href="/2019/07/09/迁移学习综述/" data-toggle="tooltip" data-placement="top" title="迁移学习综述">Next Post &rarr;</a>
+                            <a href="/2019/07/10/SVM三部曲之非线性SVM/" data-toggle="tooltip" data-placement="top" title="SVM三部曲之非线性SVM">Next Post &rarr;</a>
                         </li>
                     
                 </ul>
@@ -296,7 +285,7 @@
       <div id="toc" class="toc-article">
       <strong class="toc-title">文章目录</strong>
       
-        <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#基本概念"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">基本概念</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#软间隔svm"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">软间隔SVM</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#支持向量"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">支持向量</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#几何间隔"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">几何间隔</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#损失函数"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">损失函数</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#学习算法"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">学习算法</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#具体求解"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">具体求解</span></a></li></ol>
+        <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#基本概念"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">基本概念</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#线性可分"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">线性可分</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#感知机模型"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">感知机模型</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#分离超平面"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">分离超平面</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#参数学习"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">参数学习</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#感知机算法"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">感知机算法</span></a></li></ol>
       
       </div>
     </aside>
@@ -305,7 +294,7 @@
 
 <!-- <div id="toc" class="toc-article">
   <strong class="toc-title">文章目录</strong>
-  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#基本概念"><span class="toc-number">1.</span> <span class="toc-text">基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#软间隔svm"><span class="toc-number">1.1.</span> <span class="toc-text">软间隔SVM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支持向量"><span class="toc-number">1.2.</span> <span class="toc-text">支持向量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#几何间隔"><span class="toc-number">1.3.</span> <span class="toc-text">几何间隔</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#损失函数"><span class="toc-number">1.4.</span> <span class="toc-text">损失函数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#学习算法"><span class="toc-number">2.</span> <span class="toc-text">学习算法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#具体求解"><span class="toc-number">3.</span> <span class="toc-text">具体求解</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#基本概念"><span class="toc-number">1.</span> <span class="toc-text">基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#线性可分"><span class="toc-number">1.1.</span> <span class="toc-text">线性可分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#感知机模型"><span class="toc-number">1.2.</span> <span class="toc-text">感知机模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分离超平面"><span class="toc-number">1.3.</span> <span class="toc-text">分离超平面</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参数学习"><span class="toc-number">2.</span> <span class="toc-text">参数学习</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#感知机算法"><span class="toc-number">3.</span> <span class="toc-text">感知机算法</span></a></li></ol>
 </div> -->
                 
             <!-- Sidebar Container -->
@@ -323,7 +312,7 @@
                        
                           <a class="tag" href="/tags/#机器学习" title="机器学习">机器学习</a>
                         
-                          <a class="tag" href="/tags/#SVM" title="SVM">SVM</a>
+                          <a class="tag" href="/tags/#感知机" title="感知机">感知机</a>
                         
                     </div>
                 </section>
