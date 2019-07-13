@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="null">
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          决策树模型 - WatsonWang | On the way.
+        
+    </title>
+
+    <link rel="canonical" href="http://watsonwangzh.github.io/2019/07/13/决策树模型/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('decisiontree.jpg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#机器学习" title="机器学习">机器学习</a>
+                            
+                              <a class="tag" href="/tags/#决策树" title="决策树">决策树</a>
+                            
+                              <a class="tag" href="/tags/#DecisionTree" title="DecisionTree">DecisionTree</a>
+                            
+                        </div>
+                        <h1>决策树模型</h1>
+                        <h2 class="subheading">DecisionTree整理</h2>
+                        <span class="meta">
+                            Posted by Watson Wang on
+                            2019-07-13
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">WatsonWang Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>决策树是基于树结构来对实例进行决策的一种基本的分类和回归的机器学习方法。决策树由结点和有向边组成，结点分为内部结点（表示一个特征的划分）和叶子结点（表示一个类别或输出）。<br>决策树学习，训练数据集</p>
+<script type="math/tex; mode=display">\begin{align*} \\& D = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left(\mathbf{x}_i,y_i\right),\cdots,\left( \mathbf{x}_{N}, y_{N} \right) \right\} \end{align*}</script><p>其中，$\mathbf{x}_{i}$为第$i$个特征向量（实例），$\mathbf{x}_{i}=\left( x^{\left(1\right)}_i,x^{\left(2\right)}_i,\ldots ,x^{\left(j\right)}_i,\ldots ,x^{\left(n\right)}_i\right) ^{T} \in \mathcal{X} \subseteq \mathbb{R}^{n}$；$y_{i}$为$\mathbf{x}_{i}$的类别标记，$y_i\in\{1,2,\cdots,K\}$。学习的目标数是根据给定的训练数据集构建一个决策树模型，使得可对实例进行正确的分类或回归。<br>决策树学习包括3个步骤：特征选择、决策树生成、决策树剪枝。</p>
+<h1 id="特征选择"><a href="#特征选择" class="headerlink" title="特征选择"></a>特征选择</h1><p>特征选择在于选取对于训练数据具有分类能力的特征。<br>熵表示随机变量不确定性的度量。<br>设$X$是一个取有限个值的离散随机变量，其概率分布为</p>
+<script type="math/tex; mode=display">\begin{align*} P \left( X = x_{i} \right) = p_{i}, \quad i =1, 2, \cdots, n \end{align*}</script><p>则随机变量$X$的熵</p>
+<script type="math/tex; mode=display">\begin{align*} H \left( X \right) = H \left( p \right) = - \sum_{i=1}^{n} p_{i} \log p_{i} \end{align*}</script><p>其中，若$p_{i}=0$，则定义$0 \log 0 = 0$<br>若</p>
+<script type="math/tex; mode=display">\begin{align*} p_{i} = \dfrac{1}{n} \end{align*}</script><p>则</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & H \left( p \right) = - \sum_{i=1}^{n} p_{i} \log p_{i} 
+\\ & = - \sum_{i=1}^{n} \dfrac{1}{n} \log \dfrac{1}{n}
+\\ & = \log n\end{align*}</script><p>由定义，得</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & 0 \leq H \left( p \right) \leq \log n\end{align*}</script><hr>
+<p>设有随机变量$\left( X , Y \right)$，其联合分布</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & P \left( X = x_{i}, Y = y_{j} \right) = p_{ij}, \quad i=1,2, \cdots, n; \quad j=1,2, \cdots, m\end{align*}</script><p>随机变量$X$给定的条件下随机变量$Y$的条件熵</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & H \left( Y | X \right) = \sum_{i=1}^{n} p_{i} H \left( Y | X = x_{i} \right) \end{align*}</script><p>即，$X$给定条件下$Y$的条件概率分布的熵对$X$的数学期望。其中，$p_{i}=P \left( X = x_{i} \right), i= 1,2,\cdots,n$。<br>条件熵$H \left( Y | X \right)$表示在已知随机变量$X$的条件下随机变量$Y$的不确定性。</p>
+<hr>
+<p>特征$A$对训练集$D$的信息增益</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & g \left( D, A \right) = H \left( D \right) - H \left( D | A \right) \end{align*}</script><p>即，集合$D$的经验熵$H \left( D \right)$与特征$A$给定条件下$D$的经验条件熵$H \left( D | A \right)$之差。<br>其中，当熵和条件熵由数据估计（极大似然估计）得到时，对应的熵和条件熵分别称为经验熵和经验条件熵。</p>
+<hr>
+<p>设训练数据集为$D$，$\left| D \right|$表示其样本容量，即样本个数。<br>设有$K$个类$C_{k}, k=1,2,\cdots,K$，$\left| C_{k} \right|$为属于类$C_{k}$的样本的个数，$\sum_{k=1}^{K} \left| C_{k} \right| = \left| D \right|$。<br>设特征$A$有$n$个不同的特征取值$\left\{ a_{1},a_{2},\cdots,a_{n}\right\}$，根据特征$A$的取值将$D$划分为$n$个子集$D_{1},D_{2},\cdots,D_{n}$，$\left| D_{i} \right|$为$D_{i}$的样本数，$\sum_{i=1}^{n}\left| D_{i} \right| = \left| D \right|$。<br>记子集$D_{i}$中属于类$C_{k}$的样本的集合为$D_{ik}$，即$D_{ik} = D_{i} \cap C_{k}$，$\left| D_{ik} \right|$为$D_{ik}$的样本个数。<br>信息增益算法：<br>输入：训练数据集$D$和特征$A$<br>输出：特征$A$对训练数据集$D$的信息增益$g \left( D, A \right) $</p>
+<ol>
+<li>计算数据集$D$的经验熵$H\left(D\right)$  <script type="math/tex; mode=display">\begin{align*} \\ &  H \left( D \right) = -\sum_{k=1}^{K} \dfrac{\left|C_{k}\right|}{\left| D \right|}\log_{2}\dfrac{\left|C_{k}\right|}{\left| D \right|} \end{align*}</script></li>
+<li>计算特征$A$对数据集$D$的经验条件熵$H \left( D | A \right)$<script type="math/tex; mode=display">\begin{align*} \\ & H \left( D | A \right) = \sum_{i=1}^{n} \dfrac{\left| D_{i} \right|}{\left| D \right|} H \left( D_{i} \right)
+\\ & = \sum_{i=1}^{n} \dfrac{\left| D_{i} \right|}{\left| D \right|} \sum_{k=1}^{K} \dfrac{\left| D_{ik} \right|}{\left| D_{i} \right|} \log_{2} \dfrac{\left| D_{ik} \right|}{\left| D_{i} \right|}\end{align*}</script></li>
+<li>计算信息增益<script type="math/tex; mode=display">\begin{align*} \\ & g \left( D, A \right) = H \left( D \right) - H \left( D | A \right) \end{align*}</script></li>
+</ol>
+<hr>
+<p>特征$A$对训练集$D$的信息增益比</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & g_{R} \left( D, A \right) = \dfrac{g \left( D, A \right)}{H_{A} \left(D\right)}\end{align*}</script><p>即，信息增益$g\left( D, A \right)$与训练数据集$D$关于特征$A$的经验熵$H_{A}\left(D\right)$之比。<br>其中，</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & H_{A} \left( D \right) = -\sum_{i=1}^{n} \dfrac{\left|D_{i}\right|}{\left|D\right|}\log_{2}\dfrac{\left|D_{i}\right|}{\left|D\right|}\end{align*}</script><h1 id="决策树生成"><a href="#决策树生成" class="headerlink" title="决策树生成"></a>决策树生成</h1><p>ID3算法：<br>输入：训练数据集$D$，特征集合$A$，阈值$\varepsilon$<br>输出：决策树$T$</p>
+<ol>
+<li>若$D$中所有实例属于同一类$C_{k}$，则$T$为单结点树，并将类$C_{k}$作为该结点的类标记，返回$T$； </li>
+<li>若$A = \emptyset$，则$T$为单结点树，并将$D$中实例数最大的类$C_{k}$作为该结点的类标记，返回$T$；</li>
+<li>否则，计算$A$中各特征对$D$的信息增益，选择信息增益最大的特征$A_{g}$<script type="math/tex; mode=display">\begin{align*} \\ & A_{g} = \arg \max_{A} g \left( D, A \right) \end{align*}</script></li>
+<li>如果$A_{g}$的信息增益小于阈值$\varepsilon$，则置$T$为单结点树，并将$D$中实例数量最大的类$C_{k}$作为该结点的类标记，返回$T$;</li>
+<li>否则，对$A_{g}$的每一个可能值$a_{i}$，依$A_{g}=a_{i}$将$D$分割为若干非空子集$D_{i}$，将$D_{i}$中实例数对大的类作为标记，构建子结点，由结点及其子结点构成树$T$，返回$T$；</li>
+<li>对第$i$个子结点，以$D_{i}$为训练集，以$A-\left\{A_{g}\right\}$为特征集，递归地调用步1.～步5.，得到子树$T_{i}$，返回$T_{i}$。</li>
+</ol>
+<p>C4.5算法：<br>输入：训练数据集$D$，特征集合$A$，阈值$\varepsilon$<br>输出：决策树$T$</p>
+<ol>
+<li>若$D$中所有实例属于同一类$C_{k}$，则$T$为单结点树，并将类$C_{k}$作为该结点的类标记，返回$T$； </li>
+<li>若$A = \emptyset$，则$T$为单结点树，并将$D$中实例数最大的类$C_{k}$作为该结点的类标记，返回$T$；</li>
+<li>否则，计算$A$中各特征对$D$的信息增益，选择信息增益比最大的特征$A_{g}$<script type="math/tex; mode=display">\begin{align*} \\ & A_{g} = \arg \max_{A} g_{R} \left( D, A \right) \end{align*}</script></li>
+<li>如果$A_{g}$的信息增益小于阈值$\varepsilon$，则置$T$为单结点树，并将$D$中实例数量最大的类$C_{k}$作为该结点的类标记，返回$T$;</li>
+<li>否则，对$A_{g}$的每一个可能值$a_{i}$，依$A_{g}=a_{i}$将$D$分割为若干非空子集$D_{i}$，将$D_{i}$中实例数对大的类作为标记，构建子结点，由结点及其子结点构成树$T$，返回$T$；</li>
+<li>对第$i$个子结点，以$D_{i}$为训练集，以$A-\left\{A_{g}\right\}$为特征集，递归地调用步1.～步5.，得到子树$T_{i}$，返回$T_{i}$。</li>
+</ol>
+<h1 id="决策树剪枝"><a href="#决策树剪枝" class="headerlink" title="决策树剪枝"></a>决策树剪枝</h1><p>决策树的剪枝通过极小化决策树整体的损失函数或代价函数来实现。<br>设树$T$的叶结点个数为$\left| T \right|$，$t$是树$T$的叶结点，该叶结点有$N_{t}$个样本点，其中$k$类的样本点有$N_{tk}$个，$k=1,2,\cdots,K$，$H_{t}\left(T\right)$为叶结点$t$上的经验熵，<br>则决策树的损失函数</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & C_{\alpha} \left( T \right) = \sum_{t=1}^{\left| T \right|} N_{t} H_{t} \left( T \right) + \alpha \left| T \right| \end{align*}</script><p>其中，$\alpha \geq 0$为参数，经验熵</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & H_{t} \left( T \right) = - \sum_{k} \dfrac{N_{tk}}{N_{t}} \log \dfrac{N_{tk}}{N_{t}} \end{align*}</script><p>损失函数中，记</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & C \left( T \right) = \sum_{t=1}^{\left| T \right|} N_{t} H_{t} \left( T \right) = - \sum_{t=1}^{\left| T \right|} \sum_{k=1}^{K} N_{tk} \log \dfrac{N_{tk}}{N_{t}}   \end{align*}</script><p>则</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & C_{\alpha} \left( T \right) = C \left( T \right) + \alpha \left| T \right|   \end{align*}</script><p>其中，$C \left( T \right)$表示模型对训练数据的预测误差，即模型与训练数据的拟合程度，$\left| T \right|$表示模型复杂度，参数$\alpha \geq 0$控制两者之间的影响。 </p>
+<p>树的剪枝算法：<br>输入：决策树$T$，参数$\alpha$<br>输出：修剪后的子树$T_{\alpha}$</p>
+<ol>
+<li>计算每个结点的经验熵 </li>
+<li>递归地从树的叶结点向上回缩<br>设一组叶结点回缩到其父结点之前与之后的整体树分别为$T_{B}$与$T_{A}$，其对应的损失函数值分别是$C_{\alpha} \left( T_{B} \right)$与$C_{\alpha} \left( T_{A} \right)$，如果<script type="math/tex; mode=display">\begin{align*} \\ & C_{\alpha} \left( T_{A} \right) \leq C_{\alpha} \left( T_{B} \right)  \end{align*}</script>则进行剪枝，即将父结点变为新的叶结点。</li>
+<li>返回2.，直到不能继续为止，得到损失函数最小的子树$T_{\alpha}$</li>
+</ol>
+<h1 id="分类与回归树cart"><a href="#分类与回归树CART" class="headerlink" title="分类与回归树CART"></a>分类与回归树CART</h1><h2 id="回归树的生成"><a href="#回归树的生成" class="headerlink" title="回归树的生成"></a>回归树的生成</h2><p>假设$X$与$Y$分别为输入和输出变量，并且$Y$是连续变量，给定训练数据集</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & D = \left\{  \left(\mathbf{x}_{1},y_{1}\right), \left(\mathbf{x}_{2},y_{2}\right),\cdots,\left(\mathbf{x}_{N},y_{N}\right) \right\}   \end{align*}</script><p>可选择第$j$个变量$x^{\left(j\right)}$及其取值$s$作为切分变量和切分点，并定义两个区域</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & R_{1} \left( j,s \right) = \left\{ x | x^{\left(j\right)} \leq s \right\}, \quad R_{2} \left( j,s \right) = \left\{ x | x^{\left(j\right)} > s \right\}   \end{align*}</script><p>最优切分变量$x_{j}$及最优切分点$s$</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & j,s = \arg \min_{j,s} \left[ \min_{c_{1}} \sum_{x_{i} \in R_{1} \left(j,s\right)} \left( y_{i} - c_{1} \right)^{2} + \min_{c_{2}} \sum_{x_{i} \in R_{2} \left(j,s\right)} \left( y_{i} - c_{2} \right)^{2}\right]   \end{align*}</script><p>其中，$c_{m}$是区域$R_{m}$上的回归决策树输出，是区域$R_{m}$上所有输入实例$x_{i}$对应的输出$y_{i}$的均值</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & c_{m} = ave \left( y_{i} | x_{i} \in R_{m} \right), \quad m=1,2   \end{align*}</script><p>对每个区域$R_{1}$和$R_{2}$重复上述过程，将输入空间划分为$M$个区域$R_{1},R_{2},\cdots,R_{M}$，在每个区域上的输出为$c_{m},m=1,2,\cdots,M$，最小二乘回归树</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & f \left( x \right) = \sum_{m=1}^{M} c_{m} I \left( x \in R_{m} \right)   \end{align*}</script><p>最小二乘回归树生成算法：<br>输入：训练数据集$D$<br>输出：回归树$f \left( x \right)$</p>
+<ol>
+<li>选择最优切分变量$x^{\left(j\right)}$与切分点$s$<script type="math/tex; mode=display">\begin{align*} \\ & j,s = \arg \min_{j,s} \left[ \min_{c_{1}} \sum_{x_{i} \in R_{1} \left(j,s\right)} \left( y_{i} - c_{1} \right)^{2} + \min_{c_{2}} \sum_{x_{i} \in R_{2} \left(j,s\right)} \left( y_{i} - c_{2} \right)^{2}\right]   \end{align*}</script></li>
+<li>用最优切分变量$x^{\left(j\right)}$与切分点$s$划分区域并决定相应的输出值 <script type="math/tex; mode=display">\begin{align*} \\ & R_{1} \left( j,s \right) = \left\{ x | x^{\left(j\right)} \leq s \right\}, \quad R_{2} \left( j,s \right) = \left\{ x | x^{\left(j\right)} > s \right\}   
+\\ & c_{m} = \dfrac{1}{N} \sum_{x_{i} \in R_{m} \left( j,s \right)} y_{i}, \quad m=1,2\end{align*}</script></li>
+<li>继续对两个子区域调用步骤1.和2.，直到满足停止条件</li>
+<li>将输入空间划分为$M$个区域$R_{1},R_{2},\cdots,R_{M}$，生成决策树<script type="math/tex; mode=display">\begin{align*} \\ & f \left( x \right) = \sum_{m=1}^{M} c_{m} I \left( x \in R_{m} \right)   \end{align*}</script><h2 id="分类树的生成"><a href="#分类树的生成" class="headerlink" title="分类树的生成"></a>分类树的生成</h2>分类问题中，假设有$K$个类，样本点属于第$k$类的概率为$p_{k}$，则概率分布的基尼指数<script type="math/tex; mode=display">\begin{align*} \\ & Gini \left( p \right) = \sum_{k=1}^{K} p_{k} \left( 1 - p_{k} \right) = 1 - \sum_{k=1}^{K}  \end{align*}</script>对于二分类问题，若样本点属于第1类的概率为$p$，则概率分布的基尼指数<script type="math/tex; mode=display">\begin{align*} \\ & Gini \left( p \right) = \sum_{k=1}^{2} p_{k} \left( 1 - p_{k} \right) = 2p\left(1-p\right) \end{align*}</script>对于给定样本集和$D$，其基尼指数<script type="math/tex; mode=display">\begin{align*} \\ & Gini \left( D \right) = 1 - \sum_{k=1}^{K} \left( \dfrac{\left| C_{k} \right|}{\left| D \right|} \right)^{2}\end{align*}</script>其中，$C_{k}$是$D$中属于第$k$类的样本自己，$K$是类别个数。<br>如果样本集合$D$根据特征$A$是否取某一可能值$a$被分割成$D_{1}$和$D_{2}$两个部分，即<script type="math/tex; mode=display">\begin{align*} \\ & D_{1} = \left\{ \left(x,y\right) | A\left(x\right)=a \right\}, \quad D_{2} = D - D_{1} \end{align*}</script>则在特征$A$的条件下，集合$D$的基尼指数<script type="math/tex; mode=display">\begin{align*} \\ & Gini \left( D, A \right) = \dfrac{\left| D_{1} \right|}{\left| D \right|} Gini \left( D_{1} \right) + \dfrac{\left| D_{2} \right|}{\left| D \right|} Gini \left( D_{2} \right)\end{align*}</script>基尼指数$Gini \left( D \right)$表示集合$D$的不确定性，基尼指数$Gini \left( D,A \right)$表示经$A=a$分割后集合$D$的不确定性。基尼指数值越大，样本集合的不确定性也越大。<br>CART生成算法：<br>输入：训练数据集$D$，特征$A$，阈值$\varepsilon$<br>输出：CART决策树$T$</li>
+<li>设结点的训练数据集为$D$，对每一个特征$A$，对其可能取的每个值$a$，根据样本点对$A=a$的测试为“是”或“否”将$D$分割成$D_{1}$和$D_{2}$两部分，并计算$Gini\left(D,A\right)$</li>
+<li>在所有可能的特征$A$以及其所有可能的切分点$a$中，选择基尼指数最小的特征及其对应的切分点作为最优特征与最优切分点。依此从现结点生成两个子结点，将训练数据集依特征分配到两个子结点中去。</li>
+<li>对两个子结点递归地调用1.和2.，直至满足停止条件</li>
+<li>生成CART决策树$T$</li>
+</ol>
+<h2 id="cart树剪枝"><a href="#CART树剪枝" class="headerlink" title="CART树剪枝"></a>CART树剪枝</h2><p>对整体树$T_{0}$任意内部结点$t$，以$t$为单结点树的损失函数</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & C_{\alpha} \left( t \right) = C \left( t \right) + \alpha \end{align*}</script><p>以$t$为根结点的子树$T_{t}$的损失函数</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & C_{\alpha} \left( T_{t} \right) = C \left( T_{t} \right) + \alpha \left| T_{t} \right| \end{align*}</script><p>当$\alpha = 0$及$\alpha$充分小时，有不等式</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & C_{\alpha} \left( T_{t} \right) <  C_{\alpha} \left( t \right) \end{align*}</script><p>当$\alpha$增大时，在某一$\alpha$有</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & \quad\quad C_{\alpha} \left( T_{t} \right)  ＝  C_{\alpha} \left( t \right) 
+\\ & C \left( T_{t} \right) + \alpha \left| T_{t} \right| ＝ C \left( t \right) + \alpha
+\\ & \quad\quad \alpha = \dfrac{C\left( t \right) - C \left(T_{t}\right)} { \left| T_{t} \right| -1 }\end{align*}</script><p>即$T_{t}$与$t$有相同的损失函数值，而$t$的结点少，因此对$T_{t}$进行剪枝。<br>CART剪枝算法：<br>输入：CART决策树$T_{0}$<br>输出：最优决策树$T_{\alpha}$</p>
+<ol>
+<li>设$k=0, T=T_{0}$</li>
+<li>设$\alpha=+\infty$</li>
+<li>自下而上地对各内部结点$t$计算$ C\left(T_{t}\right),\left| T_{t} \right|$，以及<script type="math/tex; mode=display">\begin{align*} \\ & g\left(t\right) =  \dfrac{C\left( t \right) - C \left(T_{t}\right)} { \left| T_{t} \right| -1 }
+\\ & \alpha = \min \left( \alpha, g\left( t \right) \right) \end{align*}</script>其中，$T_{t}$表示以$t$为根结点的子树，$ C\left(T_{t}\right)$是对训练数据的预测误差，$\left| T_{t} \right|$是$T_{t}$的叶结点个数。</li>
+<li>自下而上地访问内部结点$t$，如果有$g\left(t\right)=\alpha$，则进行剪枝，并对叶结点$t$以多数表决法决定其类别，得到树$T$</li>
+<li>设$k=k+1, \alpha_{k}=\alpha, T_{k}=T$</li>
+<li>如果$T$不是由根结点单独构成的树，则回到步骤4.</li>
+<li>采用交叉验证法在子树序列$T_{0},T_{1},\cdots,T_{n}$中选取最优子树$T_{\alpha}$</li>
+</ol>
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/07/12/感知机模型/" data-toggle="tooltip" data-placement="top" title="感知机模型">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NDg0OS8yMTM3MA==">
+    <script type="text/javascript">
+        (function(d, s) {
+            var j, e = d.getElementsByTagName(s)[0];
+            if (typeof LivereTower === 'function') { return; }
+            j = d.createElement(s);
+            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+            j.async = true;
+            e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+    </script>
+</div>
+    </div>     
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <aside id="sidebar">
+      <div id="toc" class="toc-article">
+      <strong class="toc-title">文章目录</strong>
+      
+        <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#特征选择"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">特征选择</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#决策树生成"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">决策树生成</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#决策树剪枝"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">决策树剪枝</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#分类与回归树cart"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">分类与回归树CART</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#回归树的生成"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">回归树的生成</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#分类树的生成"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">分类树的生成</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#cart树剪枝"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">CART树剪枝</span></a></li></ol></li></ol>
+      
+      </div>
+    </aside>
+  
+
+
+<!-- <div id="toc" class="toc-article">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#特征选择"><span class="toc-number">1.</span> <span class="toc-text">特征选择</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#决策树生成"><span class="toc-number">2.</span> <span class="toc-text">决策树生成</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#决策树剪枝"><span class="toc-number">3.</span> <span class="toc-text">决策树剪枝</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分类与回归树cart"><span class="toc-number">4.</span> <span class="toc-text">分类与回归树CART</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#回归树的生成"><span class="toc-number">4.1.</span> <span class="toc-text">回归树的生成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分类树的生成"><span class="toc-number">4.2.</span> <span class="toc-text">分类树的生成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cart树剪枝"><span class="toc-number">4.3.</span> <span class="toc-text">CART树剪枝</span></a></li></ol></li></ol>
+</div> -->
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#机器学习" title="机器学习">机器学习</a>
+                        
+                          <a class="tag" href="/tags/#决策树" title="决策树">决策树</a>
+                        
+                          <a class="tag" href="/tags/#DecisionTree" title="DecisionTree">DecisionTree</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                
+                    <li><a href="http://beantech.org" target="_blank">Bean Tech</a></li>
+                
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<script type="text/javascript" src="/js/zooming.js"></script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/WatsonWangZh">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                	
+
+                <p class="copyright text-muted">
+                    	
+                    <span class="post-count">23.3k words altogether</span>
+                    <br>
+                    Copyright &copy; Watson Wang 2019 
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://watsonwangzh.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+	
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://watsonwangzh.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
