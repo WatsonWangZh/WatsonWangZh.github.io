@@ -14,11 +14,11 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>
         
-          SVM三部曲之软间隔SVM - WatsonWang | On the way.
+          朴素贝叶斯 - WatsonWang | On the way.
         
     </title>
 
-    <link rel="canonical" href="http://watsonwangzh.github.io/2019/07/09/SVM三部曲之软间隔SVM/">
+    <link rel="canonical" href="http://watsonwangzh.github.io/2019/07/18/朴素贝叶斯/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -69,7 +69,7 @@
 <style type="text/css">
     header.intro-header{
         
-            background-image: url('svm2.jpg')
+            background-image: url('nb.jpg')
             /*post*/
         
     }
@@ -90,16 +90,12 @@
                     <div class="post-heading">
                         <div class="tags">
                             
-                              <a class="tag" href="/tags/#机器学习" title="机器学习">机器学习</a>
-                            
-                              <a class="tag" href="/tags/#SVM" title="SVM">SVM</a>
-                            
                         </div>
-                        <h1>SVM三部曲之软间隔SVM</h1>
-                        <h2 class="subheading">SVM推导整理之二</h2>
+                        <h1>朴素贝叶斯</h1>
+                        <h2 class="subheading">Naive Bayes</h2>
                         <span class="meta">
                             Posted by Watson Wang on
-                            2019-07-09
+                            2019-07-18
                         </span>
                     </div>
                 
@@ -209,68 +205,48 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="软间隔svm"><a href="#软间隔SVM" class="headerlink" title="软间隔SVM"></a>软间隔SVM</h2><p>线性支持向量机（软间隔支持向量机）：给定线性不可分训练数据集，通过求解凸二次规划问题  </p>
-<script type="math/tex; mode=display">\begin{align*}  \\ & \min_{\mathbf{w},b,\xi} \quad \dfrac{1}{2} \| \mathbf{w} \|^{2} + C \sum_{i=1}^{N} \xi_{i}
-\\ & s.t. \quad y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) \geq 1 - \xi_{i}
-\\ & \xi_{i} \geq 0, \quad i=1,2, \cdots, N \end{align*}</script><p>学习得到分离超平面为</p>
-<script type="math/tex; mode=display">\begin{align*} \\& \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} = 0 \end{align*}</script><p>以及相应的分类决策函数</p>
-<script type="math/tex; mode=display">\begin{align*} \\& f \left( \mathbf{x} \right) = sign \left( \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} \right)  \end{align*}</script><p>称为线型支持向量机。</p>
-<h2 id="支持向量"><a href="#支持向量" class="headerlink" title="支持向量"></a>支持向量</h2><p>（软间隔）支持向量：线性不可分情况下，最优化问题的解<script type="math/tex">\alpha^{*} = \left( \alpha_{1}^{*}, \alpha_{2}^{*}, \cdots, \alpha_{N}^{*} \right)^{T}</script>中对应于<script type="math/tex">\alpha_{i}^{*} > 0</script>的样本点<script type="math/tex">\left( x_{i}, y_{i} \right)</script>的实例<script type="math/tex">x_{i}</script>。</p>
-<h2 id="几何间隔"><a href="#几何间隔" class="headerlink" title="几何间隔"></a>几何间隔</h2><p>实例$x_{i}$的几何间隔</p>
-<script type="math/tex; mode=display">\begin{align*} \\& \gamma_{i} = \dfrac{y_{i} \left( w \cdot x_{i} + b \right)}{ \| w \|} = \dfrac{| 1 - \xi_{i} |}{\| w \|} \end{align*}</script><p>且$\dfrac{1}{2} | H_{1}H_{2} | = \dfrac{1}{| w |}$<br>则实例$x_{i}$到间隔边界的距离</p>
-<script type="math/tex; mode=display">\begin{align*} \dfrac{\xi_{i}}{\| w \|}\end{align*}</script><script type="math/tex; mode=display">\begin{align*} \xi_{i} \geq 0 \Leftrightarrow \left\{
-\begin{aligned} 
-\ &  \xi_{i}=0, x_{i}在间隔边界上;
-\\ & 0 < \xi_{i} < 1, x_{i}在间隔边界与分离超平面之间;
-\\ & \xi_{i}=1, x_{i}在分离超平面上;
-\\ & \xi_{i}>1, x_{i}在分离超平面误分类一侧;
-\end{aligned}
-\right.\end{align*}</script><h2 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h2><p>线性支持向量机（软间隔）的合页损失函数</p>
-<script type="math/tex; mode=display">\begin{align*} \\& L \left( y \left( \mathbf{w} \cdot \mathbf{x} + b \right) \right) = \left[ 1 - y \left(\mathbf{w} \cdot \mathbf{x} + b \right) \right]_{+} \end{align*}</script><p>其中，“＋”为取正函数</p>
-<script type="math/tex; mode=display">\begin{align*} \left[ z \right]_{+} = \left\{
-\begin{aligned} 
-\ &  z, z > 0
-\\ & 0, z \leq 0
-\end{aligned}
-\right.\end{align*}</script><h1 id="学习算法"><a href="#学习算法" class="headerlink" title="学习算法"></a>学习算法</h1><p>线性支持向量机（软间隔支持向量机）学习算法：<br>输入：训练数据集$T = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\}$，其中$\mathbf{x}_{i} \in \mathcal{X} = \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N$<br>输出：最大间隔分离超平面和分类决策函数  </p>
+                <p>朴素贝叶斯法是基于贝叶斯定理与特征条件独立假设的分类方法。</p>
+<h1 id="朴素贝叶斯法的学习与分类"><a href="#朴素贝叶斯法的学习与分类" class="headerlink" title="朴素贝叶斯法的学习与分类"></a>朴素贝叶斯法的学习与分类</h1><p>训练数据集</p>
+<script type="math/tex; mode=display">\begin{align*} \\& T = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\} \end{align*}</script><p>由$P \left( X, Y \right)$独立同分布产生。其中，$\mathbf{x}_{i} \in \mathcal{X} \subseteq \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ c_{1}, c_{2}, \cdots, c_{K} \right\}, i = 1, 2, \cdots, N$，$\mathbf{x}_{i}$为第$i$个特征向量（实例），$y_{i}$为$\mathbf{x}_{i}$的类标记，<br>$X$是定义在输入空间$\mathcal{X}$上的随机向量，$Y$是定义在输出空间$\mathcal{Y}$上的随机变量。$P \left( X, Y \right)$是$X$和$Y$的联合概率分布。</p>
+<p>条件独立性假设</p>
+<script type="math/tex; mode=display">\begin{align*} \\& P \left( X = \mathbf{x} | Y = c_{k} \right) = P \left( X^{\left( 1 \right)} = x^{\left( 1 \right)} , \cdots, X^{\left( n \right)} = x^{\left( n \right)} | Y = c_{k}\right) 
+\\ & \quad\quad\quad\quad\quad\quad = \prod_{j=1}^{n} P \left( X^{\left( j \right)} = x^{\left( j \right)} | Y = c_{k} \right) \end{align*}</script><p>即，用于分类的特征在类确定的条件下都是条件独立的。</p>
+<p>由</p>
+<script type="math/tex; mode=display">\begin{align*} \\& P \left( X = \mathbf{x}, Y = c_{k} \right) = P \left(X = \mathbf{x} | Y = c_{k} \right) P \left( Y = c_{k} \right)
+\\ & P \left( X = \mathbf{x}, Y = c_{k} \right) = P \left( Y = c_{k}| X = \mathbf{x} \right) P \left( X = \mathbf{x}  \right)\end{align*}</script><p>得</p>
+<script type="math/tex; mode=display">\begin{align*} \\ P \left(X = \mathbf{x} | Y = c_{k} \right) P \left( Y = c_{k} \right) &= P \left( Y = c_{k}| X = \mathbf{x} \right) P \left( X = \mathbf{x}  \right)
+\\  P \left( Y = c_{k}| X = \mathbf{x} \right) & = \dfrac{P \left(X = \mathbf{x} | Y = c_{k} \right) P \left( Y = c_{k} \right)}{P \left( X = \mathbf{x}  \right)} 
+\\ & = \dfrac{P \left(X = \mathbf{x} | Y = c_{k} \right) P \left( Y = c_{k} \right)}{\sum_{Y} P \left( X = \mathbf{x}, Y = c_{k}  \right)}
+\\ &  = \dfrac{P \left(X = \mathbf{x} | Y = c_{k} \right) P \left( Y = c_{k} \right)}{\sum_{Y} P \left(X = \mathbf{x} | Y = c_{k} \right) P \left( Y = c_{k} \right)}
+\\ &  = \dfrac{ P \left( Y = c_{k} \right)\prod_{j=1}^{n} P \left( X^{\left( j \right)} = x^{\left( j \right)} | Y = c_{k} \right)}{\sum_{Y} P \left( Y = c_{k} \right)\prod_{j=1}^{n} P \left( X^{\left( j \right)} = x^{\left( j \right)} | Y = c_{k} \right)}\end{align*}</script><p>朴素贝叶斯分类器可表示为</p>
+<script type="math/tex; mode=display">\begin{align*} \\& y = f \left( \mathbf{x} \right) = \arg \max_{c_{k}} \dfrac{ P \left( Y = c_{k} \right)\prod_{j=1}^{n} P \left( X^{\left( j \right)} = x^{\left( j \right)} | Y = c_{k} \right)}{\sum_{Y} P \left( Y = c_{k} \right)\prod_{j=1}^{n} P \left( X^{\left( j \right)} = x^{\left( j \right)} | Y = c_{k} \right)}
+\\ & \quad\quad\quad = \arg \max_{c_{k}} P \left( Y = c_{k} \right)\prod_{j=1}^{n} P \left( X^{\left( j \right)} = x^{\left( j \right)} | Y = c_{k} \right)\end{align*}</script><h1 id="朴素贝叶斯法的参数估计"><a href="#朴素贝叶斯法的参数估计" class="headerlink" title="朴素贝叶斯法的参数估计"></a>朴素贝叶斯法的参数估计</h1><h2 id="极大似然估计"><a href="#极大似然估计" class="headerlink" title="极大似然估计"></a>极大似然估计</h2><p>朴素贝叶斯模型参数的极大似然估计  </p>
 <ol>
-<li>选择惩罚参数$C \geq 0$，构建并求解约束最优化问题<script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha} \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right)  - \sum_{i=1}^{N} \alpha_{i}  
-\\ & s.t. \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
-\\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2, \cdots, N  \end{align*}</script>求得最优解<script type="math/tex">\alpha^{*} = \left( \alpha_{1}^{*}, \alpha_{1}^{*}, \cdots, \alpha_{N}^{*} \right)</script>。  </li>
-<li>计算<script type="math/tex; mode=display">\begin{align*}  \\ & \mathbf{w}^{*} = \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} \mathbf{x}_{i} \end{align*}</script>并选择<script type="math/tex">\alpha^{*}</script>的一个分量<script type="math/tex">0 < \alpha_{j}^{*} < C</script>，计算<script type="math/tex; mode=display">\begin{align*}  \\ & b^{*} = y_{j} - \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right) \end{align*}</script></li>
-<li>得到分离超平面<script type="math/tex; mode=display">\begin{align*}  \\ & \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} = 0 \end{align*}</script>以及分类决策函数  <script type="math/tex; mode=display">\begin{align*} \\& f \left( \mathbf{x} \right) = sign \left( \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} \right)  \end{align*}</script></li>
+<li>先验概率$P \left( Y = c_{k} \right)$的极大似然估计  <script type="math/tex; mode=display">\begin{align*} \\& P \left( Y = c_{k} \right) = \dfrac{\sum_{i=1}^{N} I \left( y_{i} = c_{k} \right)}{N} \quad  k = 1, 2, \cdots, K\end{align*}</script></li>
+<li>设第$j$个特征$x^{\left( j \right)}$可能取值的集合为$\left\{ a_{j1}, a_{j2}, \cdots, a_{j S_{j}} \right\}$，条件概率$P \left( X^{\left( j \right)} = a_{jl} | Y = c_{k} \right)$的极大似然估计<script type="math/tex; mode=display">\begin{align*} \\& P \left( X^{\left( j \right)} = a_{jl} | Y = c_{k} \right) ＝ \dfrac{\sum_{i=1}^{N} I \left(x_{i}^{\left( j \right)}=a_{jl}, y_{i} = c_{k} \right)}{\sum_{i=1}^{N} I \left( y_{i} = c_{k} \right)}
+\\ & j = 1, 2, \cdots, n;\quad l = 1, 2, \cdots, S_{j};\quad k = 1, 2, \cdots, K\end{align*}</script>其中，$x_{i}^{\left( j \right)}$是第$i$个样本的第$j$个特征；$a_{jl}$是第$j$个特征可能取的第$l$个值；$I$是指示函数。</li>
 </ol>
-<h1 id="具体求解"><a href="#具体求解" class="headerlink" title="具体求解"></a>具体求解</h1><p>最优化问题的求解：  </p>
+<p>朴素贝叶斯算法：<br>输入：线性可分训练数据集$T = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\}$，其中$\mathbf{x}_{i}＝ \left( x_{i}^{\left(1\right)},x_{i}^{\left(2\right)},\cdots, x_{i}^{\left(n\right)} \right)^{T}$，$x_{i}^{\left( j \right)}$是第$i$个样本的第$j$个特征，$x_{i}^{\left( j \right)} \in \left\{ a_{j1}, a_{j2}, \cdots, a_{j S_{j}} \right\}$，$a_{jl}$是第$j$个特征可能取的第$l$个值，$j = 1, 2, \cdots, n; l = 1, 2, \cdots, S_{j},y_{i} \in  \left\{ c_{1}, c_{2}, \cdots, c_{K} \right\}$；实例$\mathbf{x}$；<br>输出：实例$\mathbf{x}$的分类</p>
 <ol>
-<li>引入拉格朗日乘子$\alpha_{i} \geq 0, \mu_{i} \geq 0, i = 1, 2, \cdots, N$构建拉格朗日函数<script type="math/tex; mode=display">\begin{align*} \\ & L \left( \mathbf{w}, b, \xi, \alpha, \mu \right) =  \dfrac{1}{2} \| \mathbf{w} \|^{2} + C \sum_{i=1}^{N} \xi_{i} + \sum_{i=1}^{N} \alpha_{i} \left[- y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) + 1 - \xi_{i}  \right] + \sum_{i=1}^{N} \mu_{i} \left( -\xi_{i} \right)
-\\ & = \dfrac{1}{2} \| \mathbf{w} \|^{2} + C \sum_{i=1}^{N} \xi_{i} - \sum_{i=1}^{N} \alpha_{i} \left[ y_{i} \left( \mathbf{w} \cdot \mathbf{x}_{i} + b \right) -1 + \xi_{i} \right] - \sum_{i=1}^{N} \mu_{i} \xi_{i}  \end{align*}</script>其中，$\alpha = \left( \alpha_{1}, \alpha_{2}, \cdots, \alpha_{N} \right)^{T}$以及$\mu = \left( \mu_{1}, \mu_{2}, \cdots, \mu_{N} \right)^{T}$为拉格朗日乘子向量。  </li>
-<li>求$\min_{\mathbf{w},b}L \left( \mathbf{w}, b, \xi, \alpha, \mu \right)$:<script type="math/tex; mode=display">\begin{align*} \\ &  \nabla_{\mathbf{w}} L \left( \mathbf{w}, b, \xi, \alpha, \mu \right) = \mathbf{w} - \sum_{i=1}^{N} \alpha_{i} y_{i} \mathbf{x}_{i} = 0 
-\\ &  \nabla_{b} L \left( \mathbf{w}, b, \xi, \alpha, \mu \right) = -\sum_{i=1}^{N} \alpha_{i} y_{i} = 0 
-\\ & \nabla_{\xi_{i}} L \left( \mathbf{w}, b, \xi, \alpha, \mu \right) = C - \alpha_{i} - \mu_{i} = 0 \end{align*}</script>得  <script type="math/tex; mode=display">\begin{align*} \\ &   \mathbf{w} ＝ \sum_{i=1}^{N} \alpha_{i} y_{i} \mathbf{x}_{i}  
-\\ &  \sum_{i=1}^{N} \alpha_{i} y_{i} = 0 
-\\ & C - \alpha_{i} - \mu_{i} = 0\end{align*}</script>代入拉格朗日函数，得<script type="math/tex; mode=display">\begin{align*} \\  L \left( \mathbf{w}, b, \xi, \alpha, \mu \right) &=  \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right) + C \sum_{i=1}^{N} \xi_{i} - \sum_{i=1}^{N} \alpha_{i}  y_{i} \left[ \left( \sum_{j=1}^{N} \alpha_{j} y_{j} x_{j} \right) \cdot \mathbf{x}_{i} + b \right] 
-\\ & + \sum_{i=1}^{N} \alpha_{i} - \sum_{i=1}^{N} \alpha_{i} \xi_{i} - \sum_{i}^{N} \mu_{i} \xi_{i}
-\\ & = - \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right) - \sum_{i=1}^{N} \alpha_{i} y_{i} b + \sum_{i=1}^{N} \alpha_{i} + \sum_{i=1}^{N} \xi_{i} \left( C - \alpha_{i} - \mu_{i}  \right)
-\\ & = - \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right)  + \sum_{i=1}^{N} \alpha_{i} \end{align*}</script>即<script type="math/tex; mode=display">\begin{align*} \\ & \min_{\mathbf{w},b,\xi}L \left( \mathbf{w}, b, \xi, \alpha, \mu \right) = - \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right)  + \sum_{i=1}^{N} \alpha_{i}    \end{align*}</script>3.求$\max_{\alpha} \min_{\mathbf{w},b, \xi}L \left( \mathbf{w}, b, \xi, \alpha, \mu \right)$:<script type="math/tex; mode=display">\begin{align*} \\ &  \max_{\alpha} - \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right)  + \sum_{i=1}^{N} \alpha_{i}  
-\\ & s.t. \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
-\\ & C - \alpha_{i} - \mu_{i} = 0
-\\ & \alpha_{i} \geq 0
-\\ & \mu_{i} \geq 0, \quad i=1,2, \cdots, N  \end{align*}</script>等价的<script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha} \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} \left( \mathbf{x}_{i} \cdot \mathbf{x}_{j} \right)  - \sum_{i=1}^{N} \alpha_{i}  
-\\ & s.t. \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
-\\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2, \cdots, N  \end{align*}</script></li>
+<li>计算先验概率及条件概率<script type="math/tex; mode=display">\begin{align*}  \\ & P \left( Y = c_{k} \right) = \dfrac{\sum_{i=1}^{N} I \left( y_{i} = c_{k} \right)}{N} \quad  k = 1, 2, \cdots, K
+\\ & P \left( X^{\left( j \right)} = a_{jl} | Y = c_{k} \right) ＝ \dfrac{\sum_{i=1}^{N} I \left(x_{i}^{\left( j \right)}=a_{jl}, y_{i} = c_{k} \right)}{\sum_{i=1}^{N} I \left( y_{i} = c_{k} \right)}
+\\ & j = 1, 2, \cdots, n;\quad l = 1, 2, \cdots, S_{j};\quad k = 1, 2, \cdots, K\end{align*}</script></li>
+<li>对于给定的实例$\mathbf{x}=\left( x^{\left( 1 \right)}, x^{\left( 2 \right)}, \cdots, x^{\left( n \right)}\right)^{T}$，计算<script type="math/tex; mode=display">\begin{align*}  \\ & P \left( Y = c_{k} \right)\prod_{j=1}^{n} P \left( X^{\left( j \right)} = x^{\left( j \right)} | Y = c_{k} \right) \quad  k=1,2,\cdots,K\end{align*}</script></li>
+<li>确定实例$x$的类别  <script type="math/tex; mode=display">\begin{align*} \\& y = f \left( \mathbf{x} \right) = \arg \max_{c_{k}} P \left( Y = c_{k} \right)\prod_{j=1}^{n} P \left( X^{\left( j \right)} = x^{\left( j \right)} | Y = c_{k} \right)  \end{align*}</script></li>
+</ol>
+<h2 id="贝叶斯估计"><a href="#贝叶斯估计" class="headerlink" title="贝叶斯估计"></a>贝叶斯估计</h2><p>朴素贝叶斯模型参数的贝叶斯估计    </p>
+<ol>
+<li>条件概率的贝叶斯估计<script type="math/tex; mode=display">\begin{align*} \\& P_{\lambda} \left( X^{\left( j \right)} = a_{jl} | Y = c_{k} \right) ＝ \dfrac{\sum_{i=1}^{N} I \left(x_{i}^{\left( j \right)}=a_{jl}, y_{i} = c_{k} \right) + \lambda}{\sum_{i=1}^{N} I \left( y_{i} = c_{k} \right) + S_{j} \lambda} \end{align*}</script>式中$\lambda \geq 0$。当$\lambda ＝ 0$时，是极大似然估计；当$\lambda ＝ 1$时，称为拉普拉斯平滑。  </li>
+<li>先验概率的贝叶斯估计<script type="math/tex; mode=display">\begin{align*} \\&  P \left( Y = c_{k} \right) = \dfrac{\sum_{i=1}^{N} I \left( y_{i} = c_{k} \right) + \lambda}{N + K \lambda}\end{align*}</script></li>
 </ol>
 
                 <hr>
                 <!-- Pager -->
                 <ul class="pager">
                     
-                        <li class="previous">
-                            <a href="/2019/07/10/SVM三部曲之非线性SVM/" data-toggle="tooltip" data-placement="top" title="SVM三部曲之非线性SVM">&larr; Previous Post</a>
-                        </li>
-                    
                     
                         <li class="next">
-                            <a href="/2019/07/09/迁移学习综述/" data-toggle="tooltip" data-placement="top" title="迁移学习综述">Next Post &rarr;</a>
+                            <a href="/2019/07/13/决策树模型/" data-toggle="tooltip" data-placement="top" title="决策树模型">Next Post &rarr;</a>
                         </li>
                     
                 </ul>
@@ -296,7 +272,7 @@
       <div id="toc" class="toc-article">
       <strong class="toc-title">文章目录</strong>
       
-        <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#基本概念"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">基本概念</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#软间隔svm"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">软间隔SVM</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#支持向量"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">支持向量</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#几何间隔"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">几何间隔</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#损失函数"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">损失函数</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#学习算法"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">学习算法</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#具体求解"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">具体求解</span></a></li></ol>
+        <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#朴素贝叶斯法的学习与分类"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">朴素贝叶斯法的学习与分类</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#朴素贝叶斯法的参数估计"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">朴素贝叶斯法的参数估计</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#极大似然估计"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">极大似然估计</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#贝叶斯估计"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">贝叶斯估计</span></a></li></ol></li></ol>
       
       </div>
     </aside>
@@ -305,7 +281,7 @@
 
 <!-- <div id="toc" class="toc-article">
   <strong class="toc-title">文章目录</strong>
-  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#基本概念"><span class="toc-number">1.</span> <span class="toc-text">基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#软间隔svm"><span class="toc-number">1.1.</span> <span class="toc-text">软间隔SVM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支持向量"><span class="toc-number">1.2.</span> <span class="toc-text">支持向量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#几何间隔"><span class="toc-number">1.3.</span> <span class="toc-text">几何间隔</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#损失函数"><span class="toc-number">1.4.</span> <span class="toc-text">损失函数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#学习算法"><span class="toc-number">2.</span> <span class="toc-text">学习算法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#具体求解"><span class="toc-number">3.</span> <span class="toc-text">具体求解</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#朴素贝叶斯法的学习与分类"><span class="toc-number">1.</span> <span class="toc-text">朴素贝叶斯法的学习与分类</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#朴素贝叶斯法的参数估计"><span class="toc-number">2.</span> <span class="toc-text">朴素贝叶斯法的参数估计</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#极大似然估计"><span class="toc-number">2.1.</span> <span class="toc-text">极大似然估计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#贝叶斯估计"><span class="toc-number">2.2.</span> <span class="toc-text">贝叶斯估计</span></a></li></ol></li></ol>
 </div> -->
                 
             <!-- Sidebar Container -->
@@ -321,10 +297,6 @@
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
                        
-                          <a class="tag" href="/tags/#机器学习" title="机器学习">机器学习</a>
-                        
-                          <a class="tag" href="/tags/#SVM" title="SVM">SVM</a>
-                        
                     </div>
                 </section>
                 
