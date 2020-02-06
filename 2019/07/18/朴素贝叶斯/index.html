@@ -207,7 +207,10 @@
 
                 <p>朴素贝叶斯法是基于贝叶斯定理与特征条件独立假设的分类方法。</p>
 <h1 id="朴素贝叶斯法的学习与分类"><a href="#朴素贝叶斯法的学习与分类" class="headerlink" title="朴素贝叶斯法的学习与分类"></a>朴素贝叶斯法的学习与分类</h1><p>训练数据集</p>
-<script type="math/tex; mode=display">\begin{align*} \\& T = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\} \end{align*}</script><p>由$P \left( X, Y \right)$独立同分布产生。其中，$\mathbf{x}_{i} \in \mathcal{X} \subseteq \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ c_{1}, c_{2}, \cdots, c_{K} \right\}, i = 1, 2, \cdots, N$，$\mathbf{x}_{i}$为第$i$个特征向量（实例），$y_{i}$为$\mathbf{x}_{i}$的类标记，<br>$X$是定义在输入空间$\mathcal{X}$上的随机向量，$Y$是定义在输出空间$\mathcal{Y}$上的随机变量。$P \left( X, Y \right)$是$X$和$Y$的联合概率分布。</p>
+<script type="math/tex; mode=display">
+\begin{align*} 
+\\& T = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\} 
+\end{align*}</script><p>由$P \left( X, Y \right)$独立同分布产生。其中，$\mathbf{x}_{i} \in \mathcal{X} \subseteq \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ c_{1}, c_{2}, \cdots, c_{K} \right\}, i = 1, 2, \cdots, N$，$\mathbf{x}_{i}$为第$i$个特征向量（实例），$y_{i}$为$\mathbf{x}_{i}$的类标记，<br>$X$是定义在输入空间$\mathcal{X}$上的随机向量，$Y$是定义在输出空间$\mathcal{Y}$上的随机变量。$P \left( X, Y \right)$是$X$和$Y$的联合概率分布。</p>
 <p>条件独立性假设</p>
 <script type="math/tex; mode=display">\begin{align*} \\& P \left( X = \mathbf{x} | Y = c_{k} \right) = P \left( X^{\left( 1 \right)} = x^{\left( 1 \right)} , \cdots, X^{\left( n \right)} = x^{\left( n \right)} | Y = c_{k}\right) 
 \\ & \quad\quad\quad\quad\quad\quad = \prod_{j=1}^{n} P \left( X^{\left( j \right)} = x^{\left( j \right)} | Y = c_{k} \right) \end{align*}</script><p>即，用于分类的特征在类确定的条件下都是条件独立的。</p>
@@ -222,7 +225,9 @@
 <script type="math/tex; mode=display">\begin{align*} \\& y = f \left( \mathbf{x} \right) = \arg \max_{c_{k}} \dfrac{ P \left( Y = c_{k} \right)\prod_{j=1}^{n} P \left( X^{\left( j \right)} = x^{\left( j \right)} | Y = c_{k} \right)}{\sum_{Y} P \left( Y = c_{k} \right)\prod_{j=1}^{n} P \left( X^{\left( j \right)} = x^{\left( j \right)} | Y = c_{k} \right)}
 \\ & \quad\quad\quad = \arg \max_{c_{k}} P \left( Y = c_{k} \right)\prod_{j=1}^{n} P \left( X^{\left( j \right)} = x^{\left( j \right)} | Y = c_{k} \right)\end{align*}</script><h1 id="朴素贝叶斯法的参数估计"><a href="#朴素贝叶斯法的参数估计" class="headerlink" title="朴素贝叶斯法的参数估计"></a>朴素贝叶斯法的参数估计</h1><h2 id="极大似然估计"><a href="#极大似然估计" class="headerlink" title="极大似然估计"></a>极大似然估计</h2><p>朴素贝叶斯模型参数的极大似然估计  </p>
 <ol>
-<li>先验概率$P \left( Y = c_{k} \right)$的极大似然估计  <script type="math/tex; mode=display">\begin{align*} \\& P \left( Y = c_{k} \right) = \dfrac{\sum_{i=1}^{N} I \left( y_{i} = c_{k} \right)}{N} \quad  k = 1, 2, \cdots, K\end{align*}</script></li>
+<li>先验概率$P \left( Y = c_{k} \right)$的极大似然估计<script type="math/tex; mode=display">
+\begin{align*}\\& P \left( Y = c_{k} \right) = \dfrac{\sum_{i=1}^{N} I \left( y_{i} = c_{k} \right)}{N} \quad  k = 1, 2, \cdots, K
+ \end{align*}</script></li>
 <li>设第$j$个特征$x^{\left( j \right)}$可能取值的集合为$\left\{ a_{j1}, a_{j2}, \cdots, a_{j S_{j}} \right\}$，条件概率$P \left( X^{\left( j \right)} = a_{jl} | Y = c_{k} \right)$的极大似然估计<script type="math/tex; mode=display">\begin{align*} \\& P \left( X^{\left( j \right)} = a_{jl} | Y = c_{k} \right) ＝ \dfrac{\sum_{i=1}^{N} I \left(x_{i}^{\left( j \right)}=a_{jl}, y_{i} = c_{k} \right)}{\sum_{i=1}^{N} I \left( y_{i} = c_{k} \right)}
 \\ & j = 1, 2, \cdots, n;\quad l = 1, 2, \cdots, S_{j};\quad k = 1, 2, \cdots, K\end{align*}</script>其中，$x_{i}^{\left( j \right)}$是第$i$个样本的第$j$个特征；$a_{jl}$是第$j$个特征可能取的第$l$个值；$I$是指示函数。</li>
 </ol>
@@ -394,7 +399,7 @@
                     	
                     <span class="post-count">24.7k words altogether</span>
                     <br>
-                    Copyright &copy; Watson Wang 2019 
+                    Copyright &copy; Watson Wang 2020 
                 </p>
             </div>
         </div>

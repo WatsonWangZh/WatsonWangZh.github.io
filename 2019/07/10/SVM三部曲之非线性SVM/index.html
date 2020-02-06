@@ -210,30 +210,30 @@
                 post-container">
 
                 <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="非线性svm"><a href="#非线性SVM" class="headerlink" title="非线性SVM"></a>非线性SVM</h2><p>从非线性分类训练集，通过核函数与软间隔最大化，学习得到分类决策函数  </p>
-<script type="math/tex; mode=display">\begin{align*} \\& f \left( \mathbf{x} \right) = sign \left( \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} K \left(\mathbf{x}, \mathbf{x}_{i} \right) + b^{*} \right) \end{align*}</script><p>称为非线性支持向量机，$K \left( \mathbf{x}, \mathbf{z} \right)$是正定核函数。</p>
-<h2 id="核函数"><a href="#核函数" class="headerlink" title="核函数"></a>核函数</h2><p>设$\mathcal{X}$是输入空间（欧氏空间$\mathbb{R}^{n}$的子集或离散集合），$\mathcal{H}$是特征空间（希尔伯特空间），如果存在一个从$\mathcal{X}$到$\mathcal{H}$的映射</p>
-<script type="math/tex; mode=display">\begin{align*} \\& \phi \left( \mathbf{x} \right) : \mathcal{X} \to \mathcal{H}   \end{align*}</script><p>使得对所有$\mathbf{x},\mathbf{z} \in \mathcal{X}$，函数$K \left(\mathbf{x}, \mathbf{z} \right)$满足条件 </p>
-<script type="math/tex; mode=display">\begin{align*} \\ &  K \left(\mathbf{x}, \mathbf{z} \right) = \phi \left( \mathbf{x} \right) \cdot \phi \left( \mathbf{z} \right)  \end{align*}</script><p>则称$K \left(\mathbf{x}, \mathbf{z} \right)$为核函数，$\phi \left( \mathbf{x} \right)$为映射函数，式中$\phi \left( \mathbf{x} \right) \cdot \phi \left( \mathbf{z} \right)$为$\phi \left( \mathbf{x} \right)$和$\phi \left( \mathbf{z} \right)$的内积。 </p>
+<script type="math/tex; mode=display">\begin{align*} \\& f \left( \mathbf{x} \right) = sign \left( \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} K \left(\mathbf{x}, \mathbf{x}_{i} \right) + b^{*} \right) \end{align*}</script><p>称为非线性支持向量机，<script type="math/tex">K \left( \mathbf{x}, \mathbf{z} \right)</script>是正定核函数。</p>
+<h2 id="核函数"><a href="#核函数" class="headerlink" title="核函数"></a>核函数</h2><p>设<script type="math/tex">\mathcal{X}</script>是输入空间（欧氏空间<script type="math/tex">\mathbb{R}^{n}</script>的子集或离散集合），<script type="math/tex">\mathcal{H}</script>是特征空间（希尔伯特空间），如果存在一个从<script type="math/tex">\mathcal{X}</script>到<script type="math/tex">\mathcal{H}</script>的映射</p>
+<script type="math/tex; mode=display">\begin{align*} \\& \phi \left( \mathbf{x} \right) : \mathcal{X} \to \mathcal{H}   \end{align*}</script><p>使得对所有<script type="math/tex">\mathbf{x},\mathbf{z} \in \mathcal{X}</script>，函数<script type="math/tex">K \left(\mathbf{x}, \mathbf{z} \right)</script>满足条件 </p>
+<script type="math/tex; mode=display">\begin{align*} \\ &  K \left(\mathbf{x}, \mathbf{z} \right) = \phi \left( \mathbf{x} \right) \cdot \phi \left( \mathbf{z} \right)  \end{align*}</script><p>则称<script type="math/tex">K \left(\mathbf{x}, \mathbf{z} \right)</script>为核函数，<script type="math/tex">\phi \left( \mathbf{x} \right)</script>为映射函数，式中<script type="math/tex">\phi \left( \mathbf{x} \right) \cdot \phi \left( \mathbf{z} \right)</script>为<script type="math/tex">\phi \left( \mathbf{x} \right)$和$\phi \left( \mathbf{z} \right)</script>的内积。 </p>
 <h2 id="常用核函数"><a href="#常用核函数" class="headerlink" title="常用核函数"></a>常用核函数</h2><ol>
 <li>多项式核函数<script type="math/tex; mode=display">\begin{align*} \\& K \left( \mathbf{x}, \mathbf{z} \right) = \left( \mathbf{x} \cdot \mathbf{z} + 1 \right)^{p} \end{align*}</script></li>
 <li>高斯核函数  <script type="math/tex; mode=display">\begin{align*} \\& K \left( \mathbf{x}, \mathbf{z} \right) = \exp \left( - \dfrac{\| \mathbf{x} - \mathbf{z} \|^{2}}{2 \sigma^{2}} \right) \end{align*}</script></li>
 </ol>
-<h1 id="学习算法"><a href="#学习算法" class="headerlink" title="学习算法"></a>学习算法</h1><p>输入：训练数据集$T = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\}$，其中$\mathbf{x}_{i} \in \mathcal{X} = \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N$<br>输出：分类决策函数  </p>
+<h1 id="学习算法"><a href="#学习算法" class="headerlink" title="学习算法"></a>学习算法</h1><p>输入：训练数据集<script type="math/tex">T = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\}</script>，其中<script type="math/tex">\mathbf{x}_{i} \in \mathcal{X} = \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N</script><br>输出：分类决策函数  </p>
 <ol>
-<li>选择适当的核函数$K \left( \mathbf{x}, \mathbf{z} \right)$和惩罚参数$C \geq 0$，构建并求解约束最优化问题<script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha} \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right)  - \sum_{i=1}^{N} \alpha_{i}  
+<li>选择适当的核函数<script type="math/tex">K \left( \mathbf{x}, \mathbf{z} \right)</script>和惩罚参数<script type="math/tex">C \geq 0</script>，构建并求解约束最优化问题<script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha} \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right)  - \sum_{i=1}^{N} \alpha_{i}  
 \\ & s.t. \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
 \\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2, \cdots, N  \end{align*}</script>求得最优解<script type="math/tex">\alpha^{*} = \left( \alpha_{1}^{*}, \alpha_{1}^{*}, \cdots, \alpha_{N}^{*} \right)</script>。  </li>
 <li>计算<script type="math/tex; mode=display">\begin{align*}  \\ & \mathbf{w}^{*} = \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} \mathbf{x}_{i} \end{align*}</script>并选择<script type="math/tex">\alpha^{*}</script>的一个分量<script type="math/tex">0 < \alpha_{j}^{*} < C</script>，计算<script type="math/tex; mode=display">\begin{align*}  \\ & b^{*} = y_{j} - \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right) \end{align*}</script></li>
 <li>得到分离超平面<script type="math/tex; mode=display">\begin{align*}  \\ & \mathbf{w}^{*} \cdot \mathbf{x} + b^{*} = 0 \end{align*}</script>以及分类决策函数  <script type="math/tex; mode=display">\begin{align*} \\& f \left( \mathbf{x} \right) = sign \left( \sum_{i=1}^{N} \alpha_{i}^{*} y_{i} K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right) + b^{*} \right)  \end{align*}</script></li>
 </ol>
-<h1 id="具体求解smo"><a href="#具体求解SMO" class="headerlink" title="具体求解SMO"></a>具体求解SMO</h1><p>SMO算法：<br>输入：训练数据集$T = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\}$，其中$\mathbf{x}_{i} \in \mathcal{X} = \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N$，精度$\varepsilon$；<br>输出：近似解$\hat \alpha$ </p>
+<h1 id="具体求解smo"><a href="#具体求解SMO" class="headerlink" title="具体求解SMO"></a>具体求解SMO</h1><p>SMO算法：<br>输入：训练数据集<script type="math/tex">T = \left\{ \left( \mathbf{x}_{1}, y_{1} \right), \left( \mathbf{x}_{2}, y_{2} \right), \cdots, \left( \mathbf{x}_{N}, y_{N} \right) \right\}</script>，其中<script type="math/tex">\mathbf{x}_{i} \in \mathcal{X} = \mathbb{R}^{n}, y_{i} \in \mathcal{Y} = \left\{ +1, -1 \right\}, i = 1, 2, \cdots, N</script>，精度<script type="math/tex">\varepsilon</script>；<br>输出：近似解<script type="math/tex">\hat \alpha</script> </p>
 <ol>
-<li>取初始值$\alpha^{0} = 0$，令$k = 0$；</li>
-<li>选取优化变量$\alpha_{1}^{\left( k \right)},\alpha_{2}^{\left( k \right)}$，求解<script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha_{1}, \alpha_{2}} W \left( \alpha_{1}, \alpha_{2} \right) = \dfrac{1}{2} K_{11} \alpha_{1}^{2} + \dfrac{1}{2} K_{22} \alpha_{2}^{2} + y_{1} y_{2} K_{12} \alpha_{1} \alpha_{2} 
+<li>取初始值<script type="math/tex">\alpha^{0} = 0</script>，令<script type="math/tex">k = 0</script>；</li>
+<li>选取优化变量<script type="math/tex">\alpha_{1}^{\left( k \right)},\alpha_{2}^{\left( k \right)}</script>，求解<script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha_{1}, \alpha_{2}} W \left( \alpha_{1}, \alpha_{2} \right) = \dfrac{1}{2} K_{11} \alpha_{1}^{2} + \dfrac{1}{2} K_{22} \alpha_{2}^{2} + y_{1} y_{2} K_{12} \alpha_{1} \alpha_{2} 
 \\ & \quad\quad\quad\quad\quad\quad - \left( \alpha_{1} + \alpha_{2} \right) + y_{1} \alpha_{1} \sum_{i=3}^{N} y_{i} \alpha_{i} K_{i1} + y_{2} \alpha_{2} \sum_{i=3}^{N} y_{i} \alpha_i K_{i2}
 \\ & s.t. \quad \alpha_{1} + \alpha_{2} = -\sum_{i=3}^{N} \alpha_{i} y_{i} = \varsigma
-\\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2  \end{align*}</script>求得最优解$\alpha_{1}^{\left( k＋1 \right)},\alpha_{2}^{\left( k+1 \right)}$，更新$\alpha$为$\alpha^{\left( k+1 \right)}$；</li>
-<li>若在精度$\varepsilon$范围内满足停机条件<script type="math/tex; mode=display">\begin{align*}  \\ & \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
+\\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2  \end{align*}</script>求得最优解<script type="math/tex">\alpha_{1}^{\left( k＋1 \right)},\alpha_{2}^{\left( k+1 \right)}</script>，更新<script type="math/tex">\alpha</script>为<script type="math/tex">\alpha^{\left( k+1 \right)}</script>；</li>
+<li>若在精度<script type="math/tex">\varepsilon</script>范围内满足停机条件<script type="math/tex; mode=display">\begin{align*}  \\ & \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
 \\ & 0 \leq \alpha_{i} \leq C, i = 1, 2, \cdots, N
 \\ & \end{align*}</script><script type="math/tex; mode=display">\begin{align*} y_{i} \cdot g \left( x_{i} \right) = \left\{
 \begin{aligned} 
@@ -241,38 +241,38 @@
 \\ & = 1, \left\{ x_{i} | 0 < \alpha_{i} < C \right\}
 \\ & \leq 1, \left\{ x_{i} | \alpha_{i} = C \right\}
 \end{aligned}
-\right.\end{align*}</script>则转4.；否则令$k = k + 1$，转2.；<br>4.取$\hat \alpha = \alpha^{\left( k + 1 \right)}$。</li>
+\right.\end{align*}</script>则转4.；否则令<script type="math/tex">k = k + 1</script>，转2.；<br>4.取<script type="math/tex">\hat \alpha = \alpha^{\left( k + 1 \right)}</script>。</li>
 </ol>
 <hr>
 <p>要解如下凸二次规划的对偶问题：  </p>
 <script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha} \dfrac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j} K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right)  - \sum_{i=1}^{N} \alpha_{i}  
 \\ & s.t. \sum_{i=1}^{N} \alpha_{i} y_{i} = 0
-\\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2, \cdots, N  \end{align*}</script><p>选择$\alpha_{1}, \alpha_{2}$两个变量，其他变量$\alpha_{i} \left( i = 3, 4, \cdots, N \right)$是固定的，SMO的最优化问题的子问题  </p>
+\\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2, \cdots, N  \end{align*}</script><p>选择<script type="math/tex">\alpha_{1}, \alpha_{2}</script>两个变量，其他变量<script type="math/tex">\alpha_{i} \left( i = 3, 4, \cdots, N \right)</script>是固定的，SMO的最优化问题的子问题  </p>
 <script type="math/tex; mode=display">\begin{align*} \\ &  \min_{\alpha_{1}, \alpha_{2}} W \left( \alpha_{1}, \alpha_{2} \right) = \dfrac{1}{2} K_{11} \alpha_{1}^{2} + \dfrac{1}{2} K_{22} \alpha_{2}^{2} + y_{1} y_{2} K_{12} \alpha_{1} \alpha_{2} 
 \\ & \quad\quad\quad\quad\quad\quad - \left( \alpha_{1} + \alpha_{2} \right) + y_{1} \alpha_{1} \sum_{i=3}^{N} y_{i} \alpha_{i} K_{i1} + y_{2} \alpha_{2} \sum_{i=3}^{N} y_{i} \alpha_i K_{i2}
 \\ & s.t. \quad \alpha_{1} + \alpha_{2} = -\sum_{i=3}^{N} \alpha_{i} y_{i} = \varsigma
-\\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2  \end{align*}</script><p>其中，<script type="math/tex">K_{ij} = K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right), i,j = 1,2, \cdots, N, \varsigma</script>是常数，且省略了不含<script type="math/tex">\alpha_{1}, \alpha_{2}</script>的常数项。<br>设凸二次规划的对偶问题的初始可行解为$\alpha_{1}^{old}, \alpha_{2}^{old}$，最优解为$\alpha_{1}^{new}, \alpha_{2}^{new}$，且在沿着约束方向未经剪辑时$\alpha_{2}$的最优解为$ \alpha_{2}^{new,unc}$。<br>由于$\alpha_{2}^{new}$需要满足$0 \leq \alpha_{i} \leq C$，所以最优解$\alpha_{2}^{new}$的取值范围需满足</p>
-<script type="math/tex; mode=display">\begin{align*} \\ &  L \leq \alpha_{2}^{new} \leq H  \end{align*}</script><p>其中，L与H是$\alpha_{2}^{new}$所在的对角线段断点的界。<br>如果$y_{1} \neq y_{2}$，则  </p>
-<script type="math/tex; mode=display">\begin{align*} \\ &  L = \max \left( 0, \alpha_{2}^{old} - \alpha_{1}^{old} \right), H = \min \left( C, C + \alpha_{2}^{old} - \alpha_{1}^{old} \right) \end{align*}</script><p>如果$y_{1} = y_{2}$，则  </p>
+\\ & 0 \leq \alpha_{i} \leq C , \quad i=1,2  \end{align*}</script><p>其中，<script type="math/tex">K_{ij} = K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right), i,j = 1,2, \cdots, N, \varsigma</script>是常数，且省略了不含<script type="math/tex">\alpha_{1}, \alpha_{2}</script>的常数项。<br>设凸二次规划的对偶问题的初始可行解为<script type="math/tex">\alpha_{1}^{old}, \alpha_{2}^{old}</script>，最优解为<script type="math/tex">\alpha_{1}^{new}, \alpha_{2}^{new}</script>，且在沿着约束方向未经剪辑时<script type="math/tex">\alpha_{2}</script>的最优解为<script type="math/tex">\alpha_{2}^{new,unc}</script>。<br>由于<script type="math/tex">\alpha_{2}^{new}</script>需要满足<script type="math/tex">0 \leq \alpha_{i} \leq C</script>，所以最优解<script type="math/tex">\alpha_{2}^{new}</script>的取值范围需满足</p>
+<script type="math/tex; mode=display">\begin{align*} \\ &  L \leq \alpha_{2}^{new} \leq H  \end{align*}</script><p>其中，L与H是<script type="math/tex">\alpha_{2}^{new}</script>所在的对角线段断点的界。<br>如果<script type="math/tex">y_{1} \neq y_{2}</script>，则  </p>
+<script type="math/tex; mode=display">\begin{align*} \\ &  L = \max \left( 0, \alpha_{2}^{old} - \alpha_{1}^{old} \right), H = \min \left( C, C + \alpha_{2}^{old} - \alpha_{1}^{old} \right) \end{align*}</script><p>如果<script type="math/tex">y_{1} = y_{2}</script>，则  </p>
 <script type="math/tex; mode=display">\begin{align*} \\ &  L = \max \left( 0, \alpha_{2}^{old} + \alpha_{1}^{old} - C \right), H = \min \left( C,  \alpha_{2}^{old} + \alpha_{1}^{old} \right) \end{align*}</script><p>记</p>
 <script type="math/tex; mode=display">\begin{align*} \\ &  g \left( \mathbf{x} \right) = \sum_{i=1}^{N} \alpha_{i} y_{i} K \left( \mathbf{x}_{i}, \mathbf{x} \right) + b  \end{align*}</script><p>令</p>
 <script type="math/tex; mode=display">\begin{align*} \\ &  E_{i} = g \left( \mathbf{x}_{i} \right) - y_{i} = \left( \sum_{j=1}^{N} \alpha_{j} y_{j} K \left( \mathbf{x}_{j}, \mathbf{x}_{i} \right) + b \right) - y_{i}, \quad i=1,2
 \\ & v_{i} = \sum_{j=3}^{N} \alpha_{j} y_{j} K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right) = g \left( \mathbf{x}_{i} \right) - \sum_{j=1}^{2}\alpha_{j} y_{j} K \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right) - b, \quad i=1,2\end{align*}</script><p>则</p>
 <script type="math/tex; mode=display">\begin{align*} \\ &   W \left( \alpha_{1}, \alpha_{2} \right) = \dfrac{1}{2} K_{11} \alpha_{1}^{2} + \dfrac{1}{2} K_{22} \alpha_{2}^{2} + y_{1} y_{2} K_{12} \alpha_{1} \alpha_{2} 
 \\ & \quad\quad\quad\quad\quad\quad - \left( \alpha_{1} + \alpha_{2} \right) + y_{1} v_{1} \alpha_{1}+ y_{2} v_{2} \alpha_{2} 
-\end{align*}</script><p>由于$\alpha_{1} y_{1} = \varsigma, y_{i}^{2} = 1$，可将$\alpha_{1}$表示为</p>
+\end{align*}</script><p>由于<script type="math/tex">\alpha_{1} y_{1} = \varsigma, y_{i}^{2} = 1</script>，可将<script type="math/tex">\alpha_{1}</script>表示为</p>
 <script type="math/tex; mode=display">\begin{align*} \\ &  \alpha_{1} = \left( \varsigma - y_{2} \alpha_{2} \right) y_{1}\end{align*}</script><p>代入，得</p>
 <script type="math/tex; mode=display">\begin{align*} \\    W \left( \alpha_{2} \right) &= \dfrac{1}{2} K_{11} \left[ \left( \varsigma - y_{2} \alpha_{2} \right) y_{1} \right]^{2} + \dfrac{1}{2} K_{22} \alpha_{2}^{2} + y_{1} y_{2} K_{12} \left( \varsigma - y_{2} \alpha_{2} \right) y_{1} \alpha_{2} 
 \\ & \quad\quad\quad\quad\quad\quad - \left[ \left( \varsigma - y_{2} \alpha_{2} \right) y_{1} + \alpha_{2} \right] + y_{1} v_{1} \left( \varsigma - y_{2} \alpha_{2} \right) y_{1} + y_{2} v_{2} \alpha_{2}
 \\ & = \dfrac{1}{2} K_{11} \left( \varsigma - y_{2} \alpha_{2} \right)^{2} + \dfrac{1}{2} K_{22} \alpha_{2}^{2} + y_{2} K_{12} \left( \varsigma - y_{2} \alpha_{2} \right) \alpha_{2} 
 \\ & \quad\quad\quad\quad\quad\quad - \left( \varsigma - y_{2} \alpha_{2} \right) y_{1} - \alpha_{2} + v_{1} \left( \varsigma - y_{2} \alpha_{2} \right) + y_{2} v_{2} \alpha_{2}
-\end{align*}</script><p>对$\alpha_{2}$求导</p>
+\end{align*}</script><p>对<script type="math/tex">\alpha_{2}</script>求导</p>
 <script type="math/tex; mode=display">\begin{align*} \\ & \dfrac {\partial W}{\partial \alpha_{2}} = K_{11} \alpha_{2} + K_{22} \alpha_{2} -2 K_{12} \alpha_{2}
 \\ & \quad\quad\quad - K_{11} \varsigma y_{2} + K_{12} \varsigma y_{2} + y_{1} y_{2} -1 - v_{1} y_{2} + y_{2} v_{2} \end{align*}</script><p>令其为0，得</p>
 <script type="math/tex; mode=display">\begin{align*} \\  \left( K_{11} + K_{22} - 2 K_{12} \right) \alpha_{2} &= y_{2} \left( y_{2} - y_{1} + \varsigma K_{11} - \varsigma K_{12} + v_{1} - v_{2} \right)
-\\ & = y_{2} \left[ y_{2} - y_{1} + \varsigma K_{11} - \varsigma K_{12} + \left( g \left( \mathbf{x}_{1} \right) - \sum_{j=1}^{2}\alpha_{j} y_{j} K_{1j} - b \right) - \left( g \left( \mathbf{x}_{2} \right) - \sum_{j=1}^{2}\alpha_{j} y_{j} K_{2j} - b \right) \right]\end{align*}</script><p>将$\varsigma = \alpha_{1}^{old} y_{1} + \alpha_{2}^{old} y_{2}$代入，得</p>
+\\ & = y_{2} \left[ y_{2} - y_{1} + \varsigma K_{11} - \varsigma K_{12} + \left( g \left( \mathbf{x}_{1} \right) - \sum_{j=1}^{2}\alpha_{j} y_{j} K_{1j} - b \right) - \left( g \left( \mathbf{x}_{2} \right) - \sum_{j=1}^{2}\alpha_{j} y_{j} K_{2j} - b \right) \right]\end{align*}</script><p>将<script type="math/tex">\varsigma = \alpha_{1}^{old} y_{1} + \alpha_{2}^{old} y_{2}</script>代入，得</p>
 <script type="math/tex; mode=display">\begin{align*} \\  \left( K_{11} + K_{22} - 2 K_{12} \right) \alpha_{2}^{new,unc} &= y_{2} \left( \left( K_{11} + K_{22} - 2 K_{12} \right) \alpha_{2}^{old} y_{2} + y_{2} - y_{1} + g \left( x_{1} \right) - g \left( x_{2} \right) \right)
-\\ & = \left( K_{11} + K_{22} - 2 K_{12} \right) \alpha_{2}^{old} + y_{2} \left( E_{1} - E_{2} \right) \end{align*}</script><p>令$\eta = K_{11} + K_{22} - 2 K_{12}$代入，得</p>
+\\ & = \left( K_{11} + K_{22} - 2 K_{12} \right) \alpha_{2}^{old} + y_{2} \left( E_{1} - E_{2} \right) \end{align*}</script><p>令<script type="math/tex">\eta = K_{11} + K_{22} - 2 K_{12}</script>代入，得</p>
 <script type="math/tex; mode=display">\begin{align*} \\ & \alpha_{2}^{new,unc} = \alpha_{2}^{old} + \dfrac{y_{2} \left( E_{1} - E_{2} \right)}{\eta}\end{align*}</script><p>经剪辑后</p>
 <script type="math/tex; mode=display">\begin{align*} \alpha_{2}^{new} = \left\{
 \begin{aligned} 
@@ -280,18 +280,18 @@
 \\ & \alpha_{2}^{new,unc}, L \leq \alpha_{2}^{new,unc} \leq H
 \\ & L, \alpha_{2}^{new,unc} < L 
 \end{aligned}
-\right.\end{align*}</script><p>由于$\varsigma = \alpha_{1}^{old} y_{1} + \alpha_{2}^{old} y_{2}$及$\varsigma = \alpha_{1}^{new} y_{1} + \alpha_{2}^{new} y_{2}$<br>则</p>
+\right.\end{align*}</script><p>由于<script type="math/tex">\varsigma = \alpha_{1}^{old} y_{1} + \alpha_{2}^{old} y_{2}</script>及<script type="math/tex">\varsigma = \alpha_{1}^{new} y_{1} + \alpha_{2}^{new} y_{2}</script><br>则</p>
 <script type="math/tex; mode=display">\begin{align*} \\ & \alpha_{1}^{old} y_{1} + \alpha_{2}^{old} y_{2} = \alpha_{1}^{new} y_{1} + \alpha_{2}^{new} y_{2}
-\\ & \quad\quad\quad\quad \alpha_{1}^{new} = \alpha_{1}^{old} + y_{1} y_{2} \left( \alpha_{2}^{old} - \alpha_{2}^{new} \right) \end{align*}</script><p>由分量$0 &lt; \alpha_{1}^{new} &lt; C$，则</p>
+\\ & \quad\quad\quad\quad \alpha_{1}^{new} = \alpha_{1}^{old} + y_{1} y_{2} \left( \alpha_{2}^{old} - \alpha_{2}^{new} \right) \end{align*}</script><p>由分量<script type="math/tex">0 < \alpha_{1}^{new} < C</script>，则</p>
 <script type="math/tex; mode=display">\begin{align*}  \\ & b_1^{new} = y_{1} - \sum_{i=3}^{N} \alpha_{i} y_{i} K_{i1} - \alpha_{1}^{new} y_{1} K_{11} - \alpha_{2}^{new} y_{2} K_{21} \end{align*}</script><p>由</p>
 <script type="math/tex; mode=display">\begin{align*} \\ &  E_{1} = g \left( \mathbf{x}_{1} \right) - y_{1} = \left( \sum_{j=1}^{N} \alpha_{j} y_{j} K_{ij} + b \right) - y_{1}
 \\ & = \sum_{i=3}^{N} \alpha_{i} y_{i} K_{i1} + \alpha_{1}^{old} y_{1} K_{11} + \alpha_{2}^{old} y_{2} K_{21} + b^{old} - y_{1} \end{align*}</script><p>则</p>
 <script type="math/tex; mode=display">\begin{align*} \\ & y_{1} - \sum_{i=3}^{N} \alpha_{i} y_{i} K_{i1} = -E_{1} + \alpha_{1}^{old} y_{1} K_{11} + \alpha_{2}^{old} y_{2} K_{21} + b^{old}  \end{align*}</script><p>代入，得</p>
 <script type="math/tex; mode=display">\begin{align*} \\ & b_1^{new} =  -E_{1} + y_{1} K_{11} \left( \alpha_{1}^{new} - \alpha_{1}^{old} \right) - y_{2} K_{21} \left( \alpha_{2}^{new} - \alpha_{2}^{old} \right) + b^{old} \end{align*}</script><p>同理，得</p>
-<script type="math/tex; mode=display">\begin{align*} \\ & b_2^{new} =  -E_{2} + y_{1} K_{12} \left( \alpha_{1}^{new} - \alpha_{1}^{old} \right) - y_{2} K_{22} \left( \alpha_{2}^{new} - \alpha_{2}^{old} \right) + b^{old} \end{align*}</script><p>如果$\alpha_{1}^{new}, \alpha_{2}^{new}$满足$0 &lt; \alpha_{i}^{new} &lt; C, i = 1, 2$，<br>则  </p>
+<script type="math/tex; mode=display">\begin{align*} \\ & b_2^{new} =  -E_{2} + y_{1} K_{12} \left( \alpha_{1}^{new} - \alpha_{1}^{old} \right) - y_{2} K_{22} \left( \alpha_{2}^{new} - \alpha_{2}^{old} \right) + b^{old} \end{align*}</script><p>如果<script type="math/tex">\alpha_{1}^{new}, \alpha_{2}^{new}</script>满足<script type="math/tex">0 < \alpha_{i}^{new} < C, i = 1, 2</script>，<br>则  </p>
 <script type="math/tex; mode=display">\begin{align*} \\ & b^{new} = b_{1}^{new} = b_{2}^{new}\end{align*}</script><p>否则</p>
 <script type="math/tex; mode=display">\begin{align*} \\ & b^{new} = \dfrac{b_{1}^{new} + b_{2}^{new}}{2} \end{align*}</script><p>更新$E_{i}$  </p>
-<script type="math/tex; mode=display">\begin{align*} \\ & E_{i}^{new} = \sum_{S} y_{j} \alpha_{j} K_{ \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right)} + b^{new} - y_{i} \end{align*}</script><p>其中，$S$是所有支持向量$x_{j}$的集合。</p>
+<script type="math/tex; mode=display">\begin{align*} \\ & E_{i}^{new} = \sum_{S} y_{j} \alpha_{j} K_{ \left( \mathbf{x}_{i}, \mathbf{x}_{j} \right)} + b^{new} - y_{i} \end{align*}</script><p>其中，<script type="math/tex">S</script>是所有支持向量<script type="math/tex">x_{j}</script>的集合。</p>
 
                 <hr>
                 <!-- Pager -->
@@ -455,7 +455,7 @@
                     	
                     <span class="post-count">24.7k words altogether</span>
                     <br>
-                    Copyright &copy; Watson Wang 2019 
+                    Copyright &copy; Watson Wang 2020 
                 </p>
             </div>
         </div>
