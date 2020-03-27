@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="null">
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Multi-Source Domain Adaptation for Text Classification via DistanceNet-Bandits - WatsonWang | On the way.
+        
+    </title>
+
+    <link rel="canonical" href="http://watsonwangzh.github.io/2020/03/26/Multi-Source-Domain-Adaptation-for-Text-Classification-via-DistanceNet-Bandits/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('DADB.jpg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#无监督 多领域 领域适应" title="无监督 多领域 领域适应">无监督 多领域 领域适应</a>
+                            
+                        </div>
+                        <h1>Multi-Source Domain Adaptation for Text Classification via DistanceNet-Bandits</h1>
+                        <h2 class="subheading">AAAI 2020</h2>
+                        <span class="meta">
+                            Posted by Watson Wang on
+                            2020-03-26
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">WatsonWang Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p><a href="https://arxiv.org/pdf/2001.04362.pdf" target="_blank" rel="noopener">原文链接</a> </p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p><a href="http://www.john.blitzer.com/papers/nips06.pdf" target="_blank" rel="noopener">论文</a>提出学习算法在目标领域上的性能由两个因素决定:其在原始领域的误差和两个领域间数据分布的差异。<br>该论文首先讨论了几种距离度量方式，包括L2距离、Cosine距离、MMD(Maximum Mean Discrepancy)、FLD(Fisher Linear Discriminant)和CORAL(Correlation Alignment) 等,对区分样本来源的有效性及独特信息量,并实验验证。实验发现不存在某一种单独的度量可以完美区分不同领域，且L2距离、MMD与FLD度量标准在上述两个指标上表现较好。<br>基于该发现作者随后提出了一种结合了L2距离、MMD和FLD三种度量的DistanceNet模型。为了让模型适应在多个原领域来源的情况下的领域迁移，随后又提出了将multi-armed bandit 与UCB(upper confident bound)结合起来的DistanceNet-Bandit模型。</p>
+<h1 id="baseline-model"><a href="#Baseline-Model" class="headerlink" title="Baseline Model"></a>Baseline Model</h1><p>LSTM Encoder + Cross Entropy Loss</p>
+<h1 id="distancenet-modelsingle-source"><a href="#DistanceNet-Model-Single-Source" class="headerlink" title="DistanceNet Model(Single Source)"></a>DistanceNet Model(Single Source)</h1><p><img src="DistanceNet.jpg" alt="DistanceNet模型"><br>在基线模型的基础上添加组合距离损失，来优化Encoder对领域无关特征的编码能力。</p>
+<h1 id="distancenet-bandit-modelmulti-source"><a href="#DistanceNet-Bandit-Model-Multi-Source" class="headerlink" title="DistanceNet-Bandit Model(Multi-Source)"></a>DistanceNet-Bandit Model(Multi-Source)</h1><p><img src="DistanceNet-Bandit.jpg" alt="DistanceNet-Bandit模型"><br>类似强化学习的思路，添加赌博机控制器，通过reward优化控制器的策略选择，使得控制器能够在多个原领域数据下，选择一条较好的策略。</p>
+<h1 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h1><h2 id="baseline-compare"><a href="#Baseline-Compare" class="headerlink" title="Baseline Compare"></a>Baseline Compare</h2><p><img src="Baseline.jpg" alt="BaselineCompare"></p>
+<h2 id="single-source"><a href="#Single-Source" class="headerlink" title="Single Source"></a>Single Source</h2><p><img src="SS.jpg" alt="Single Source"></p>
+<h2 id="multi-source"><a href="#Multi-Source" class="headerlink" title="Multi-Source"></a>Multi-Source</h2><p><img src="MS.jpg" alt="Multi-Source"></p>
+<h1 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h1><p><a href="https://arxiv.org/pdf/1704.05742.pdf" target="_blank" rel="noopener">Adversarial multi-task learning for text classification. ACL 2017.</a><br><a href="https://sentic.net/sentire2012remus.pdf" target="_blank" rel="noopener">DataSel. ICDM 2012.</a><br><a href="http://jmlr.org/papers/volume17/15-239/15-239.pdf" target="_blank" rel="noopener">Domain-adversarial training of neural networks. JMLR 2016.</a></p>
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/07/18/朴素贝叶斯/" data-toggle="tooltip" data-placement="top" title="朴素贝叶斯">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NDg0OS8yMTM3MA==">
+    <script type="text/javascript">
+        (function(d, s) {
+            var j, e = d.getElementsByTagName(s)[0];
+            if (typeof LivereTower === 'function') { return; }
+            j = d.createElement(s);
+            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+            j.async = true;
+            e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+    </script>
+</div>
+    </div>     
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <aside id="sidebar">
+      <div id="toc" class="toc-article">
+      <strong class="toc-title">文章目录</strong>
+      
+        <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#总结"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">总结</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#baseline-model"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Baseline Model</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#distancenet-modelsingle-source"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">DistanceNet Model(Single Source)</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#distancenet-bandit-modelmulti-source"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">DistanceNet-Bandit Model(Multi-Source)</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#实验结果"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">实验结果</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#baseline-compare"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">Baseline Compare</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#single-source"><span class="toc-nav-number">5.2.</span> <span class="toc-nav-text">Single Source</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#multi-source"><span class="toc-nav-number">5.3.</span> <span class="toc-nav-text">Multi-Source</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#扩展阅读"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">扩展阅读</span></a></li></ol>
+      
+      </div>
+    </aside>
+  
+
+
+<!-- <div id="toc" class="toc-article">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-number">1.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#baseline-model"><span class="toc-number">2.</span> <span class="toc-text">Baseline Model</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#distancenet-modelsingle-source"><span class="toc-number">3.</span> <span class="toc-text">DistanceNet Model(Single Source)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#distancenet-bandit-modelmulti-source"><span class="toc-number">4.</span> <span class="toc-text">DistanceNet-Bandit Model(Multi-Source)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实验结果"><span class="toc-number">5.</span> <span class="toc-text">实验结果</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#baseline-compare"><span class="toc-number">5.1.</span> <span class="toc-text">Baseline Compare</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#single-source"><span class="toc-number">5.2.</span> <span class="toc-text">Single Source</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#multi-source"><span class="toc-number">5.3.</span> <span class="toc-text">Multi-Source</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#扩展阅读"><span class="toc-number">6.</span> <span class="toc-text">扩展阅读</span></a></li></ol>
+</div> -->
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#无监督 多领域 领域适应" title="无监督 多领域 领域适应">无监督 多领域 领域适应</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                
+                    <li><a href="http://beantech.org" target="_blank">Bean Tech</a></li>
+                
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<script type="text/javascript" src="/js/zooming.js"></script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/WatsonWangZh">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                	
+
+                <p class="copyright text-muted">
+                    	
+                    <span class="post-count">25.1k words altogether</span>
+                    <br>
+                    Copyright &copy; Watson Wang 2020 
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://watsonwangzh.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+	
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://watsonwangzh.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
