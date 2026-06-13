@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="DPO 的缺陷及其变体整理，包括 DPOP、SimPO、LD-DPO、IPO、ORPO、KTO。">
+    <meta name="keyword" content="DPO, RLHF, LLM, Preference Optimization">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+          DPO 的缺陷及其变体整理 - WatsonWang | On the way.
+    </title>
+
+    <link rel="canonical" href="http://watsonwangzh.github.io/2026/06/13/DPO-defects-and-variants/">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    <link rel="stylesheet" href="/css/highlight.css">
+    <link rel="stylesheet" href="/css/widget.css">
+    <link rel="stylesheet" href="/css/rocket.css">
+    <link rel="stylesheet" href="/css/signature.css">
+    <link rel="stylesheet" href="/css/toc.css">
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script></script>
+</head>
+
+<body ontouchstart="">
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/header_img/stars.jpg')
+    }
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+</style>
+
+<header class="intro-header" >
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <div class="tags">
+                              <a class="tag" href="/tags/#LLM" title="LLM">LLM</a>
+                              <a class="tag" href="/tags/#RLHF" title="RLHF">RLHF</a>
+                              <a class="tag" href="/tags/#DPO" title="DPO">DPO</a>
+                        </div>
+                        <h1>DPO 的缺陷及其变体整理</h1>
+                        <h2 class="subheading">DPOP、SimPO、LD-DPO、IPO、ORPO、KTO</h2>
+                        <span class="meta">
+                            Posted by Watson Wang on
+                            2026-06-13
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">WatsonWang Blog</a>
+        </div>
+
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/archive/">Archives</a></li>
+                    <li><a href="/tags/">Tags</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+<script>
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            $navbar.className = " ";
+            setTimeout(function(){
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>本文整理 DPO（Direct Preference Optimization）的基本推导、常见缺陷及其若干变体。DPO 将 RLHF 中的 reward model 与强化学习优化过程合并为一个监督式的二分类目标，因此在 LLM 对齐中被广泛使用。但 DPO 的简洁性也带来一些隐含假设：所有偏好对被视为同等强度，优化目标只关心相对概率差，且 reward 由 policy 与 reference model 的 log-ratio 间接定义。DPOP、SimPO、LD-DPO、IPO、ORPO、KTO 等方法大多可以看作对这些假设的修正。</p>
+
+<h1 id="preference-optimization"><a href="#Preference-Optimization" class="headerlink" title="Preference Optimization"></a>Preference Optimization</h1>
+<p>设偏好数据集为</p>
+<script type="math/tex; mode=display">\begin{align*}
+\mathcal{D}=\left\{\left(x^{(i)},y_{w}^{(i)},y_{l}^{(i)}\right)\right\}_{i=1}^{N}
+\end{align*}</script>
+<p>其中，$x$ 表示 prompt，$y_w$ 表示 preferred response 或 chosen response，$y_l$ 表示 dispreferred response 或 rejected response。偏好学习通常假设人类偏好服从 Bradley-Terry 模型，即</p>
+<script type="math/tex; mode=display">\begin{align*}
+P\left(y_w \succ y_l | x\right)
+=\dfrac{\exp\left(r(x,y_w)\right)}
+{\exp\left(r(x,y_w)\right)+\exp\left(r(x,y_l)\right)}
+=\sigma\left(r(x,y_w)-r(x,y_l)\right)
+\end{align*}</script>
+<p>其中，$r(x,y)$ 为 reward model，$\sigma(\cdot)$ 为 sigmoid 函数。传统 RLHF 通常包含三个阶段：</p>
+<ol>
+<li>使用监督数据训练 $\pi_{\text{SFT}}$；</li>
+<li>使用偏好数据训练 reward model $r_{\phi}(x,y)$；</li>
+<li>在 KL 约束下使用 PPO 等强化学习算法优化 policy。</li>
+</ol>
+<p>第三步常写作</p>
+<script type="math/tex; mode=display">\begin{align*}
+\max_{\pi_{\theta}} \quad
+\mathbb{E}_{x \sim \mathcal{D}, y \sim \pi_{\theta}}
+\left[
+r_{\phi}(x,y)
+-\beta \log \dfrac{\pi_{\theta}(y|x)}{\pi_{\text{ref}}(y|x)}
+\right]
+\end{align*}</script>
+<p>其中，$\pi_{\text{ref}}$ 通常取 SFT model，$\beta$ 控制 policy 偏离 reference model 的程度。</p>
+
+<h1 id="dpo"><a href="#DPO" class="headerlink" title="DPO"></a>DPO</h1>
+<p>DPO 的关键观察是：在带 KL 正则的 RLHF 目标中，最优 policy 与 reward 之间满足如下关系</p>
+<script type="math/tex; mode=display">\begin{align*}
+r(x,y)=\beta \log \dfrac{\pi^{*}(y|x)}{\pi_{\text{ref}}(y|x)}+\beta \log Z(x)
+\end{align*}</script>
+<p>其中，$Z(x)$ 为只与 prompt 有关的归一化因子。当比较同一个 prompt 下的两个 response 时，$Z(x)$ 会相互抵消，因此可定义 policy 的隐式 reward margin 为</p>
+<script type="math/tex; mode=display">\begin{align*}
+h_{\theta}(x,y_w,y_l)
+=\beta \log \dfrac{\pi_{\theta}(y_w|x)}{\pi_{\text{ref}}(y_w|x)}
+-\beta \log \dfrac{\pi_{\theta}(y_l|x)}{\pi_{\text{ref}}(y_l|x)}
+\end{align*}</script>
+<p>代入 Bradley-Terry 模型后，DPO 的损失函数为</p>
+<script type="math/tex; mode=display">\begin{align*}
+\mathcal{L}_{\text{DPO}}(\pi_{\theta};\pi_{\text{ref}})
+=-\mathbb{E}_{(x,y_w,y_l)\sim\mathcal{D}}
+\left[
+\log \sigma\left(h_{\theta}(x,y_w,y_l)\right)
+\right]
+\end{align*}</script>
+<p>直观上，DPO 希望 preferred response 相对 reference model 的概率提升幅度，大于 rejected response 相对 reference model 的概率提升幅度。</p>
+
+<h1 id="dpo-defects"><a href="#DPO-Defects" class="headerlink" title="DPO Defects"></a>DPO Defects</h1>
+<p>DPO 的优点是形式简单、训练稳定、不需要显式训练 reward model，也不需要在线 RL。但在实际训练中，DPO 至少有以下几个问题。</p>
+<h2 id="reference-dependence"><a href="#Reference-Dependence" class="headerlink" title="Reference Dependence"></a>Reference Dependence</h2>
+<p>DPO 的 reward 由 log-ratio 定义：</p>
+<script type="math/tex; mode=display">\begin{align*}
+r_{\theta}(x,y)=\beta \log \dfrac{\pi_{\theta}(y|x)}{\pi_{\text{ref}}(y|x)}
+\end{align*}</script>
+<p>因此训练时需要同时计算 $\pi_{\theta}$ 与 $\pi_{\text{ref}}$ 的 log probability。工程上，这会增加显存和计算开销；理论上，reference model 的质量也会影响 reward 的尺度与方向。</p>
+<h2 id="unbounded-margin"><a href="#Unbounded-Margin" class="headerlink" title="Unbounded Margin"></a>Unbounded Margin</h2>
+<p>DPO 使用 logistic loss。当 $h_{\theta}$ 变大时，loss 会持续鼓励 margin 增大。若偏好数据存在噪声，或者某些 pair 太容易区分，模型可能把 log-ratio 推得过大，导致过优化或偏离原模型。</p>
+<h2 id="positive-probability-decrease"><a href="#Positive-Probability-Decrease" class="headerlink" title="Positive Probability Decrease"></a>Positive Probability Decrease</h2>
+<p>DPO 只关心相对差值 $h_{\theta}$。因此只要 rejected response 的概率下降得更多，即使 preferred response 的概率也下降，DPO loss 仍可能变小。换言之，DPO 不直接保证 $\pi_{\theta}(y_w|x)$ 上升。</p>
+<h2 id="binary-preference-strength"><a href="#Binary-Preference-Strength" class="headerlink" title="Binary Preference Strength"></a>Binary Preference Strength</h2>
+<p>标准 DPO 把所有 preference pair 当作同等强度的二元偏好。但实际标注中，有的 pair 差距很小，有的 pair 差距极大。如果不区分偏好强度，训练信号会被压缩成单一的 chosen/rejected 标签。</p>
+<h2 id="length-bias"><a href="#Length-Bias" class="headerlink" title="Length Bias"></a>Length Bias</h2>
+<p>序列概率是 token 概率的乘积，log probability 是 token log probability 的求和：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\log \pi_{\theta}(y|x)=\sum_{t=1}^{|y|}\log \pi_{\theta}(y_t|x,y_{<t})
+\end{align*}</script>
+<p>若偏好数据中较长回答更容易被选为 preferred response，DPO 的优化方向可能混合了真实质量偏好与长度偏好，最终产生 verbosity bias。</p>
+<h2 id="data-format-limitation"><a href="#Data-Format-Limitation" class="headerlink" title="Data Format Limitation"></a>Data Format Limitation</h2>
+<p>DPO 需要 pairwise preference，即同一个 prompt 下至少有一个 chosen 和一个 rejected。实际系统中更常见的数据可能是单条回答的 thumbs-up / thumbs-down、用户是否采纳、是否触发安全拦截等 binary feedback。DPO 无法直接利用这些单样本标签。</p>
+
+<h1 id="dpop"><a href="#DPOP" class="headerlink" title="DPOP"></a>DPOP</h1>
+<p>DPOP 通常指 DPO-Positive。该方法针对 DPO 的一个 failure mode：DPO 可能通过降低 rejected response 的概率来扩大 margin，同时 preferred response 的概率也被降低。</p>
+<h2 id="dpop-motivation"><a href="#DPOP-Motivation" class="headerlink" title="DPOP Motivation"></a>动机</h2>
+<p>设 DPO 的隐式 reward margin 为 $h_{\theta}$。只要 $h_{\theta}$ 增大，DPO loss 就会下降。但 $h_{\theta}$ 增大不等价于 $\log \pi_{\theta}(y_w|x)$ 增大。例如当 $y_w$ 与 $y_l$ 只有少量 token 差异时，模型可能通过强烈压低 rejected token 来获得较好的 DPO loss，却没有真正提升 preferred completion。</p>
+<h2 id="dpop-loss"><a href="#DPOP-Loss" class="headerlink" title="DPOP Loss"></a>目标函数</h2>
+<p>DPOP 在 DPO loss 外加入 positive penalty，惩罚 preferred response 相对 reference model 的概率下降。可将其理解为</p>
+<script type="math/tex; mode=display">\begin{align*}
+\mathcal{L}_{\text{DPOP}}
+=\mathcal{L}_{\text{DPO}}
+\lambda \cdot
+\max\left(0,
+\log \pi_{\text{ref}}(y_w|x)-\log \pi_{\theta}(y_w|x)
+\right)
+\end{align*}</script>
+<p>其中，$\lambda$ 控制正样本概率下降的惩罚强度。该项要求模型在拉开 chosen/rejected 差距时，不应以牺牲 chosen response 自身概率为代价。</p>
+<h2 id="dpop-practice"><a href="#DPOP-Practice" class="headerlink" title="DPOP Practice"></a>实践选择</h2>
+<p>DPOP 适合用于 chosen 与 rejected 差别较小的数据集，例如回答只有局部修改、推理步骤只有少量差异、摘要或代码补全中编辑距离较小的 preference pair。若数据 pair 差别很大，DPOP 的收益可能不如 SimPO 或 ORPO 明显，但它仍然是修正 DPO 正样本下降问题的直接方案。</p>
+
+<h1 id="simpo"><a href="#SimPO" class="headerlink" title="SimPO"></a>SimPO</h1>
+<p>SimPO（Simple Preference Optimization）是 reference-free 的偏好优化方法。它的核心是用平均 token log probability 作为 reward，使训练目标更接近推理时的生成打分方式。</p>
+<h2 id="simpo-motivation"><a href="#SimPO-Motivation" class="headerlink" title="SimPO Motivation"></a>动机</h2>
+<p>DPO 需要 reference model，训练时显存和计算开销较大。同时，DPO 的 sequence-level log probability 容易受到长度影响。SimPO 试图同时解决这两个问题：去掉 reference model，并显式做长度归一化。</p>
+<h2 id="simpo-loss"><a href="#SimPO-Loss" class="headerlink" title="SimPO Loss"></a>目标函数</h2>
+<p>SimPO 定义 reward 为</p>
+<script type="math/tex; mode=display">\begin{align*}
+r_{\text{SimPO}}(x,y)
+=\dfrac{\beta}{|y|}\log \pi_{\theta}(y|x)
+=\dfrac{\beta}{|y|}
+\sum_{t=1}^{|y|}
+\log \pi_{\theta}(y_t|x,y_{<t})
+\end{align*}</script>
+<p>并加入 target reward margin $\gamma$：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\mathcal{L}_{\text{SimPO}}
+=-\mathbb{E}_{(x,y_w,y_l)\sim\mathcal{D}}
+\left[
+\log \sigma
+\left(
+\dfrac{\beta}{|y_w|}\log \pi_{\theta}(y_w|x)
+-\dfrac{\beta}{|y_l|}\log \pi_{\theta}(y_l|x)
+-\gamma
+\right)
+\right]
+\end{align*}</script>
+<p>其中，$\gamma>0$ 表示希望 preferred reward 至少比 rejected reward 大一个固定 margin。</p>
+<h2 id="simpo-practice"><a href="#SimPO-Practice" class="headerlink" title="SimPO Practice"></a>实践选择</h2>
+<p>SimPO 适合显存紧张、希望避免加载 reference model 的场景。由于使用平均 log probability，它通常比 DPO 更不容易鼓励冗长回答。但 SimPO 对 $\beta$ 与 $\gamma$ 的比例较敏感，实践中需要关注 response length、reward margin 和 win rate 的共同变化。</p>
+
+<h1 id="ld-dpo"><a href="#LD-DPO" class="headerlink" title="LD-DPO"></a>LD-DPO</h1>
+<p>LD-DPO（Length Desensitization in Direct Preference Optimization）直接针对 DPO 的长度敏感问题。它认为 DPO 的隐式 reward 与 response length 之间存在强相关，容易将 verbosity 当作人类偏好。</p>
+<h2 id="ld-dpo-motivation"><a href="#LD-DPO-Motivation" class="headerlink" title="LD-DPO Motivation"></a>动机</h2>
+<p>在许多偏好数据中，较长回答包含更多细节，因此更容易被标注为 chosen。但较长并不一定意味着更好。若模型把 length preference 当作 quality preference，就会生成冗长、重复、信息密度低的回答。</p>
+<h2 id="ld-dpo-loss"><a href="#LD-DPO-Loss" class="headerlink" title="LD-DPO Loss"></a>目标函数</h2>
+<p>LD-DPO 的思想是将长回答的 likelihood 分解为 public-length portion 与 excessive portion。设较短回答长度为 $l_p$，较长回答可表示为</p>
+<script type="math/tex; mode=display">\begin{align*}
+y_{\text{long}}=\left(y_{\text{pub}},y_{\text{exc}}\right),
+\quad |y_{\text{pub}}|=l_p
+\end{align*}</script>
+<p>则长回答概率可分解为</p>
+<script type="math/tex; mode=display">\begin{align*}
+\pi_{\theta}(y_{\text{long}}|x)
+=\pi_{\theta}(y_{\text{pub}}|x)
+\cdot
+\pi_{\theta}(y_{\text{exc}}|x,y_{\text{pub}})
+\end{align*}</script>
+<p>LD-DPO 对 excessive portion 的贡献进行衰减，使 DPO 的 log-ratio 不再过度依赖额外长度。抽象地，可写作使用长度去敏感后的概率 $\hat{\pi}_{\theta}$ 替代原始概率：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\mathcal{L}_{\text{LD-DPO}}
+=-\mathbb{E}
+\left[
+\log\sigma\left(
+\beta \log \dfrac{\hat{\pi}_{\theta}(y_w|x)}{\pi_{\text{ref}}(y_w|x)}
+-\beta \log \dfrac{\hat{\pi}_{\theta}(y_l|x)}{\pi_{\text{ref}}(y_l|x)}
+\right)
+\right]
+\end{align*}</script>
+<p>其中，$\hat{\pi}_{\theta}$ 表示经过长度去敏感化重参数化后的 likelihood。</p>
+<h2 id="ld-dpo-practice"><a href="#LD-DPO-Practice" class="headerlink" title="LD-DPO Practice"></a>实践选择</h2>
+<p>LD-DPO 适合处理 DPO 后回答明显变长、重复增多、AlpacaEval 等长度相关 benchmark 虚高的情况。如果主要问题是显存或 reference model 开销，则 SimPO/ORPO 更直接；如果主要问题是 verbosity bias，则 LD-DPO 更有针对性。</p>
+
+<h1 id="ipo"><a href="#IPO" class="headerlink" title="IPO"></a>IPO</h1>
+<p>IPO（Identity Preference Optimization）将 DPO 中无界增长的 preference margin 改为固定目标 margin，从而缓解 DPO 的过优化问题。</p>
+<h2 id="ipo-motivation"><a href="#IPO-Motivation" class="headerlink" title="IPO Motivation"></a>动机</h2>
+<p>DPO 的 logistic loss 只要求 $h_{\theta}$ 越大越好，并不规定合理的 margin 应该多大。对于噪声数据，模型可能为了拟合训练偏好而过度拉大 log-ratio，降低泛化能力。</p>
+<h2 id="ipo-loss"><a href="#IPO-Loss" class="headerlink" title="IPO Loss"></a>目标函数</h2>
+<p>设</p>
+<script type="math/tex; mode=display">\begin{align*}
+\rho_{\theta}(x,y)
+=\log \dfrac{\pi_{\theta}(y|x)}{\pi_{\text{ref}}(y|x)}
+\end{align*}</script>
+<p>则 IPO 使用 squared loss 将 reward margin 回归到固定目标 $1/(2\beta)$：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\mathcal{L}_{\text{IPO}}
+=\mathbb{E}_{(x,y_w,y_l)\sim\mathcal{D}}
+\left[
+\left(
+\rho_{\theta}(x,y_w)
+-\rho_{\theta}(x,y_l)
+-\dfrac{1}{2\beta}
+\right)^2
+\right]
+\end{align*}</script>
+<p>与 DPO 相比，IPO 不再鼓励 margin 无限增大；当 margin 达到目标值后，继续增大也会受到惩罚。</p>
+<h2 id="ipo-practice"><a href="#IPO-Practice" class="headerlink" title="IPO Practice"></a>实践选择</h2>
+<p>IPO 适合偏好数据较小、噪声较多、担心 DPO 过拟合的情况。它的训练目标更像 regression，稳定性较好，但 target margin 的设定会影响学习强度。若数据非常干净且 pair 数量充足，标准 DPO 或 SimPO 可能已经足够。</p>
+
+<h1 id="orpo"><a href="#ORPO" class="headerlink" title="ORPO"></a>ORPO</h1>
+<p>ORPO（Odds Ratio Preference Optimization）试图将 SFT 与 preference alignment 合并为一个单阶段训练过程。它不使用 reference model，而是在 NLL loss 上加入 odds ratio preference penalty。</p>
+<h2 id="orpo-motivation"><a href="#ORPO-Motivation" class="headerlink" title="ORPO Motivation"></a>动机</h2>
+<p>传统流程通常先 SFT，再 DPO。ORPO 认为在 SFT 阶段给 chosen response 强学习信号，同时对 rejected style 加一个较弱惩罚，就可以完成偏好对齐，从而避免额外的 reference model 和多阶段训练。</p>
+<h2 id="orpo-loss"><a href="#ORPO-Loss" class="headerlink" title="ORPO Loss"></a>目标函数</h2>
+<p>定义 odds 为</p>
+<script type="math/tex; mode=display">\begin{align*}
+\text{odds}_{\theta}(y|x)
+=\dfrac{P_{\theta}(y|x)}{1-P_{\theta}(y|x)}
+\end{align*}</script>
+<p>chosen 与 rejected 的 odds ratio 为</p>
+<script type="math/tex; mode=display">\begin{align*}
+\text{OR}_{\theta}(y_w,y_l)
+=\dfrac{\text{odds}_{\theta}(y_w|x)}
+{\text{odds}_{\theta}(y_l|x)}
+\end{align*}</script>
+<p>ORPO 的总体损失可写为</p>
+<script type="math/tex; mode=display">\begin{align*}
+\mathcal{L}_{\text{ORPO}}
+=\mathbb{E}_{(x,y_w,y_l)\sim\mathcal{D}}
+\left[
+\mathcal{L}_{\text{SFT}}(x,y_w)
+\lambda \mathcal{L}_{\text{OR}}(x,y_w,y_l)
+\right]
+\end{align*}</script>
+<p>其中，</p>
+<script type="math/tex; mode=display">\begin{align*}
+\mathcal{L}_{\text{OR}}
+=-\log\sigma\left(
+\log \text{OR}_{\theta}(y_w,y_l)
+\right)
+\end{align*}</script>
+<p>该项鼓励 chosen response 的 odds 高于 rejected response。</p>
+<h2 id="orpo-practice"><a href="#ORPO-Practice" class="headerlink" title="ORPO Practice"></a>实践选择</h2>
+<p>ORPO 适合希望用一份 preference data 同时完成 instruction tuning 与 alignment 的场景。它工程上简单，不需要 reference model，但由于 SFT 与偏好惩罚耦合在一起，$\lambda$ 的选择会影响模型保留原始能力与偏好对齐之间的平衡。</p>
+
+<h1 id="kto"><a href="#KTO" class="headerlink" title="KTO"></a>KTO</h1>
+<p>KTO（Kahneman-Tversky Optimization）从 prospect theory 出发，将人类对 gain/loss 的非对称感知引入 alignment loss。与 DPO 最大的不同是：KTO 不要求 pairwise preference，只需要单条样本的 desirable / undesirable 标签。</p>
+<h2 id="kto-motivation"><a href="#KTO-Motivation" class="headerlink" title="KTO Motivation"></a>动机</h2>
+<p>真实业务数据中，pairwise preference 昂贵且难收集。相比之下，单条回答的好坏反馈更容易获得，例如用户点赞、点踩、是否点击、是否采纳、是否被安全系统判定为违规。KTO 试图直接利用这种 binary feedback。</p>
+<h2 id="kto-loss"><a href="#KTO-Loss" class="headerlink" title="KTO Loss"></a>目标函数</h2>
+<p>KTO 仍可使用 policy 与 reference model 的 log-ratio 定义隐式 reward：</p>
+<script type="math/tex; mode=display">\begin{align*}
+r_{\theta}(x,y)
+=\beta \log \dfrac{\pi_{\theta}(y|x)}{\pi_{\text{ref}}(y|x)}
+\end{align*}</script>
+<p>但它不再构造 $y_w$ 与 $y_l$ 的差值，而是根据样本标签 $v \in \{+1,-1\}$ 对单条 response 施加不同效用。抽象地，可写为</p>
+<script type="math/tex; mode=display">\begin{align*}
+\mathcal{L}_{\text{KTO}}
+=\mathbb{E}_{(x,y,v)\sim\mathcal{D}}
+\left[
+w_v \cdot \ell_v\left(r_{\theta}(x,y)-z_0\right)
+\right]
+\end{align*}</script>
+<p>其中，$v=+1$ 表示 desirable，$v=-1$ 表示 undesirable，$w_v$ 控制正负样本权重，$z_0$ 可理解为参考点。KTO 的关键不是 pairwise ranking，而是根据人类对收益与损失的非对称感知来塑造单样本效用函数。</p>
+<h2 id="kto-practice"><a href="#KTO-Practice" class="headerlink" title="KTO Practice"></a>实践选择</h2>
+<p>KTO 适合缺少成对偏好数据、但有大量单样本反馈的场景。若已经有高质量 pairwise preference，DPO/SimPO/IPO 仍然直接；若线上积累的是 thumbs-up/down 或安全审核标签，KTO 的数据利用方式更自然。</p>
+
+<h1 id="comparison"><a href="#Comparison" class="headerlink" title="Comparison"></a>Comparison</h1>
+<p>从 DPO 的缺陷出发，可以将上述方法理解为不同方向的修正：</p>
+<ol>
+<li>DPOP 解决的是 DPO 不保证 preferred response 概率上升的问题；</li>
+<li>SimPO 解决的是 reference model 开销与长度归一化问题；</li>
+<li>LD-DPO 解决的是 DPO 对 response length 过度敏感的问题；</li>
+<li>IPO 解决的是 DPO margin 无界、容易过优化的问题；</li>
+<li>ORPO 解决的是 SFT 与 preference optimization 两阶段训练复杂的问题；</li>
+<li>KTO 解决的是 DPO 必须依赖 pairwise preference data 的问题。</li>
+</ol>
+<p>如果偏好数据干净、显存充足，DPO 仍然是很好的 baseline。如果希望降低工程成本，可优先考虑 SimPO 或 ORPO。如果训练后回答明显变长，应重点检查 LD-DPO 或 SimPO 的长度归一化思路。如果担心过拟合或数据噪声，IPO 的固定 margin 更稳。如果只有单样本好坏标签，KTO 比强行构造 preference pair 更自然。</p>
+
+<h1 id="reading"><a href="#Reading" class="headerlink" title="Reading"></a>扩展阅读</h1>
+<p><a href="https://arxiv.org/abs/2305.18290" target="_blank" rel="noopener">Direct Preference Optimization: Your Language Model is Secretly a Reward Model.</a><br>
+<a href="https://arxiv.org/pdf/2402.13228" target="_blank" rel="noopener">Smaug: Fixing Failure Modes of Preference Optimisation with DPO-Positive.</a><br>
+<a href="https://arxiv.org/html/2405.14734v1" target="_blank" rel="noopener">SimPO: Simple Preference Optimization with a Reference-Free Reward.</a><br>
+<a href="https://arxiv.org/html/2409.06411v1" target="_blank" rel="noopener">Length Desensitization in Direct Preference Optimization.</a><br>
+<a href="https://proceedings.mlr.press/v235/azar24a.html" target="_blank" rel="noopener">A General Theoretical Paradigm to Understand Learning from Human Preferences.</a><br>
+<a href="https://aclanthology.org/2024.emnlp-main.626.pdf" target="_blank" rel="noopener">ORPO: Monolithic Preference Optimization without Reference Model.</a><br>
+<a href="https://proceedings.mlr.press/v235/ethayarajh24a.html" target="_blank" rel="noopener">Model Alignment as Prospect Theoretic Optimization.</a></p>
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    <li class="next">
+                        <a href="/2020/03/26/Multi-Source-Domain-Adaptation-for-Text-Classification-via-DistanceNet-Bandits/" data-toggle="tooltip" data-placement="top" title="Multi-Source Domain Adaptation for Text Classification via DistanceNet-Bandits">Next Post &rarr;</a>
+                    </li>
+                </ul>
+
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NDg0OS8yMTM3MA==">
+    <script type="text/javascript">
+        (function(d, s) {
+            var j, e = d.getElementsByTagName(s)[0];
+            if (typeof LivereTower === 'function') { return; }
+            j = d.createElement(s);
+            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+            j.async = true;
+            e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+    </script>
+</div>
+    </div>
+            <!-- Table of Contents -->
+    <aside id="sidebar">
+      <div id="toc" class="toc-article">
+      <strong class="toc-title">文章目录</strong>
+        <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#preference-optimization"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Preference Optimization</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#dpo"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">DPO</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#dpo-defects"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">DPO Defects</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#dpop"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">DPOP</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#simpo"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">SimPO</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#ld-dpo"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">LD-DPO</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#ipo"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">IPO</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#orpo"><span class="toc-nav-number">8.</span> <span class="toc-nav-text">ORPO</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#kto"><span class="toc-nav-number">9.</span> <span class="toc-nav-text">KTO</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#comparison"><span class="toc-nav-number">10.</span> <span class="toc-nav-text">Comparison</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#reading"><span class="toc-nav-number">11.</span> <span class="toc-nav-text">扩展阅读</span></a></li></ol>
+      </div>
+    </aside>
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+                <section>
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                          <a class="tag" href="/tags/#LLM" title="LLM">LLM</a>
+                          <a class="tag" href="/tags/#RLHF" title="RLHF">RLHF</a>
+                          <a class="tag" href="/tags/#DPO" title="DPO">DPO</a>
+                    </div>
+                </section>
+
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    <li><a href="http://beantech.org" target="_blank">Bean Tech</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+
+<style>
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+<script type="text/javascript" src="/js/zooming.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  }
+});
+</script>
+<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a target="_blank"  href="https://github.com/WatsonWangZh">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+                <p class="copyright text-muted">
+                    <span class="post-count">25.1k words altogether</span>
+                    <br>
+                    Copyright &copy; Watson Wang 2020
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<script>
+    if($('#tag_cloud').length !== 0){
+        async("http://watsonwangzh.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<a id="rocket" href="#top" class=""></a>
+<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+<script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<img src="http://watsonwangzh.github.io/img/icon_wechat.png" width="0" height="0" />
+
+</body>
+</html>

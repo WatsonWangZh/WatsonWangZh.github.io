@@ -8,6 +8,14 @@
     </url>
 
     <url>
+        <loc>http://watsonwangzh.github.io/2026/06/13/DPO-defects-and-variants/</loc>
+        <lastmod>2026-06-13T14:47:00.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://watsonwangzh.github.io/2020/03/26/Multi-Source-Domain-Adaptation-for-Text-Classification-via-DistanceNet-Bandits/</loc>
         <lastmod>2020-03-27T17:40:36.808Z</lastmod>
         <changefreq>weekly</changefreq>
